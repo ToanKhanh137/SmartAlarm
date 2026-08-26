@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_primary">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_primary"
+        app:navigationIcon="@drawable/ic_dismiss"
+        app:navigationContentDescription="Back"/>
+
+    <!-- Step indicator -->
+    <LinearLayout
+        android:id="@+id/llStepIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="16dp">
+
+        <TextView android:id="@+id/tvStep1"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="@string/step_time" android:textSize="12sp"
+            android:textColor="@color/accent" android:textStyle="bold"/>
+        <View android:layout_width="0dp" android:layout_height="1dp"
+            android:layout_weight="0.5" android:background="@color/border"
+            android:layout_gravity="center_vertical"/>
+        <TextView android:id="@+id/tvStep2"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="@string/step_sound" android:textSize="12sp"
+            android:textColor="@color/text_secondary"/>
+        <View android:layout_width="0dp" android:layout_height="1dp"
+            android:layout_weight="0.5" android:background="@color/border"
+            android:layout_gravity="center_vertical"/>
+        <TextView android:id="@+id/tvStep3"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="@string/step_challenge" android:textSize="12sp"
+            android:textColor="@color/text_secondary"/>
+    </LinearLayout>
+
+    <!-- ViewFlipper cho 3 bước -->
+    <ViewFlipper
+        android:id="@+id/stepFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- === BƯỚC 1: Giờ & Ngày === -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="24dp">
+
+                <!-- TimePicker -->
+                <TimePicker
+                    android:id="@+id/timePicker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:timePickerMode="spinner"
+                    android:layout_gravity="center"/>
+
+                <!-- Label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_hint"
+                    style="@style/TextSectionHeader"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="@color/border"
+                    app:hintTextColor="@color/text_hint">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_hint"
+                        android:textColor="@color/text_primary"
+                        android:inputType="text"
+                        android:maxLength="50"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Ngày lặp -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lặp lại"
+                    style="@style/TextSectionHeader"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView android:id="@+id/dayMon" style="@style/DayChipLarge" android:text="@string/day_mon"/>
+                    <TextView android:id="@+id/dayTue" style="@style/DayChipLarge" android:text="@string/day_tue"/>
+                    <TextView android:id="@+id/dayWed" style="@style/DayChipLarge" android:text="@string/day_wed"/>
+                    <TextView android:id="@+id/dayThu" style="@style/DayChipLarge" android:text="@string/day_thu"/>
+                    <TextView android:id="@+id/dayFri" style="@style/DayChipLarge" android:text="@string/day_fri"/>
+                    <TextView android:id="@+id/daySat" style="@style/DayChipLarge" android:text="@string/day_sat"/>
+                    <TextView android:id="@+id/daySun" style="@style/DayChipLarge" android:text="@string/day_sun"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- === BƯỚC 2: Âm thanh === -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="24dp">
+
+                <!-- Nhạc chuông -->
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/ringtone_label" style="@style/TextSectionHeader"
+                    android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:background="@color/bg_card" android:orientation="horizontal"
+                    android:gravity="center_vertical" android:paddingHorizontal="16dp"
+                    android:id="@+id/rowRingtone">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:textColor="@color/text_primary"
+                        android:text="@string/ringtone_default" android:textSize="16sp"/>
+                    <TextView android:id="@+id/tvRingtoneName" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:textColor="@color/text_secondary"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <!-- Âm lượng -->
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/volume_label" style="@style/TextSectionHeader"
+                    android:layout_marginTop="20dp" android:layout_marginBottom="8dp"/>
+                <SeekBar android:id="@+id/seekVolume" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:max="100" android:progress="80"
+                    android:progressTint="@color/accent" android:thumbTint="@color/accent"/>
+
+                <!-- Tăng dần -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginTop="16dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="@string/gradual_volume_label"
+                        android:textColor="@color/text_primary" android:textSize="16sp"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchGradual" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Rung -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="@string/vibrate_label"
+                        android:textColor="@color/text_primary" android:textSize="16sp"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchVibrate" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:checked="true"/>
+                </LinearLayout>
+
+                <!-- Snooze -->
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/divider" android:layout_marginVertical="8dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/snooze_label" style="@style/TextSectionHeader"
+                    android:layout_marginBottom="8dp"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Thời gian hoãn"
+                        android:textColor="@color/text_primary" android:textSize="16sp"/>
+                    <NumberPicker android:id="@+id/pickerSnooze" android:layout_width="80dp"
+                        android:layout_height="wrap_content"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text=" phút" android:textColor="@color/text_secondary" android:textSize="16sp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- === BƯỚC 3: Thử thách thức dậy === -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="24dp">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Thử thách thức dậy" style="@style/TextSectionHeader"
+                    android:layout_marginTop="12dp" android:layout_marginBottom="4dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Chọn cách bạn muốn tắt báo thức"
+                    android:textColor="@color/text_secondary" android:textSize="13sp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Vẫn cần RadioGroup ẩn để giữ logic Java tương thích -->
+                <RadioGroup android:id="@+id/rgChallenge" android:layout_width="0dp"
+                    android:layout_height="0dp" android:visibility="gone">
+                    <RadioButton android:id="@+id/rbNone"  android:layout_width="0dp" android:layout_height="0dp" android:checked="true"/>
+                    <RadioButton android:id="@+id/rbMath"  android:layout_width="0dp" android:layout_height="0dp"/>
+                    <RadioButton android:id="@+id/rbShake" android:layout_width="0dp" android:layout_height="0dp"/>
+                    <RadioButton android:id="@+id/rbSquat" android:layout_width="0dp" android:layout_height="0dp"/>
+                    <RadioButton android:id="@+id/rbStep"  android:layout_width="0dp" android:layout_height="0dp"/>
+                    <RadioButton android:id="@+id/rbQr"    android:layout_width="0dp" android:layout_height="0dp"/>
+                </RadioGroup>
+
+                <!-- Card: Tắt bình thường -->
+                <LinearLayout
+                    android:id="@+id/cardChallengeNone"
+                    android:layout_width="match_parent" android:layout_height="72dp"
+                    android:background="@drawable/bg_challenge_card_selected"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:layout_marginBottom="10dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp"
+                        android:src="@drawable/ic_challenge_none" android:layout_marginEnd="16dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Tắt bình thường"
+                            android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Chỉ cần nhấn nút để tắt"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/ivCheckNone"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check" android:visibility="visible"/>
+                </LinearLayout>
+
+                <!-- Card: Giải toán -->
+                <LinearLayout
+                    android:id="@+id/cardChallengeMath"
+                    android:layout_width="match_parent" android:layout_height="72dp"
+                    android:background="@drawable/bg_challenge_card"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:layout_marginBottom="10dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp"
+                        android:src="@drawable/ic_challenge_math" android:layout_marginEnd="16dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Giải toán"
+                            android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Giải phép tính để tắt báo thức"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/ivCheckMath"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check" android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Card: Lắc điện thoại -->
+                <LinearLayout
+                    android:id="@+id/cardChallengeShake"
+                    android:layout_width="match_parent" android:layout_height="72dp"
+                    android:background="@drawable/bg_challenge_card"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:layout_marginBottom="10dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp"
+                        android:src="@drawable/ic_challenge_shake" android:layout_marginEnd="16dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Lắc điện thoại"
+                            android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Lắc mạnh một số lần để tắt"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/ivCheckShake"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check" android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Card: Squat -->
+                <LinearLayout
+                    android:id="@+id/cardChallengeSquat"
+                    android:layout_width="match_parent" android:layout_height="72dp"
+                    android:background="@drawable/bg_challenge_card"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:layout_marginBottom="10dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp"
+                        android:src="@drawable/ic_challenge_squat" android:layout_marginEnd="16dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Squat"
+                            android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Thực hiện squat để tắt báo thức"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/ivCheckSquat"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check" android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Card: Đếm bước chân -->
+                <LinearLayout
+                    android:id="@+id/cardChallengeStep"
+                    android:layout_width="match_parent" android:layout_height="72dp"
+                    android:background="@drawable/bg_challenge_card"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:layout_marginBottom="10dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp"
+                        android:src="@drawable/ic_challenge_step" android:layout_marginEnd="16dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Đếm bước chân"
+                            android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Đi bộ một đoạn ngắn để tắt"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/ivCheckStep"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check" android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Card: Quét QR -->
+                <LinearLayout
+                    android:id="@+id/cardChallengeQr"
+                    android:layout_width="match_parent" android:layout_height="72dp"
+                    android:background="@drawable/bg_challenge_card"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:layout_marginBottom="16dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp"
+                        android:src="@drawable/ic_challenge_qr" android:layout_marginEnd="16dp"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Quét QR"
+                            android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Quét mã QR đặt ở nơi xa giường"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/ivCheckQr"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check" android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Độ khó (ẩn nếu chọn None/QR) -->
+                <LinearLayout android:id="@+id/llDifficulty" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="@color/divider" android:layout_marginBottom="16dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/difficulty_label" style="@style/TextSectionHeader"
+                        android:layout_marginBottom="12dp"/>
+
+                    <RadioGroup android:id="@+id/rgDifficulty" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:orientation="horizontal">
+                        <RadioButton android:id="@+id/rbEasy" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:text="@string/difficulty_easy" android:textColor="@color/text_primary"
+                            android:buttonTint="@color/accent"/>
+                        <RadioButton android:id="@+id/rbMedium" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:text="@string/difficulty_medium" android:textColor="@color/text_primary"
+                            android:buttonTint="@color/accent" android:checked="true"/>
+                        <RadioButton android:id="@+id/rbHard" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:text="@string/difficulty_hard" android:textColor="@color/text_primary"
+                            android:buttonTint="@color/accent"/>
+                        <RadioButton android:id="@+id/rbCustom" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:text="@string/difficulty_custom" android:textColor="@color/text_primary"
+                            android:buttonTint="@color/accent"/>
+                    </RadioGroup>
+
+                    <!-- Custom slider (ẩn nếu không chọn Custom) -->
+                    <LinearLayout android:id="@+id/llCustomValue" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:orientation="horizontal"
+                        android:gravity="center_vertical" android:layout_marginTop="12dp"
+                        android:visibility="gone">
+                        <SeekBar android:id="@+id/seekCustomValue" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:progressTint="@color/accent" android:thumbTint="@color/accent"/>
+                        <TextView android:id="@+id/tvCustomValue" android:layout_width="48dp"
+                            android:layout_height="wrap_content" android:gravity="center"
+                            android:textColor="@color/text_primary" android:textSize="16sp"
+                            android:layout_marginStart="8dp" android:text="10"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </ViewFlipper>
+
+    <!-- Nút điều hướng bước -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@color/bg_surface">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:text="@string/back"
+            android:textColor="@color/text_secondary"
+            app:strokeColor="@color/border"
+            android:layout_marginEnd="12dp"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNext"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="2"
+            android:text="@string/next"
+            android:backgroundTint="@color/accent"
+            android:textColor="@color/text_primary"
+            app:cornerRadius="12dp"/>
+    </LinearLayout>
+
+</LinearLayout>

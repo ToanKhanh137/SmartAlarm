@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart Alarm</string>
+
+    <string name="nav_alarm">Alarm</string>
+    <string name="nav_clock">Clock</string>
+    <string name="nav_timer">Timer</string>
+    <string name="nav_stopwatch">Stopwatch</string>
+
+    <string name="no_alarms">No alarms yet\nTap + to add one</string>
+    <string name="next_alarm">Next alarm: %s</string>
+    <string name="alarm_off">No active alarms</string>
+    <string name="delete_alarm_title">Delete alarm?</string>
+    <string name="delete_alarm_msg">Delete alarm \"%s\"?</string>
+
+    <string name="day_mon">Mo</string>
+    <string name="day_tue">Tu</string>
+    <string name="day_wed">We</string>
+    <string name="day_thu">Th</string>
+    <string name="day_fri">Fr</string>
+    <string name="day_sat">Sa</string>
+    <string name="day_sun">Su</string>
+    <string name="repeat_once">Once</string>
+    <string name="repeat_weekdays">Mon–Fri</string>
+    <string name="repeat_weekend">Weekend</string>
+    <string name="repeat_everyday">Every day</string>
+
+    <string name="edit_alarm_title_add">Add Alarm</string>
+    <string name="edit_alarm_title_edit">Edit Alarm</string>
+    <string name="step_time">Time &amp; Days</string>
+    <string name="step_sound">Sound</string>
+    <string name="step_challenge">Wake-up</string>
+    <string name="label_hint">Alarm name</string>
+    <string name="ringtone_label">Ringtone</string>
+    <string name="ringtone_default">Default</string>
+    <string name="ringtone_silent">Silent</string>
+    <string name="volume_label">Volume</string>
+    <string name="vibrate_label">Vibrate</string>
+    <string name="gradual_volume_label">Gradually increase volume</string>
+    <string name="snooze_label">Snooze</string>
+    <string name="snooze_minutes">%d min</string>
+    <string name="auto_action_label">Auto action</string>
+    <string name="auto_action_none">None</string>
+    <string name="auto_action_snooze">Auto snooze</string>
+    <string name="auto_action_dismiss">Auto dismiss</string>
+    <string name="auto_after_minutes">After %d min</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+
+    <string name="challenge_none">Normal dismiss</string>
+    <string name="challenge_math">Math</string>
+    <string name="challenge_shake">Shake</string>
+    <string name="challenge_squat">Squat</string>
+    <string name="challenge_step">Steps</string>
+    <string name="challenge_qr">Scan QR</string>
+    <string name="difficulty_label">Difficulty</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
+    <string name="difficulty_custom">Custom</string>
+
+    <string name="ring_snooze">Snooze %d min</string>
+    <string name="ring_dismiss">Wake Up</string>
+    <string name="ring_solve_challenge">Solve challenge</string>
+    <string name="snoozed_until">Snoozed until %s</string>
+
+    <string name="math_instruction">Solve to dismiss the alarm</string>
+    <string name="math_wrong">Wrong! Try again</string>
+    <string name="math_wrong_reduce">Too many mistakes. Reducing difficulty</string>
+    <string name="math_wrong_switch">Switch to shake challenge?</string>
+    <string name="math_switch_yes">Switch to shake</string>
+    <string name="math_switch_no">Keep solving</string>
+    <string name="math_correct">Correct!</string>
+    <string name="math_attempts">%d wrong answers</string>
+
+    <string name="shake_instruction">Shake %d times to dismiss</string>
+    <string name="shake_progress">%1$d / %2$d</string>
+    <string name="shake_hint">Hold the phone and shake it hard</string>
+
+    <string name="squat_instruction">Do %d squats to dismiss</string>
+    <string name="squat_progress">%1$d / %2$d</string>
+    <string name="squat_hint">Hold phone in hand, squat down and stand up</string>
+    <string name="squat_detected">Squat %d! Keep going</string>
+
+    <string name="step_instruction">Walk %d steps to dismiss</string>
+    <string name="step_progress">%1$d / %2$d steps</string>
+    <string name="step_hint">Hold phone and walk normally</string>
+
+    <string name="qr_instruction">Scan your registered QR code to dismiss</string>
+    <string name="qr_wrong">Wrong QR code, try again</string>
+    <string name="qr_success">Correct! Alarm dismissed</string>
+    <string name="qr_no_setup">No QR code registered. Set one up first.</string>
+    <string name="qr_setup_now">Create QR</string>
+
+    <string name="qr_generator_title">QR Code Manager</string>
+    <string name="qr_generate">Generate new QR</string>
+    <string name="qr_save_gallery">Save to gallery</string>
+    <string name="qr_print">Print QR code</string>
+    <string name="qr_saved">Saved to gallery</string>
+    <string name="qr_print_hint">Print and place QR away from bed (bathroom, kitchen...)</string>
+
+    <string name="timer_start">Start</string>
+    <string name="timer_pause">Pause</string>
+    <string name="timer_reset">Reset</string>
+    <string name="timer_done">Time\'s up!</string>
+    <string name="timer_set_time">Set time</string>
+
+    <string name="stopwatch_lap">Lap</string>
+    <string name="stopwatch_lap_n">Lap %d</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_display">Display</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_alarm">Alarm</string>
+    <string name="settings_snooze_enabled">Enable Snooze</string>
+    <string name="settings_snooze_enabled_desc">Disable to hide the Snooze button</string>
+    <string name="settings_snooze_duration">Default snooze duration</string>
+    <string name="settings_qr_manager">QR Code Manager</string>
+    <string name="settings_qr_manager_desc">Create and print QR codes for the scan challenge</string>
+
+    <string name="perm_exact_alarm_title">Exact alarm permission needed</string>
+    <string name="perm_exact_alarm_msg">This permission is required to ring alarms on time, even when the screen is off.</string>
+    <string name="perm_notification_title">Notification permission needed</string>
+    <string name="perm_notification_msg">Allow the app to show alarm notifications.</string>
+    <string name="perm_open_settings">Open Settings</string>
+    <string name="perm_activity_recognition">Activity recognition needed</string>
+    <string name="perm_activity_recognition_msg">This permission is required for the step counter feature.</string>
+
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete">Delete</string>
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="done">Done</string>
+    <string name="skip">Skip this time</string>
+    <string name="upcoming_channel_name">Upcoming alarm</string>
+    <string name="ringing_channel_name">Alarm ringing</string>
+    <string name="notification_action_snooze">Snooze</string>
+    <string name="notification_action_dismiss">Dismiss</string>
+</resources>

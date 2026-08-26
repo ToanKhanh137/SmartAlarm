@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center"
+    android:background="@color/ring_bg" android:padding="32dp">
+
+    <TextView android:id="@+id/tvInstruction" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:textSize="18sp"
+        android:textColor="@color/text_secondary" android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <ProgressBar android:id="@+id/progressBar" style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent" android:layout_height="8dp"
+        android:progressTint="@color/challenge_squat" android:progressBackgroundTint="@color/bg_card"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView android:id="@+id/tvProgress" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:textSize="48sp"
+        android:textColor="@color/challenge_squat" android:gravity="center"
+        android:fontFamily="sans-serif-light" android:layout_marginBottom="24dp"/>
+
+    <TextView android:id="@+id/tvHint" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:textSize="14sp"
+        android:textColor="@color/text_hint" android:gravity="center"/>
+</LinearLayout>

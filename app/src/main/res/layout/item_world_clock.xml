@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="horizontal" android:padding="16dp"
+    android:gravity="center_vertical" android:background="@color/bg_card"
+    android:layout_marginBottom="8dp">
+
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_weight="1" android:orientation="vertical">
+        <TextView android:id="@+id/tvCityName" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textColor="@color/text_primary"
+            android:textSize="18sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tvTimeDiff" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textColor="@color/text_secondary"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <TextClock android:id="@+id/tcWorld" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textColor="@color/text_primary"
+        android:textSize="28sp" android:fontFamily="sans-serif-light"
+        android:format12Hour="hh:mm a" android:format24Hour="HH:mm"/>
+</LinearLayout>

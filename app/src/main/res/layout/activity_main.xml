@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+
+    <!-- Content area: ViewFlipper thay đổi giữa 4 tab -->
+    <ViewFlipper
+        android:id="@+id/viewFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp">
+
+        <!-- Tab 0: Alarm List -->
+        <LinearLayout
+            android:id="@+id/pageAlarm"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/bg_primary">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nav_alarm"
+                        android:textSize="28sp"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvNextAlarm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textColor="@color/accent"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_settings"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Settings"/>
+            </LinearLayout>
+
+            <!-- Alarm RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAlarms"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="16dp"/>
+
+            <!-- Empty state -->
+            <LinearLayout
+                android:id="@+id/llEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/no_alarms"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="16sp"
+                    android:lineSpacingMultiplier="1.5"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Tab 1: World Clock -->
+        <LinearLayout
+            android:id="@+id/pageClock"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/bg_primary"
+            android:paddingHorizontal="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_clock"
+                android:textSize="28sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp"/>
+
+            <!-- Digital clock lớn ở giữa -->
+            <TextClock
+                android:id="@+id/digitalClock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="hh:mm:ss a"
+                android:format24Hour="HH:mm:ss"
+                android:textSize="56sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:fontFamily="sans-serif-light"
+                android:paddingVertical="16dp"/>
+
+            <TextClock
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="EEE, MMM d yyyy"
+                android:format24Hour="EEE, MMM d yyyy"
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:paddingBottom="24dp"/>
+
+            <!-- World clocks list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvWorldClocks"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingTop="16dp"/>
+        </LinearLayout>
+
+        <!-- Tab 2: Timer -->
+        <LinearLayout
+            android:id="@+id/pageTimer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/bg_primary"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_timer"
+                android:textSize="28sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:paddingBottom="32dp"/>
+
+            <!-- Hiển thị đếm ngược -->
+            <TextView
+                android:id="@+id/tvTimerDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="00:00:00"
+                android:textSize="72sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:fontFamily="sans-serif-light"
+                android:letterSpacing="0.05"/>
+
+            <!-- NumberPicker row khi chưa bắt đầu -->
+            <LinearLayout
+                android:id="@+id/llTimerPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="24dp">
+
+                <NumberPicker
+                    android:id="@+id/pickerHour"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="h"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="20sp"
+                    android:paddingHorizontal="4dp"/>
+
+                <NumberPicker
+                    android:id="@+id/pickerMinute"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="m"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="20sp"
+                    android:paddingHorizontal="4dp"/>
+
+                <NumberPicker
+                    android:id="@+id/pickerSecond"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="s"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="20sp"
+                    android:paddingStart="4dp"/>
+            </LinearLayout>
+
+            <!-- Quick preset buttons -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:paddingBottom="24dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn5min"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="5m"
+                    android:textColor="@color/accent"
+                    app:strokeColor="@color/accent"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn10min"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="10m"
+                    android:textColor="@color/accent"
+                    app:strokeColor="@color/accent"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn25min"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="25m"
+                    android:textColor="@color/accent"
+                    app:strokeColor="@color/accent"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn30min"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="30m"
+                    android:textColor="@color/accent"
+                    app:strokeColor="@color/accent"/>
+            </LinearLayout>
+
+            <!-- Controls -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTimerReset"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:text="@string/timer_reset"
+                    android:textColor="@color/text_secondary"
+                    app:strokeColor="@color/border"
+                    android:layout_marginEnd="16dp"
+                    app:cornerRadius="28dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTimerStart"
+                    android:layout_width="120dp"
+                    android:layout_height="56dp"
+                    android:text="@string/timer_start"
+                    android:backgroundTint="@color/accent"
+                    android:textColor="@color/text_primary"
+                    app:cornerRadius="28dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Tab 3: Stopwatch -->
+        <LinearLayout
+            android:id="@+id/pageStopwatch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/bg_primary"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_stopwatch"
+                android:textSize="28sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:paddingBottom="32dp"/>
+
+            <TextView
+                android:id="@+id/tvStopwatchDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="00:00.00"
+                android:textSize="72sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:fontFamily="sans-serif-light"
+                android:paddingBottom="32dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLap"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:text="@string/stopwatch_lap"
+                    android:textColor="@color/text_secondary"
+                    app:strokeColor="@color/border"
+                    android:layout_marginEnd="16dp"
+                    app:cornerRadius="28dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStopwatchStart"
+                    android:layout_width="120dp"
+                    android:layout_height="56dp"
+                    android:text="@string/timer_start"
+                    android:backgroundTint="@color/accent"
+                    android:textColor="@color/text_primary"
+                    app:cornerRadius="28dp"/>
+            </LinearLayout>
+
+            <!-- Lap list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLaps"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingTop="16dp"/>
+        </LinearLayout>
+
+    </ViewFlipper>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:background="@color/bg_surface"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@drawable/nav_item_color"
+        app:itemTextColor="@drawable/nav_item_color"
+        app:labelVisibilityMode="labeled"/>
+
+    <!-- FAB: Thêm báo thức (chỉ hiện trên tab Alarm) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="96dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Add alarm"
+        app:backgroundTint="@color/accent"
+        app:tint="@color/text_primary"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Card layout cho mỗi báo thức trong danh sách -->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="0dp"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/bg_card"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Row 1: Giờ + Switch toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Giờ lớn -->
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="42sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-light"
+                android:text="07:00"/>
+
+            <!-- Switch bật/tắt -->
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchActive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                app:thumbTint="@color/switch_thumb_on"
+                app:trackTint="@color/switch_track_on"/>
+        </LinearLayout>
+
+        <!-- Row 2: Label + Challenge icon -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <!-- Icon loại challenge -->
+            <TextView
+                android:id="@+id/tvChallengeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginVertical="10dp"/>
+
+        <!-- Row 3: Ngày lặp + Nút xóa/skip -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Các chip ngày trong tuần -->
+            <LinearLayout
+                android:id="@+id/llDays"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView android:id="@+id/tvMon" style="@style/DayChip" android:text="@string/day_mon"/>
+                <TextView android:id="@+id/tvTue" style="@style/DayChip" android:text="@string/day_tue"/>
+                <TextView android:id="@+id/tvWed" style="@style/DayChip" android:text="@string/day_wed"/>
+                <TextView android:id="@+id/tvThu" style="@style/DayChip" android:text="@string/day_thu"/>
+                <TextView android:id="@+id/tvFri" style="@style/DayChip" android:text="@string/day_fri"/>
+                <TextView android:id="@+id/tvSat" style="@style/DayChip" android:text="@string/day_sat"/>
+                <TextView android:id="@+id/tvSun" style="@style/DayChip" android:text="@string/day_sun"/>
+            </LinearLayout>
+
+            <!-- Nút xóa -->
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:alpha="0.6"
+                android:contentDescription="Delete"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
