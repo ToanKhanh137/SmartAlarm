@@ -6,74 +6,90 @@
     android:layout_height="match_parent"
     android:background="@color/ring_bg">
 
-    <!-- Pulse animation background (lớp sau cùng) -->
+    <!-- Pulse layers -->
     <View
         android:id="@+id/pulseView"
-        android:layout_width="280dp"
-        android:layout_height="280dp"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
         android:layout_gravity="center"
         android:background="@drawable/bg_ring_pulse"
-        android:alpha="0.3"/>
+        android:alpha="0.18"/>
+
+    <View
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_ring_pulse"
+        android:alpha="0.10"/>
 
     <!-- Main content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center_horizontal">
 
-        <!-- Label báo thức -->
+        <!-- Top spacer -->
+        <Space android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+
+        <!-- Label -->
         <TextView
             android:id="@+id/tvRingLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textColor="@color/text_secondary"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="16dp"/>
+            android:letterSpacing="0.15"
+            android:textAllCaps="true"
+            android:layout_marginBottom="8dp"/>
 
-        <!-- Giờ hiển thị lớn -->
+        <!-- Giờ lớn -->
         <TextView
             android:id="@+id/tvRingTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="80sp"
+            android:textSize="88sp"
             android:textColor="@color/text_primary"
             android:fontFamily="sans-serif-thin"
-            android:letterSpacing="0.02"/>
+            android:letterSpacing="-0.02"/>
 
         <!-- Ngày tháng -->
         <TextClock
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:format12Hour="EEE, d MMM"
-            android:format24Hour="EEE, d MMM"
-            android:textSize="16sp"
+            android:format12Hour="EEEE, d MMMM"
+            android:format24Hour="EEEE, d MMMM"
+            android:textSize="15sp"
             android:textColor="@color/text_secondary"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="80dp"/>
+            android:layout_marginTop="4dp"/>
 
-        <!-- Nút Snooze (có thể ẩn) -->
+        <!-- Bottom spacer -->
+        <Space android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+
+        <!-- Snooze -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSnooze"
             style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="200dp"
-            android:layout_height="56dp"
+            android:layout_width="240dp"
+            android:layout_height="54dp"
             android:text="Hoãn 5 phút"
-            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textColor="@color/text_secondary"
             app:strokeColor="@color/border"
-            android:layout_marginBottom="16dp"
-            app:cornerRadius="28dp"/>
+            android:layout_marginBottom="14dp"
+            app:cornerRadius="27dp"/>
 
-        <!-- Nút Thức dậy (dismiss hoặc bắt đầu challenge) -->
+        <!-- Dismiss -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDismiss"
-            android:layout_width="200dp"
-            android:layout_height="56dp"
+            android:layout_width="240dp"
+            android:layout_height="60dp"
             android:text="@string/ring_dismiss"
+            android:textSize="17sp"
             android:backgroundTint="@color/accent"
             android:textColor="@color/text_primary"
-            app:cornerRadius="28dp"/>
+            android:layout_marginBottom="56dp"
+            app:cornerRadius="30dp"/>
 
     </LinearLayout>
 

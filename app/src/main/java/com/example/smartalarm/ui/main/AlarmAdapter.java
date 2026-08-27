@@ -70,7 +70,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
     // ===== VIEW HOLDER =====
 
     class AlarmViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTime, tvLabel, tvChallengeIcon;
+        TextView tvTime, tvAmPm, tvLabel, tvChallengeIcon;
         TextView tvMon, tvTue, tvWed, tvThu, tvFri, tvSat, tvSun;
         SwitchMaterial switchActive;
         ImageButton btnDelete;
@@ -78,6 +78,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         AlarmViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTime          = itemView.findViewById(R.id.tvTime);
+            tvAmPm          = itemView.findViewById(R.id.tvAmPm);
             tvLabel         = itemView.findViewById(R.id.tvLabel);
             tvChallengeIcon = itemView.findViewById(R.id.tvChallengeIcon);
             switchActive    = itemView.findViewById(R.id.switchActive);
@@ -92,11 +93,19 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         }
 
         void bind(Alarm alarm) {
-            // Giờ
-            tvTime.setText(String.format("%02d:%02d", alarm.hour, alarm.minute));
-
-            // Dim màu giờ nếu tắt
-            tvTime.setAlpha(alarm.isActive ? 1f : 0.4f);
+            // Giờ + AM/PM
+            boolean use24h = android.text.format.DateFormat.is24HourFormat(itemView.getContext());
+            if (use24h) {
+                tvTime.setText(String.format("%02d:%02d", alarm.hour, alarm.minute));
+                if (tvAmPm != null) tvAmPm.setText("");
+            } else {
+                int h = alarm.hour % 12;
+                if (h == 0) h = 12;
+                tvTime.setText(String.format("%d:%02d", h, alarm.minute));
+                if (tvAmPm != null) tvAmPm.setText(alarm.hour < 12 ? "AM" : "PM");
+            }
+            tvTime.setAlpha(alarm.isActive ? 1f : 0.38f);
+            if (tvAmPm != null) tvAmPm.setAlpha(alarm.isActive ? 0.7f : 0.25f);
 
             // Label
             if (alarm.label != null && !alarm.label.isEmpty()) {
@@ -148,14 +157,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             }
         }
 
-        /** Trả về emoji icon cho từng loại challenge */
         private String getChallengeIcon(int type) {
             switch (type) {
-                case Alarm.CHALLENGE_MATH:  return "🔢";
-                case Alarm.CHALLENGE_SHAKE: return "📳";
-                case Alarm.CHALLENGE_SQUAT: return "🏋️";
-                case Alarm.CHALLENGE_STEP:  return "👟";
-                case Alarm.CHALLENGE_QR:    return "📷";
+                case Alarm.CHALLENGE_MATH:  return "Giải toán";
+                case Alarm.CHALLENGE_SHAKE: return "Lắc máy";
+                case Alarm.CHALLENGE_SQUAT: return "Squat";
+                case Alarm.CHALLENGE_STEP:  return "Đếm bước";
+                case Alarm.CHALLENGE_QR:    return "Quét QR";
                 default: return "";
             }
         }

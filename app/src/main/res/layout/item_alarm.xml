@@ -1,41 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Card layout cho mỗi báo thức trong danh sách -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="0dp"
     android:layout_marginBottom="12dp"
+    android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/bg_card"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="14dp">
 
-        <!-- Row 1: Giờ + Switch toggle -->
+        <!-- Row 1: Giờ lớn + Switch -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- Giờ lớn -->
-            <TextView
-                android:id="@+id/tvTime"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="42sp"
-                android:textColor="@color/text_primary"
-                android:fontFamily="sans-serif-light"
-                android:text="07:00"/>
+                android:orientation="horizontal"
+                android:gravity="bottom">
 
-            <!-- Switch bật/tắt -->
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="48sp"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-light"
+                    android:letterSpacing="-0.02"
+                    android:text="07:00"/>
+
+                <TextView
+                    android:id="@+id/tvAmPm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:text=""/>
+            </LinearLayout>
+
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchActive"
                 android:layout_width="wrap_content"
@@ -45,48 +62,32 @@
                 app:trackTint="@color/switch_track_on"/>
         </LinearLayout>
 
-        <!-- Row 2: Label + Challenge icon -->
-        <LinearLayout
+        <!-- Row 2: Label -->
+        <TextView
+            android:id="@+id/tvLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="4dp">
-
-            <TextView
-                android:id="@+id/tvLabel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="14sp"
-                android:textColor="@color/text_secondary"
-                android:maxLines="1"
-                android:ellipsize="end"/>
-
-            <!-- Icon loại challenge -->
-            <TextView
-                android:id="@+id/tvChallengeIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:visibility="gone"/>
-        </LinearLayout>
+            android:textSize="13sp"
+            android:textColor="@color/text_secondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="14dp"/>
 
         <!-- Divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider"
-            android:layout_marginVertical="10dp"/>
+            android:layout_marginBottom="12dp"/>
 
-        <!-- Row 3: Ngày lặp + Nút xóa/skip -->
+        <!-- Row 3: Day chips + delete -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- Các chip ngày trong tuần -->
             <LinearLayout
                 android:id="@+id/llDays"
                 android:layout_width="0dp"
@@ -103,14 +104,26 @@
                 <TextView android:id="@+id/tvSun" style="@style/DayChip" android:text="@string/day_sun"/>
             </LinearLayout>
 
-            <!-- Nút xóa -->
+            <!-- Challenge badge -->
+            <TextView
+                android:id="@+id/tvChallengeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/accent"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:background="@drawable/bg_challenge_card"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"/>
+
             <ImageButton
                 android:id="@+id/btnDelete"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_delete"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:alpha="0.6"
+                android:alpha="0.5"
                 android:contentDescription="Delete"/>
         </LinearLayout>
     </LinearLayout>

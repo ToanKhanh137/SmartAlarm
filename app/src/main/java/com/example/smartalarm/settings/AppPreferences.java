@@ -15,12 +15,16 @@ import android.content.SharedPreferences;
  */
 public class AppPreferences {
 
-    private static final String PREFS_NAME     = "smart_alarm_prefs";
-    private static final String KEY_THEME      = "theme";
-    private static final String KEY_LANGUAGE   = "language";
-    private static final String KEY_SNOOZE_ON  = "snooze_enabled";
-    private static final String KEY_SNOOZE_MIN = "snooze_duration";
-    private static final String KEY_QR_CODE    = "qr_code";
+    private static final String PREFS_NAME      = "smart_alarm_prefs";
+    private static final String KEY_THEME       = "theme";
+    private static final String KEY_LANGUAGE    = "language";
+    private static final String KEY_SNOOZE_ON   = "snooze_enabled";
+    private static final String KEY_SNOOZE_MIN  = "snooze_duration";
+    private static final String KEY_QR_CODE     = "qr_code";
+
+    public static final String THEME_DARK   = "dark";
+    public static final String THEME_LIGHT  = "light";
+    public static final String THEME_SYSTEM = "system";
 
     private static AppPreferences instance;
     private final SharedPreferences prefs;
@@ -40,7 +44,7 @@ public class AppPreferences {
     // ===== THEME =====
 
     public String getTheme() {
-        return prefs.getString(KEY_THEME, "dark");
+        return prefs.getString(KEY_THEME, THEME_SYSTEM);
     }
 
     public void setTheme(String theme) {
@@ -48,7 +52,7 @@ public class AppPreferences {
     }
 
     public boolean isDarkTheme() {
-        return "dark".equals(getTheme());
+        return THEME_DARK.equals(getTheme());
     }
 
     // ===== LANGUAGE =====

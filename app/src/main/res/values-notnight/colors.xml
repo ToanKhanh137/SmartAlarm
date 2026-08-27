@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light mode color overrides -->
+    <color name="bg_primary">#F5F5F7</color>
+    <color name="bg_surface">#FFFFFF</color>
+    <color name="bg_card">#FFFFFF</color>
+    <color name="bg_dialog">#FFFFFF</color>
+    <color name="text_primary">#1A1A2E</color>
+    <color name="text_secondary">#5C5C70</color>
+    <color name="text_hint">#AAAABC</color>
+    <color name="divider">#E0E0EC</color>
+    <color name="border">#D0D0E0</color>
+    <color name="day_inactive_bg">#EBEBF5</color>
+    <color name="day_inactive_text">#8888AA</color>
+    <color name="ring_bg">#EEF0FF</color>
+    <color name="switch_thumb_on">#7C6FF7</color>
+    <color name="switch_thumb_off">#AAAABC</color>
+    <color name="switch_track_on">#C5C0FB</color>
+    <color name="switch_track_off">#D8D8E8</color>
+</resources>

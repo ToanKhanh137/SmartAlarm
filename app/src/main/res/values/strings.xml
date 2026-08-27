@@ -130,6 +130,7 @@
     <string name="settings_theme">Chủ đề</string>
     <string name="settings_theme_dark">Tối</string>
     <string name="settings_theme_light">Sáng</string>
+    <string name="settings_theme_system">Hệ thống</string>
     <string name="settings_language">Ngôn ngữ</string>
     <string name="settings_alarm">Báo thức</string>
     <string name="settings_snooze_enabled">Bật tính năng hoãn</string>
