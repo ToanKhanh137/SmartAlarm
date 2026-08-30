@@ -47,8 +47,28 @@ public class UpcomingReceiver extends BroadcastReceiver {
             PendingIntent piMain = PendingIntent.getActivity(context, alarmId + 3000,
                     mainIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-            String title = context.getString(R.string.app_name);
-            String text = "Báo thức" + (label != null && !label.isEmpty() ? " '" + label + "'" : "") + " sẽ reo trong 30 phút nữa.";
+
+            String title = context.getString(R.string.upcoming_channel_name);
+            int hour = intent.getIntExtra("alarm_hour", 7);
+            int minute = intent.getIntExtra("alarm_minute", 0);
+            int challengeType = intent.getIntExtra("alarm_challenge_type", 0);
+            
+            String challengeName = "";
+            switch (challengeType) {
+                case 1: challengeName = context.getString(R.string.challenge_math); break; // CHALLENGE_MATH
+                case 2: challengeName = context.getString(R.string.challenge_shake); break; // CHALLENGE_SHAKE
+                case 3: challengeName = context.getString(R.string.challenge_squat); break; // CHALLENGE_SQUAT
+                case 4: challengeName = context.getString(R.string.challenge_step); break; // CHALLENGE_STEP
+                case 5: challengeName = context.getString(R.string.challenge_qr); break; // CHALLENGE_QR
+                default: challengeName = context.getString(R.string.challenge_none); break; // CHALLENGE_NONE
+            }
+            
+            String timeStr = String.format(java.util.Locale.getDefault(), "%02d:%02d", hour, minute);
+            String text = timeStr + " - " + challengeName;
+            if (label != null && !label.isEmpty()) {
+                text += " (" + label + ")";
+            }
+
 
             Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_alarm)

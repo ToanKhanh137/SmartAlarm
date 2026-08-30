@@ -63,7 +63,7 @@
     <!-- ===== RING SCREEN ===== -->
     <string name="ring_snooze">HoÃƒÂ£n %d phÃƒÂºt</string>
     <string name="ring_dismiss">ThÃ¡Â»Â©c dÃ¡ÂºÂ­y</string>
-    <string name="ring_solve_challenge">GiÃ¡ÂºÂ£i thÃ¡Â»Â­ thÃƒÂ¡ch</string>
+    <string name="ring_solve_challenge">Thực hiện thử thách</string>
     <string name="snoozed_until">Ã„ÂÃƒÂ£ hoÃƒÂ£n Ã„â€˜Ã¡ÂºÂ¿n %s</string>
 
     <!-- ===== MATH CHALLENGE ===== -->

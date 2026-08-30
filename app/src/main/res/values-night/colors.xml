@@ -1,20 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Night mode (dark) colors – override app default dark palette -->
+    <!-- ===== BRAND COLORS ===== -->
+    <color name="accent">#7C6FF7</color>
+    <color name="accent_dark">#5A53D0</color>
+    <color name="accent_light">#A89CF9</color>
+
+    <!-- ===== BACKGROUND ===== -->
     <color name="bg_primary">#121212</color>
     <color name="bg_surface">#1E1E2E</color>
     <color name="bg_card">#252538</color>
     <color name="bg_dialog">#2A2A3E</color>
+
+    <!-- ===== TEXT ===== -->
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#9E9EA8</color>
     <color name="text_hint">#5C5C70</color>
-    <color name="divider">#2E2E45</color>
-    <color name="border">#3A3A55</color>
+    <color name="text_on_accent">#FFFFFF</color>
+
+    <!-- ===== DAY CHIP ===== -->
+    <color name="day_active_bg">#7C6FF7</color>
+    <color name="day_active_text">#FFFFFF</color>
     <color name="day_inactive_bg">#2A2A3E</color>
     <color name="day_inactive_text">#9E9EA8</color>
-    <color name="ring_bg">#0D0D1A</color>
+
+    <!-- ===== SEMANTIC ===== -->
+    <color name="color_danger">#FF5252</color>
+    <color name="color_success">#4CAF50</color>
+    <color name="color_warning">#FFB74D</color>
+    <color name="color_info">#29B6F6</color>
+
+    <!-- ===== DIVIDER / BORDER ===== -->
+    <color name="divider">#2E2E45</color>
+    <color name="border">#3A3A55</color>
+
+    <!-- ===== SWITCH / TOGGLE ===== -->
     <color name="switch_thumb_on">#7C6FF7</color>
     <color name="switch_thumb_off">#5C5C70</color>
     <color name="switch_track_on">#3D3880</color>
     <color name="switch_track_off">#2A2A3E</color>
+
+    <!-- ===== RING SCREEN ===== -->
+    <color name="ring_bg">#0D0D1A</color>
+    <color name="ring_pulse">#4D4490</color>
+
+    <!-- ===== CHALLENGE COLORS ===== -->
+    <color name="challenge_math">#7C6FF7</color>
+    <color name="challenge_shake">#FF6B35</color>
+    <color name="challenge_squat">#4CAF50</color>
+    <color name="challenge_step">#29B6F6</color>
+    <color name="challenge_qr">#FFB74D</color>
 </resources>

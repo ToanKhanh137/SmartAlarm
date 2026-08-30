@@ -16,6 +16,7 @@ import com.example.smartalarm.data.model.Alarm;
 import com.example.smartalarm.service.AlarmReceiver;
 import com.example.smartalarm.ui.common.BaseActivity;
 import com.example.smartalarm.ui.ring.RingActivity;
+import com.example.smartalarm.ui.ring.RingActivity;
 
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -33,6 +34,7 @@ public class MathChallengeActivity extends BaseActivity {
     private int alarmId;
     private int currentDifficulty;
     private int wrongCount = 0;
+    private int customOpsMask = 3;
 
     private TextView tvInstruction, tvQuestion, tvAttempts;
     private EditText etAnswer;
@@ -42,6 +44,9 @@ public class MathChallengeActivity extends BaseActivity {
     private final Random random = new Random();
     private int targetCount = 1;
     private int currentCorrect = 0;
+    
+    private Handler fallbackHandler = new Handler(Looper.getMainLooper());
+    private Runnable fallbackRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,26 @@ public class MathChallengeActivity extends BaseActivity {
         setContentView(R.layout.activity_challenge_math);
 
         alarmId = getIntent().getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, -1);
+        
+        fallbackRunnable = () -> {
+            Button btnFallback = new Button(this);
+            btnFallback.setText("Bỏ qua thử thách");
+            btnFallback.setBackgroundColor(android.graphics.Color.RED);
+            btnFallback.setTextColor(android.graphics.Color.WHITE);
+            btnFallback.setOnClickListener(v -> dismissAlarm());
+            
+            android.view.ViewGroup root = (android.view.ViewGroup) ((android.view.ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+            if (root instanceof android.widget.LinearLayout) {
+                root.addView(btnFallback);
+            } else if (root instanceof android.widget.RelativeLayout) {
+                android.widget.RelativeLayout.LayoutParams params = new android.widget.RelativeLayout.LayoutParams(
+                    android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 
+                    android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
+                root.addView(btnFallback, params);
+            }
+        };
+        fallbackHandler.postDelayed(fallbackRunnable, 60000);
 
         tvInstruction = findViewById(R.id.tvInstruction);
         tvQuestion    = findViewById(R.id.tvQuestion);
@@ -65,7 +90,9 @@ public class MathChallengeActivity extends BaseActivity {
             currentDifficulty = alarm != null ? alarm.difficulty : Alarm.DIFFICULTY_MEDIUM;
             
             if (currentDifficulty == Alarm.DIFFICULTY_CUSTOM && alarm != null) {
-                targetCount = alarm.customValue > 0 ? alarm.customValue : 5;
+                int val = alarm.customValue;
+                targetCount = val > 0 ? (val % 1000) : 5;
+                customOpsMask = val > 0 ? (val / 1000) : 3;
             } else if (currentDifficulty == Alarm.DIFFICULTY_HARD) {
                 targetCount = 3;
             }
@@ -91,49 +118,77 @@ public class MathChallengeActivity extends BaseActivity {
         String question;
         int diffToUse = currentDifficulty;
         if (diffToUse == Alarm.DIFFICULTY_CUSTOM) {
-            diffToUse = random.nextInt(3); // Random giữa 0 (EASY), 1 (MEDIUM), 2 (HARD)
-        }
-
-        switch (diffToUse) {
-            case Alarm.DIFFICULTY_EASY:
-                // Cộng/trừ 1–10
-                int a1 = random.nextInt(10) + 1;
-                int b1 = random.nextInt(10) + 1;
-                if (random.nextBoolean()) {
-                    question = a1 + " + " + b1 + " = ?";
-                    correctAnswer = a1 + b1;
-                } else {
-                    int big = Math.max(a1, b1), small = Math.min(a1, b1);
-                    question = big + " − " + small + " = ?";
-                    correctAnswer = big - small;
-                }
-                break;
-
-            case Alarm.DIFFICULTY_HARD:
-                // Đa bước: (a × b) + c (a, b từ 2-20, c từ 1-99)
-                int a3 = random.nextInt(19) + 2;
-                int b3 = random.nextInt(19) + 2;
-                int c3 = random.nextInt(99) + 1;
-                boolean add = random.nextBoolean();
-                question = "(" + a3 + " × " + b3 + ") " + (add ? "+ " : "− ") + c3 + " = ?";
-                correctAnswer = add ? (a3 * b3 + c3) : (a3 * b3 - c3);
-                break;
-
-            default: // MEDIUM (1)
-                // Nhân 2 chữ số (10-99) với 1 chữ số (2-9), hoặc cộng 3 số
-                if (random.nextBoolean()) {
-                    int a2 = random.nextInt(90) + 10;
-                    int b2 = random.nextInt(8) + 2;
-                    question = a2 + " × " + b2 + " = ?";
-                    correctAnswer = a2 * b2;
-                } else {
-                    int a2 = random.nextInt(90) + 10;
-                    int b2 = random.nextInt(90) + 10;
-                    int c2 = random.nextInt(90) + 10;
-                    question = a2 + " + " + b2 + " + " + c2 + " = ?";
-                    correctAnswer = a2 + b2 + c2;
-                }
-                break;
+            java.util.List<Integer> ops = new java.util.ArrayList<>();
+            if ((customOpsMask & 1) != 0) ops.add(0);
+            if ((customOpsMask & 2) != 0) ops.add(1);
+            if ((customOpsMask & 4) != 0) ops.add(2);
+            if ((customOpsMask & 8) != 0) ops.add(3);
+            if (ops.isEmpty()) ops.add(0);
+            
+            int op = ops.get(random.nextInt(ops.size()));
+            int a, b;
+            if (op == 0 || op == 1) {
+                a = random.nextInt(90) + 10;
+                b = random.nextInt(90) + 10;
+            } else {
+                a = random.nextInt(10) + 2;
+                b = random.nextInt(10) + 2;
+            }
+            
+            if (op == 0) {
+                correctAnswer = a + b;
+                question = a + " + " + b + " = ?";
+            } else if (op == 1) {
+                if (a < b) { int t = a; a = b; b = t; }
+                correctAnswer = a - b;
+                question = a + " − " + b + " = ?";
+            } else if (op == 2) {
+                correctAnswer = a * b;
+                question = a + " × " + b + " = ?";
+            } else {
+                correctAnswer = a;
+                a = a * b;
+                question = a + " ÷ " + b + " = ?";
+            }
+        } else {
+            switch (diffToUse) {
+                case Alarm.DIFFICULTY_EASY:
+                    int a1 = random.nextInt(10) + 1;
+                    int b1 = random.nextInt(10) + 1;
+                    if (random.nextBoolean()) {
+                        question = a1 + " + " + b1 + " = ?";
+                        correctAnswer = a1 + b1;
+                    } else {
+                        int big = Math.max(a1, b1), small = Math.min(a1, b1);
+                        question = big + " − " + small + " = ?";
+                        correctAnswer = big - small;
+                    }
+                    break;
+    
+                case Alarm.DIFFICULTY_HARD:
+                    int a3 = random.nextInt(19) + 2;
+                    int b3 = random.nextInt(19) + 2;
+                    int c3 = random.nextInt(99) + 1;
+                    boolean add = random.nextBoolean();
+                    question = "(" + a3 + " × " + b3 + ") " + (add ? "+ " : "− ") + c3 + " = ?";
+                    correctAnswer = add ? (a3 * b3 + c3) : (a3 * b3 - c3);
+                    break;
+    
+                default: // MEDIUM (1)
+                    if (random.nextBoolean()) {
+                        int a2 = random.nextInt(90) + 10;
+                        int b2 = random.nextInt(8) + 2;
+                        question = a2 + " × " + b2 + " = ?";
+                        correctAnswer = a2 * b2;
+                    } else {
+                        int a2 = random.nextInt(90) + 10;
+                        int b2 = random.nextInt(90) + 10;
+                        int c2 = random.nextInt(90) + 10;
+                        question = a2 + " + " + b2 + " + " + c2 + " = ?";
+                        correctAnswer = a2 + b2 + c2;
+                    }
+                    break;
+            }
         }
         tvQuestion.setText(question);
         etAnswer.setText("");
@@ -213,5 +268,13 @@ public class MathChallengeActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() { /* Không cho back */ }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (fallbackHandler != null && fallbackRunnable != null) {
+            fallbackHandler.removeCallbacks(fallbackRunnable);
+        }
+    }
 }
 

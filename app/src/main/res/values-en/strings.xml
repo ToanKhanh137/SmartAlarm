@@ -57,7 +57,7 @@
 
     <string name="ring_snooze">Snooze %d min</string>
     <string name="ring_dismiss">Wake Up</string>
-    <string name="ring_solve_challenge">Solve challenge</string>
+    <string name="ring_solve_challenge">Complete challenge</string>
     <string name="snoozed_until">Snoozed until %s</string>
 
     <string name="math_instruction">Solve to dismiss the alarm</string>

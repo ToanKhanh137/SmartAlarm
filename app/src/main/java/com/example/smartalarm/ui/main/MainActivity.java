@@ -3,6 +3,12 @@ package com.example.smartalarm.ui.main;
 import android.content.Intent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.content.SharedPreferences;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;

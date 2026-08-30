@@ -6,6 +6,11 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.view.View;
 import android.widget.NumberPicker;
 import android.widget.RadioGroup;
@@ -239,12 +244,37 @@ public class EditAlarmActivity extends BaseActivity {
         b.cardChallengeMath.setOnClickListener(v  -> selectChallengeCard(R.id.rbMath));
         b.cardChallengeShake.setOnClickListener(v -> selectChallengeCard(R.id.rbShake));
         b.cardChallengeSquat.setOnClickListener(v -> selectChallengeCard(R.id.rbSquat));
-        b.cardChallengeStep.setOnClickListener(v  -> selectChallengeCard(R.id.rbStep));
-        b.cardChallengeQr.setOnClickListener(v    -> selectChallengeCard(R.id.rbQr));
+        b.cardChallengeStep.setOnClickListener(v  -> {
+            selectChallengeCard(R.id.rbStep);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 301);
+                }
+            }
+        });
+        b.cardChallengeQr.setOnClickListener(v    -> {
+            selectChallengeCard(R.id.rbQr);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 302);
+            }
+        });
 
         b.rgDifficulty.setOnCheckedChangeListener((group, checkedId) -> {
             boolean showCustom = checkedId == R.id.rbCustom;
-            b.llCustomValue.setVisibility(showCustom ? View.VISIBLE : View.GONE);
+
+            if (showCustom) {
+                  int checkedChallenge = b.rgChallenge.getCheckedRadioButtonId();
+                  if (checkedChallenge == R.id.rbMath) {
+                      b.llCustomMath.setVisibility(View.VISIBLE);
+                      b.llCustomGeneric.setVisibility(View.GONE);
+                  } else {
+                      b.llCustomMath.setVisibility(View.GONE);
+                      b.llCustomGeneric.setVisibility(View.VISIBLE);
+                  }
+              } else {
+                  b.llCustomMath.setVisibility(View.GONE);
+                  b.llCustomGeneric.setVisibility(View.GONE);
+              }
             if (showCustom) setupCustomSlider();
         });
     }

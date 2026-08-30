@@ -8,6 +8,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Button;
+import android.view.View;
+
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -27,6 +32,9 @@ import java.util.concurrent.Executors;
  * Dùng TYPE_STEP_COUNTER để lấy tổng số bước từ lúc boot, dùng baseline để tính toán số bước thực tế đã đi được sau khi báo thức kêu.
  */
 public class StepChallengeActivity extends BaseActivity implements SensorEventListener {
+    private Handler fallbackHandler = new Handler(Looper.getMainLooper());
+    private Runnable fallbackRunnable;
+
 
     private static final int PERM_REQUEST_CODE = 301;
 
@@ -44,6 +52,28 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        fallbackRunnable = () -> {
+            Button btnFallback = new Button(this);
+            btnFallback.setText("Bỏ qua thử thách");
+            btnFallback.setBackgroundColor(android.graphics.Color.RED);
+            btnFallback.setTextColor(android.graphics.Color.WHITE);
+            btnFallback.setOnClickListener(v -> dismissAlarm());
+            
+            // Add to root layout
+            android.view.ViewGroup root = (android.view.ViewGroup) ((android.view.ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+            if (root instanceof android.widget.LinearLayout) {
+                root.addView(btnFallback);
+            } else if (root instanceof android.widget.RelativeLayout) {
+                android.widget.RelativeLayout.LayoutParams params = new android.widget.RelativeLayout.LayoutParams(
+                    android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 
+                    android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
+                root.addView(btnFallback, params);
+            }
+        };
+        fallbackHandler.postDelayed(fallbackRunnable, 60000); // 60 seconds timeout
+
         setContentView(R.layout.activity_challenge_step);
 
         alarmId = getIntent().getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, -1);
@@ -125,4 +155,12 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
 
     @Override
     public void onBackPressed() {}
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (fallbackHandler != null && fallbackRunnable != null) {
+            fallbackHandler.removeCallbacks(fallbackRunnable);
+        }
+    }
 }

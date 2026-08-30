@@ -406,11 +406,15 @@
                             android:buttonTint="@color/accent"/>
                     </RadioGroup>
 
-                    <!-- Custom slider -->
-                    <LinearLayout android:id="@+id/llCustomValue" android:layout_width="match_parent"
+                                        <!-- Generic custom config (Shake, Squat, Step) -->
+                    <LinearLayout android:id="@+id/llCustomGeneric" android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:orientation="horizontal"
                         android:gravity="center_vertical" android:layout_marginTop="12dp"
                         android:visibility="gone">
+                        <TextView android:id="@+id/tvCustomLabel" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="Giá trị:"
+                            android:textColor="@color/text_secondary" android:textSize="14sp"
+                            android:layout_marginEnd="8dp"/>
                         <SeekBar android:id="@+id/seekCustomValue" android:layout_width="0dp"
                             android:layout_height="wrap_content" android:layout_weight="1"
                             android:progressTint="@color/accent" android:thumbTint="@color/accent"/>
@@ -418,6 +422,40 @@
                             android:layout_height="wrap_content" android:gravity="center"
                             android:textColor="@color/text_primary" android:textSize="16sp"
                             android:layout_marginStart="8dp" android:text="10"/>
+                    </LinearLayout>
+
+                    <!-- Math custom config -->
+                    <LinearLayout android:id="@+id/llCustomMath" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:orientation="vertical"
+                        android:layout_marginTop="12dp" android:visibility="gone">
+                        
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Số câu hỏi" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                            <SeekBar android:id="@+id/seekMathQuestions" android:layout_width="0dp"
+                                android:layout_height="wrap_content" android:layout_weight="1"
+                                android:progressTint="@color/accent" android:thumbTint="@color/accent"
+                                android:max="20" android:progress="5"/>
+                            <TextView android:id="@+id/tvMathQuestions" android:layout_width="48dp"
+                                android:layout_height="wrap_content" android:gravity="center"
+                                android:textColor="@color/text_primary" android:textSize="16sp"
+                                android:layout_marginStart="8dp" android:text="5"/>
+                        </LinearLayout>
+                        
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Phép tính" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="4dp">
+                            <CheckBox android:id="@+id/cbMathAdd" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="+" android:checked="true"/>
+                            <CheckBox android:id="@+id/cbMathSub" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="-" android:checked="true"/>
+                            <CheckBox android:id="@+id/cbMathMul" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="x" android:layout_marginStart="8dp"/>
+                            <CheckBox android:id="@+id/cbMathDiv" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="/" android:layout_marginStart="8dp"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -458,3 +496,4 @@
     </LinearLayout>
 
 </LinearLayout>
+

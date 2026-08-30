@@ -22,8 +22,8 @@
         <item name="android:layout_marginEnd">6dp</item>
     </style>
 
-    <!-- Base app theme – dark by default -->
-    <style name="Base.Theme.SmartAlarm" parent="Theme.Material3.Dark.NoActionBar">
+    <!-- Base app theme - DayNight for light/dark mode support -->
+    <style name="Base.Theme.SmartAlarm" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Brand colors -->
         <item name="colorPrimary">@color/accent</item>
         <item name="colorPrimaryDark">@color/accent_dark</item>
@@ -56,7 +56,7 @@
     </style>
 
     <!-- Dialog theme -->
-    <style name="Theme.SmartAlarm.Dialog" parent="Theme.Material3.Dark.Dialog">
+    <style name="Theme.SmartAlarm.Dialog" parent="Theme.Material3.DayNight.Dialog">
         <item name="colorPrimary">@color/accent</item>
         <item name="colorSurface">@color/bg_dialog</item>
         <item name="android:textColorPrimary">@color/text_primary</item>

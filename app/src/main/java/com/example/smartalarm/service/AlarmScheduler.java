@@ -53,6 +53,9 @@ public class AlarmScheduler {
             upIntent.setAction(UpcomingReceiver.ACTION_UPCOMING);
             upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_ID, alarm.id);
             upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_LABEL, alarm.label);
+            upIntent.putExtra("alarm_hour", alarm.hour);
+            upIntent.putExtra("alarm_minute", alarm.minute);
+            upIntent.putExtra("alarm_challenge_type", alarm.challengeType);
             
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
