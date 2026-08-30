@@ -107,10 +107,17 @@ public class EditAlarmActivity extends BaseActivity {
 
         // Ringtone name
         if (alarm.ringtoneUri != null) {
-            try {
-                android.media.Ringtone r = RingtoneManager.getRingtone(this, Uri.parse(alarm.ringtoneUri));
-                if (r != null) b.tvRingtoneName.setText(r.getTitle(this));
-            } catch (Exception ignored) {}
+            if ("silent".equals(alarm.ringtoneUri)) {
+                this.ringtoneUri = Uri.parse("silent");
+                b.tvRingtoneName.setText(getString(R.string.ringtone_silent));
+            } else {
+                try {
+                    Uri uri = Uri.parse(alarm.ringtoneUri);
+                    this.ringtoneUri = uri;
+                    android.media.Ringtone r = RingtoneManager.getRingtone(this, uri);
+                    if (r != null) b.tvRingtoneName.setText(r.getTitle(this));
+                } catch (Exception ignored) {}
+            }
         }
 
         // Challenge – sync card UI state
@@ -191,10 +198,10 @@ public class EditAlarmActivity extends BaseActivity {
         for (int i = 0; i < chips.length; i++) {
             if (daySelected[i]) {
                 chips[i].setBackgroundResource(R.drawable.bg_day_chip_active);
-                chips[i].setTextColor(Color.WHITE);
+                chips[i].setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.day_active_text));
             } else {
                 chips[i].setBackgroundResource(R.drawable.bg_day_chip);
-                chips[i].setTextColor(Color.parseColor("#9E9EA8"));
+                chips[i].setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.day_inactive_text));
             }
         }
     }
@@ -282,10 +289,11 @@ public class EditAlarmActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_RINGTONE && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-            ringtoneUri = uri;
             if (uri == null) {
+                this.ringtoneUri = Uri.parse("silent");
                 b.tvRingtoneName.setText(getString(R.string.ringtone_silent));
             } else {
+                this.ringtoneUri = uri;
                 android.media.Ringtone r = android.media.RingtoneManager.getRingtone(this, uri);
                 b.tvRingtoneName.setText(r != null ? r.getTitle(this) : uri.getLastPathSegment());
             }

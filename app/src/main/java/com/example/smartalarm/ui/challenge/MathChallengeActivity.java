@@ -40,6 +40,8 @@ public class MathChallengeActivity extends BaseActivity {
 
     private int correctAnswer;
     private final Random random = new Random();
+    private int targetCount = 1;
+    private int currentCorrect = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +63,40 @@ public class MathChallengeActivity extends BaseActivity {
         Executors.newSingleThreadExecutor().execute(() -> {
             Alarm alarm = AppDatabase.getInstance(this).alarmDao().getByIdSync(alarmId);
             currentDifficulty = alarm != null ? alarm.difficulty : Alarm.DIFFICULTY_MEDIUM;
-            runOnUiThread(this::generateQuestion);
+            
+            if (currentDifficulty == Alarm.DIFFICULTY_CUSTOM && alarm != null) {
+                targetCount = alarm.customValue > 0 ? alarm.customValue : 5;
+            } else if (currentDifficulty == Alarm.DIFFICULTY_HARD) {
+                targetCount = 3;
+            }
+            
+            runOnUiThread(() -> {
+                updateInstruction();
+                generateQuestion();
+            });
         });
 
         btnSubmit.setOnClickListener(v -> checkAnswer());
     }
 
+    private void updateInstruction() {
+        if (targetCount > 1) {
+            tvInstruction.setText(getString(R.string.math_instruction) + " (" + currentCorrect + "/" + targetCount + ")");
+        } else {
+            tvInstruction.setText(getString(R.string.math_instruction));
+        }
+    }
+
     private void generateQuestion() {
         String question;
-        switch (currentDifficulty) {
+        int diffToUse = currentDifficulty;
+        if (diffToUse == Alarm.DIFFICULTY_CUSTOM) {
+            diffToUse = random.nextInt(3); // Random giữa 0 (EASY), 1 (MEDIUM), 2 (HARD)
+        }
+
+        switch (diffToUse) {
             case Alarm.DIFFICULTY_EASY:
+            case 0:
                 // Cộng/trừ 1–10
                 int a1 = random.nextInt(10) + 1;
                 int b1 = random.nextInt(10) + 1;
@@ -85,26 +111,29 @@ public class MathChallengeActivity extends BaseActivity {
                 break;
 
             case Alarm.DIFFICULTY_HARD:
-                // Đa bước: (a × b) + c
-                int a3 = random.nextInt(12) + 2;
-                int b3 = random.nextInt(12) + 2;
-                int c3 = random.nextInt(50) + 1;
+            case 2:
+                // Đa bước: (a × b) + c (a, b từ 2-20, c từ 1-99)
+                int a3 = random.nextInt(19) + 2;
+                int b3 = random.nextInt(19) + 2;
+                int c3 = random.nextInt(99) + 1;
                 boolean add = random.nextBoolean();
                 question = "(" + a3 + " × " + b3 + ") " + (add ? "+ " : "− ") + c3 + " = ?";
                 correctAnswer = add ? (a3 * b3 + c3) : (a3 * b3 - c3);
                 break;
 
-            default: // MEDIUM
-                // Nhân/chia 2 chữ số
-                int a2 = random.nextInt(12) + 2;
-                int b2 = random.nextInt(12) + 2;
+            default: // MEDIUM (1)
+                // Nhân 2 chữ số (10-99) với 1 chữ số (2-9), hoặc cộng 3 số
                 if (random.nextBoolean()) {
+                    int a2 = random.nextInt(90) + 10;
+                    int b2 = random.nextInt(8) + 2;
                     question = a2 + " × " + b2 + " = ?";
                     correctAnswer = a2 * b2;
                 } else {
-                    int product = a2 * b2;
-                    question = product + " ÷ " + a2 + " = ?";
-                    correctAnswer = b2;
+                    int a2 = random.nextInt(90) + 10;
+                    int b2 = random.nextInt(90) + 10;
+                    int c2 = random.nextInt(90) + 10;
+                    question = a2 + " + " + b2 + " + " + c2 + " = ?";
+                    correctAnswer = a2 + b2 + c2;
                 }
                 break;
         }
@@ -120,16 +149,22 @@ public class MathChallengeActivity extends BaseActivity {
         try {
             int answer = Integer.parseInt(input);
             if (answer == correctAnswer) {
-                // Đúng → dismiss
-                Toast.makeText(this, getString(R.string.math_correct), Toast.LENGTH_SHORT).show();
-                dismissAlarm();
+                // Đúng
+                currentCorrect++;
+                if (currentCorrect >= targetCount) {
+                    Toast.makeText(this, getString(R.string.math_correct), Toast.LENGTH_SHORT).show();
+                    dismissAlarm();
+                } else {
+                    updateInstruction();
+                    generateQuestion();
+                }
             } else {
                 // Sai
                 wrongCount++;
                 handleWrongAnswer();
             }
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Nhập số hợp lệ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.math_invalid_input), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -139,11 +174,12 @@ public class MathChallengeActivity extends BaseActivity {
 
         if (wrongCount >= 5) {
             // Đề xuất chuyển sang lắc
-            new android.app.AlertDialog.Builder(this)
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                     .setTitle("Khó quá?")
                     .setMessage(getString(R.string.math_wrong_switch))
                     .setPositiveButton(getString(R.string.math_switch_yes), (d, w) -> switchToShake())
                     .setNegativeButton(getString(R.string.math_switch_no), (d, w) -> generateQuestion())
+                    .setCancelable(false)
                     .show();
         } else if (wrongCount == 3) {
             // Giảm độ khó
@@ -180,3 +216,4 @@ public class MathChallengeActivity extends BaseActivity {
     @Override
     public void onBackPressed() { /* Không cho back */ }
 }
+

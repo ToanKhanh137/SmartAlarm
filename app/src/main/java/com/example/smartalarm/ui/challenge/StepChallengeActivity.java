@@ -24,19 +24,19 @@ import java.util.concurrent.Executors;
 
 /**
  * StepChallengeActivity – đi X bước để tắt báo thức.
- * Dùng TYPE_STEP_COUNTER (đếm từ lúc boot) hoặc TYPE_STEP_DETECTOR (mỗi bước).
- * TYPE_STEP_DETECTOR: phù hợp hơn vì không cần giá trị baseline.
+ * Dùng TYPE_STEP_COUNTER để lấy tổng số bước từ lúc boot, dùng baseline để tính toán số bước thực tế đã đi được sau khi báo thức kêu.
  */
 public class StepChallengeActivity extends BaseActivity implements SensorEventListener {
 
     private static final int PERM_REQUEST_CODE = 301;
 
     private SensorManager sensorManager;
-    private Sensor stepDetector;
+    private Sensor stepCounter;
 
     private int alarmId;
     private int targetSteps;
     private int stepCount = 0;
+    private int baseline = -1;
 
     private TextView tvInstruction, tvProgress, tvHint;
     private ProgressBar progressBar;
@@ -53,7 +53,7 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
         progressBar   = findViewById(R.id.progressBar);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        stepDetector  = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        stepCounter  = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             Alarm alarm = AppDatabase.getInstance(this).alarmDao().getByIdSync(alarmId);
@@ -79,8 +79,8 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
     @Override
     protected void onResume() {
         super.onResume();
-        if (stepDetector != null)
-            sensorManager.registerListener(this, stepDetector, SensorManager.SENSOR_DELAY_FASTEST);
+        if (stepCounter != null)
+            sensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -91,8 +91,14 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            stepCount++;
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            int totalSteps = (int) event.values[0];
+            if (baseline == -1) {
+                baseline = totalSteps;
+            }
+            stepCount = totalSteps - baseline;
+            if (stepCount < 0) stepCount = 0;
+            
             runOnUiThread(() -> {
                 updateUI();
                 if (stepCount >= targetSteps) dismissAlarm();

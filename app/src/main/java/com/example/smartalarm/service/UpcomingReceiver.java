@@ -31,11 +31,17 @@ public class UpcomingReceiver extends BroadcastReceiver {
 
             createNotificationChannel(context);
 
-            Intent skipIntent = new Intent(context, AlarmReceiver.class);
-            skipIntent.setAction(AlarmReceiver.ACTION_DISABLE);
-            skipIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId);
-            PendingIntent piSkip = PendingIntent.getBroadcast(context, alarmId + 2000,
-                    skipIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            Intent skipOnceIntent = new Intent(context, AlarmReceiver.class);
+            skipOnceIntent.setAction(AlarmReceiver.ACTION_SKIP_ONCE);
+            skipOnceIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId);
+            PendingIntent piSkipOnce = PendingIntent.getBroadcast(context, alarmId + 2000,
+                    skipOnceIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            Intent disableIntent = new Intent(context, AlarmReceiver.class);
+            disableIntent.setAction(AlarmReceiver.ACTION_DISABLE);
+            disableIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId);
+            PendingIntent piDisable = PendingIntent.getBroadcast(context, alarmId + 2001,
+                    disableIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             Intent mainIntent = new Intent(context, MainActivity.class);
             PendingIntent piMain = PendingIntent.getActivity(context, alarmId + 3000,
@@ -49,7 +55,8 @@ public class UpcomingReceiver extends BroadcastReceiver {
                     .setContentTitle(title)
                     .setContentText(text)
                     .setContentIntent(piMain)
-                    .addAction(R.drawable.ic_dismiss, context.getString(R.string.skip), piSkip)
+                    .addAction(R.drawable.ic_dismiss, context.getString(R.string.skip_once), piSkipOnce)
+                    .addAction(R.drawable.ic_dismiss, context.getString(R.string.disable_alarm), piDisable)
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .build();

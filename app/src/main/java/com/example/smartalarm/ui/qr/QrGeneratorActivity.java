@@ -1,4 +1,4 @@
-package com.example.smartalarm.ui.qr;
+﻿package com.example.smartalarm.ui.qr;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -105,7 +105,7 @@ public class QrGeneratorActivity extends BaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.qr_save_error), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -117,3 +117,4 @@ public class QrGeneratorActivity extends BaseActivity {
         }
     }
 }
+

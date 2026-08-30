@@ -44,6 +44,9 @@ public class AlarmRingingService extends Service {
     private static final int GRADUAL_STEPS    = 20;
     private static final int GRADUAL_INTERVAL = 3000; // ms giữa mỗi bước (3s × 20 = 60s)
 
+    public static boolean isRinging = false;
+    public static int ringingAlarmId = -1;
+
     private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
     private Handler handler;
@@ -74,7 +77,6 @@ public class AlarmRingingService extends Service {
         // Load alarm từ database trên background thread
         new Thread(() -> {
             // Thay bằng direct DB access:
-            // Thay bằng direct DB access:
             currentAlarm = com.example.smartalarm.data.database.AppDatabase
                     .getInstance(this).alarmDao().getByIdSync(alarmId);
 
@@ -82,6 +84,10 @@ public class AlarmRingingService extends Service {
                 stopSelf();
                 return;
             }
+            
+            isRinging = true;
+            ringingAlarmId = alarmId;
+            
             // Chuyển lên main thread để cập nhật UI và khởi động media
             handler.post(() -> startRinging(currentAlarm));
         }).start();
@@ -329,6 +335,8 @@ public class AlarmRingingService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        isRinging = false;
+        ringingAlarmId = -1;
         stopMedia();
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);

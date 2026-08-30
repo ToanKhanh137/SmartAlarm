@@ -27,6 +27,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public static final String ACTION_SNOOZE  = "com.example.smartalarm.SNOOZE";
     public static final String ACTION_DISMISS = "com.example.smartalarm.DISMISS";
     public static final String ACTION_DISABLE = "com.example.smartalarm.DISABLE";
+    public static final String ACTION_SKIP_ONCE = "com.example.smartalarm.SKIP_ONCE";
 
     public static final String EXTRA_ALARM_ID = "alarm_id";
 
@@ -51,6 +52,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 break;
             case ACTION_DISABLE:
                 handleDisable(context, alarmId);
+                break;
+            case ACTION_SKIP_ONCE:
+                handleSkipOnce(context, alarmId);
                 break;
         }
     }
@@ -123,6 +127,21 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private void handleDisable(Context context, int alarmId) {
         AlarmRepository.getInstance(context).setActive(alarmId, false);
+    }
+
+    private void handleSkipOnce(Context context, int alarmId) {
+        new Thread(() -> {
+            AlarmRepository repo = AlarmRepository.getInstance(context);
+            com.example.smartalarm.data.database.AppDatabase db = com.example.smartalarm.data.database.AppDatabase.getInstance(context);
+            Alarm alarm = db.alarmDao().getByIdSync(alarmId);
+            if (alarm != null) {
+                if (alarm.repeats()) {
+                    repo.toggleSkipNext(alarm);
+                } else {
+                    repo.setActive(alarmId, false);
+                }
+            }
+        }).start();
     }
 
     // ===== HELPER =====

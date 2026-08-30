@@ -150,10 +150,10 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         private void setDayChip(TextView tv, boolean active) {
             if (active) {
                 tv.setBackgroundResource(R.drawable.bg_day_chip_active);
-                tv.setTextColor(Color.WHITE);
+                tv.setTextColor(androidx.core.content.ContextCompat.getColor(tv.getContext(), R.color.day_active_text));
             } else {
                 tv.setBackgroundResource(R.drawable.bg_day_chip);
-                tv.setTextColor(Color.parseColor("#9E9EA8"));
+                tv.setTextColor(androidx.core.content.ContextCompat.getColor(tv.getContext(), R.color.day_inactive_text));
             }
         }
 

@@ -1,9 +1,17 @@
 package com.example.smartalarm.ui.challenge;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import com.example.smartalarm.R;
 import com.example.smartalarm.service.AlarmReceiver;
@@ -22,10 +30,13 @@ import java.util.List;
  */
 public class QrChallengeActivity extends BaseActivity {
 
+    private static final int CAMERA_PERMISSION_REQUEST = 101;
     private int alarmId;
     private String expectedQrCode;
     private DecoratedBarcodeView barcodeView;
     private TextView tvInstruction;
+    private Button btnEmergencyStop;
+    private android.os.Handler timeoutHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +46,28 @@ public class QrChallengeActivity extends BaseActivity {
         alarmId = getIntent().getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, -1);
         tvInstruction = findViewById(R.id.tvInstruction);
         barcodeView   = findViewById(R.id.barcodeView);
+        btnEmergencyStop = findViewById(R.id.btnEmergencyStop);
 
         AppPreferences prefs = AppPreferences.getInstance(this);
         expectedQrCode = prefs.getQrCode();
 
         if (expectedQrCode == null || expectedQrCode.isEmpty()) {
-            // Chưa có QR → đề xuất tạo, tự dismiss sau 5 giây
             tvInstruction.setText(getString(R.string.qr_no_setup));
-            Toast.makeText(this, "Chưa có mã QR! Tắt báo thức tự động.", Toast.LENGTH_LONG).show();
-            new android.os.Handler(android.os.Looper.getMainLooper())
-                    .postDelayed(this::dismissAlarm, 5000);
+            Toast.makeText(this, getString(R.string.qr_no_setup_toast), Toast.LENGTH_LONG).show();
+            timeoutHandler.postDelayed(this::dismissAlarm, 5000);
             return;
         }
 
         tvInstruction.setText(getString(R.string.qr_instruction));
+        
+        btnEmergencyStop.setOnClickListener(v -> {
+            Toast.makeText(this, getString(R.string.emergency_stop), Toast.LENGTH_SHORT).show();
+            dismissAlarm();
+        });
+        
+        timeoutHandler.postDelayed(() -> {
+            btnEmergencyStop.setVisibility(View.VISIBLE);
+        }, 15000);
         barcodeView.decodeContinuous(new BarcodeCallback() {
             @Override
             public void barcodeResult(BarcodeResult result) {
@@ -70,7 +89,23 @@ public class QrChallengeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (barcodeView != null) barcodeView.resume();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (barcodeView != null) barcodeView.resume();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+        }
+    }
+    
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (barcodeView != null) barcodeView.resume();
+            } else {
+                Toast.makeText(this, getString(R.string.qr_camera_permission), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override

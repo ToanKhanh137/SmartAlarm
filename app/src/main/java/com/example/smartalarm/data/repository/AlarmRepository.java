@@ -25,13 +25,15 @@ public class AlarmRepository {
 
     private final AlarmDao dao;
     private final AlarmScheduler scheduler;
+    private final Context appContext;
     // Single background thread cho DB operations
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private AlarmRepository(Context context) {
-        AppDatabase db = AppDatabase.getInstance(context);
+        appContext = context.getApplicationContext();
+        AppDatabase db = AppDatabase.getInstance(appContext);
         dao = db.alarmDao();
-        scheduler = new AlarmScheduler(context);
+        scheduler = new AlarmScheduler(appContext);
     }
 
     public static AlarmRepository getInstance(Context context) {
@@ -97,6 +99,10 @@ public class AlarmRepository {
         executor.execute(() -> {
             scheduler.cancel(alarmId);
             dao.deleteById(alarmId);
+            
+            // Fix BUG-02: Dừng service nếu đang reo
+            android.content.Intent stopIntent = new android.content.Intent(appContext, com.example.smartalarm.service.AlarmRingingService.class);
+            appContext.stopService(stopIntent);
         });
     }
 
@@ -124,11 +130,8 @@ public class AlarmRepository {
         Alarm alarm = dao.getByIdSync(alarmId);
         if (alarm == null) return;
         if (!alarm.repeats() && !alarm.isQuickAlarm) {
-            if (alarm.keepAfterDismiss) {
-                dao.setActive(alarmId, false);
-            } else {
-                dao.deleteById(alarmId);
-            }
+            // Fix BUG-04: Luôn giữ báo thức lại sau khi kêu xong, chỉ tắt toggle
+            dao.setActive(alarmId, false);
         }
         // Báo thức lặp: AlarmReceiver đã schedule lần tiếp theo, không cần làm gì thêm
     }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_primary">
 
-    <!-- Content area: ViewFlipper thay đổi giữa 4 tab -->
+    <!-- Content area: ViewFlipper thay Ä‘á»•i giá»¯a 4 tab -->
     <ViewFlipper
         android:id="@+id/viewFlipper"
         android:layout_width="match_parent"
@@ -96,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Chưa có báo thức"
+                    android:text="ChÆ°a cÃ³ bÃ¡o thá»©c"
                     android:textColor="@color/text_secondary"
                     android:textSize="17sp"
                     android:fontFamily="sans-serif-medium"
@@ -106,7 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Nhấn + để thêm báo thức đầu tiên"
+                    android:text="Nháº¥n + Ä‘á»ƒ thÃªm bÃ¡o thá»©c Ä‘áº§u tiÃªn"
                     android:textColor="@color/text_hint"
                     android:textSize="13sp"/>
             </LinearLayout>
@@ -131,7 +131,7 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="12dp"/>
 
-            <!-- Digital clock lớn ở giữa -->
+            <!-- Digital clock lá»›n á»Ÿ giá»¯a -->
             <TextClock
                 android:id="@+id/digitalClock"
                 android:layout_width="match_parent"
@@ -182,7 +182,7 @@
                 android:textStyle="bold"
                 android:paddingBottom="32dp"/>
 
-            <!-- Hiển thị đếm ngược -->
+            <!-- Hiá»ƒn thá»‹ Ä‘áº¿m ngÆ°á»£c -->
             <TextView
                 android:id="@+id/tvTimerDisplay"
                 android:layout_width="match_parent"
@@ -194,7 +194,7 @@
                 android:fontFamily="sans-serif-light"
                 android:letterSpacing="0.05"/>
 
-            <!-- NumberPicker row khi chưa bắt đầu -->
+            <!-- NumberPicker row khi chÆ°a báº¯t Ä‘áº§u -->
             <LinearLayout
                 android:id="@+id/llTimerPicker"
                 android:layout_width="wrap_content"
@@ -397,7 +397,7 @@
         app:itemTextColor="@drawable/nav_item_color"
         app:labelVisibilityMode="labeled"/>
 
-    <!-- FAB: Thêm báo thức (chỉ hiện trên tab Alarm) -->
+    <!-- FAB: ThÃªm bÃ¡o thá»©c (chá»‰ hiá»‡n trÃªn tab Alarm) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddAlarm"
         android:layout_width="wrap_content"

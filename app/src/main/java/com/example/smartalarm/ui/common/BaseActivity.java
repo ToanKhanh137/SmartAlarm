@@ -30,6 +30,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         applyTheme();
         super.onCreate(savedInstanceState);
     }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Fix BUG-09: Chặn người dùng dùng app khi đang reo báo thức
+        if (com.example.smartalarm.service.AlarmRingingService.isRinging 
+            && !(this instanceof com.example.smartalarm.ui.ring.RingActivity)
+            && !(this instanceof com.example.smartalarm.ui.challenge.MathChallengeActivity)
+            && !(this instanceof com.example.smartalarm.ui.challenge.ShakeChallengeActivity)
+            && !(this instanceof com.example.smartalarm.ui.challenge.SquatChallengeActivity)
+            && !(this instanceof com.example.smartalarm.ui.challenge.StepChallengeActivity)
+            && !(this instanceof com.example.smartalarm.ui.challenge.QrChallengeActivity)) {
+            
+            android.content.Intent intent = new android.content.Intent(this, com.example.smartalarm.ui.ring.RingActivity.class);
+            intent.putExtra(com.example.smartalarm.service.AlarmReceiver.EXTRA_ALARM_ID, 
+                com.example.smartalarm.service.AlarmRingingService.ringingAlarmId);
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+    }
 
     /** Áp dụng theme từ preferences trước khi inflate layout. */
     public void applyTheme() {

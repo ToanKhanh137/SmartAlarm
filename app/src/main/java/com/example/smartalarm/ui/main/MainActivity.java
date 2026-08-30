@@ -1,6 +1,6 @@
 package com.example.smartalarm.ui.main;
 
-import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -90,7 +90,14 @@ public class MainActivity extends BaseActivity
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             String[] perms = {
                 android.Manifest.permission.POST_NOTIFICATIONS,
-                android.Manifest.permission.READ_MEDIA_AUDIO
+                android.Manifest.permission.READ_MEDIA_AUDIO,
+                android.Manifest.permission.ACTIVITY_RECOGNITION
+            };
+            requestPermissions(perms, 100);
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            String[] perms = {
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.ACTIVITY_RECOGNITION
             };
             requestPermissions(perms, 100);
         } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -208,7 +215,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onDelete(Alarm alarm) {
         String label = alarm.getDisplayLabel();
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.delete_alarm_title))
                 .setMessage(getString(R.string.delete_alarm_msg, label))
                 .setPositiveButton(getString(R.string.delete), (d, w) ->

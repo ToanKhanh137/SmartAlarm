@@ -95,8 +95,16 @@ public class SquatChallengeActivity extends BaseActivity implements SensorEventL
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
 
-        // Low-pass filter trên trục Y (lên/xuống)
+        float rawX = event.values[0];
         float rawY = event.values[1] - SensorManager.GRAVITY_EARTH;
+        float rawZ = event.values[2];
+
+        // Fix BUG-05: Lọc bỏ nhiễu nếu người dùng lắc ngang (X) hoặc lắc tới lui (Z) quá mạnh
+        if (Math.abs(rawX) > 3.0f || Math.abs(rawZ) > 3.0f) {
+            return; // Không phải chuyển động dọc (squat)
+        }
+
+        // Low-pass filter trên trục Y (lên/xuống)
         filteredY = ALPHA * rawY + (1 - ALPHA) * filteredY;
 
         long now = System.currentTimeMillis();
