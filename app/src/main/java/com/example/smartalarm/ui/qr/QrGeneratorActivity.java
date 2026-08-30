@@ -1,4 +1,4 @@
-﻿package com.example.smartalarm.ui.qr;
+package com.example.smartalarm.ui.qr;
 
 import android.Manifest;
 import android.content.ContentValues;

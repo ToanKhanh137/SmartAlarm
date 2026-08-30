@@ -96,7 +96,6 @@ public class MathChallengeActivity extends BaseActivity {
 
         switch (diffToUse) {
             case Alarm.DIFFICULTY_EASY:
-            case 0:
                 // Cộng/trừ 1–10
                 int a1 = random.nextInt(10) + 1;
                 int b1 = random.nextInt(10) + 1;
@@ -111,7 +110,6 @@ public class MathChallengeActivity extends BaseActivity {
                 break;
 
             case Alarm.DIFFICULTY_HARD:
-            case 2:
                 // Đa bước: (a × b) + c (a, b từ 2-20, c từ 1-99)
                 int a3 = random.nextInt(19) + 2;
                 int b3 = random.nextInt(19) + 2;

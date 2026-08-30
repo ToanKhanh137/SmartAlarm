@@ -21,7 +21,7 @@
     <string name="day_sat">Sa</string>
     <string name="day_sun">Su</string>
     <string name="repeat_once">Once</string>
-    <string name="repeat_weekdays">Monâ€“Fri</string>
+    <string name="repeat_weekdays">MonÃ¢â‚¬â€œFri</string>
     <string name="repeat_weekend">Weekend</string>
     <string name="repeat_everyday">Every day</string>
 
@@ -49,12 +49,6 @@
     <string name="next">Next</string>
     <string name="back">Back</string>
 
-    <string name="challenge_none">Normal dismiss</string>
-    <string name="challenge_math">Math</string>
-    <string name="challenge_shake">Shake</string>
-    <string name="challenge_squat">Squat</string>
-    <string name="challenge_step">Steps</string>
-    <string name="challenge_qr">Scan QR</string>
     <string name="difficulty_label">Difficulty</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_medium">Medium</string>
@@ -148,6 +142,16 @@
     <string name="repeat_label">Repeat</string>
     <string name="snooze_time_label">Snooze duration</string>
     <string name="minutes_unit"> min</string>
+    <string name="no_alarm_title">No alarms yet</string>
+    <string name="no_alarm_desc">Tap + to add your first alarm</string>
+    <string name="emergency_stop">Emergency Stop</string>
+    <string name="action_check">Check</string>
+    <string name="math_invalid_input">Invalid input</string>
+    <string name="qr_no_setup_toast">No QR code setup! Auto dismissing.</string>
+    <string name="qr_camera_permission">Camera permission required for QR</string>
+    <string name="qr_save_error">Error saving image</string>
+    <string name="skip_once">Skip today</string>
+    <string name="disable_alarm">Disable</string>
     <string name="challenge_title">Wake-up Challenge</string>
     <string name="challenge_subtitle">Choose how to turn off the alarm</string>
     <string name="challenge_none">Normal dismiss</string>
@@ -162,14 +166,5 @@
     <string name="challenge_step_desc">Walk a short distance to turn off</string>
     <string name="challenge_qr">Scan QR</string>
     <string name="challenge_qr_desc">Scan a QR code placed far away</string>
-    <string name="no_alarm_title">No alarms yet</string>
-    <string name="no_alarm_desc">Tap + to add your first alarm</string>
-    <string name="emergency_stop">Emergency Stop</string>
-    <string name="action_check">Check</string>
-    <string name="math_invalid_input">Invalid input</string>
-    <string name="qr_no_setup_toast">No QR code setup! Auto dismissing.</string>
-    <string name="qr_camera_permission">Camera permission required for QR</string>
-    <string name="qr_save_error">Error saving image</string>
-    <string name="skip_once">Skip today</string>
-    <string name="disable_alarm">Disable</string>
 </resources>
+

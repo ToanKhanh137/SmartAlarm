@@ -3,17 +3,17 @@
     <string name="app_name">Smart Alarm</string>
 
     <!-- ===== BOTTOM NAV ===== -->
-    <string name="nav_alarm">BÃ¡o thá»©c</string>
-    <string name="nav_clock">Äá»“ng há»“</string>
-    <string name="nav_timer">Háº¹n giá»</string>
-    <string name="nav_stopwatch">Báº¥m giá»</string>
+    <string name="nav_alarm">BÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="nav_clock">Ã„ÂÃ¡Â»â€œng hÃ¡Â»â€œ</string>
+    <string name="nav_timer">HÃ¡ÂºÂ¹n giÃ¡Â»Â</string>
+    <string name="nav_stopwatch">BÃ¡ÂºÂ¥m giÃ¡Â»Â</string>
 
     <!-- ===== ALARM LIST ===== -->
-    <string name="no_alarms">ChÆ°a cÃ³ bÃ¡o thá»©c nÃ o\nNháº¥n + Ä‘á»ƒ thÃªm</string>
-    <string name="next_alarm">BÃ¡o thá»©c tiáº¿p theo: %s</string>
-    <string name="alarm_off">KhÃ´ng cÃ³ bÃ¡o thá»©c nÃ o Ä‘ang báº­t</string>
-    <string name="delete_alarm_title">XÃ³a bÃ¡o thá»©c?</string>
-    <string name="delete_alarm_msg">Báº¡n cÃ³ cháº¯c muá»‘n xÃ³a bÃ¡o thá»©c \"%s\"?</string>
+    <string name="no_alarms">ChÃ†Â°a cÃƒÂ³ bÃƒÂ¡o thÃ¡Â»Â©c nÃƒÂ o\nNhÃ¡ÂºÂ¥n + Ã„â€˜Ã¡Â»Æ’ thÃƒÂªm</string>
+    <string name="next_alarm">BÃƒÂ¡o thÃ¡Â»Â©c tiÃ¡ÂºÂ¿p theo: %s</string>
+    <string name="alarm_off">KhÃƒÂ´ng cÃƒÂ³ bÃƒÂ¡o thÃ¡Â»Â©c nÃƒÂ o Ã„â€˜ang bÃ¡ÂºÂ­t</string>
+    <string name="delete_alarm_title">XÃƒÂ³a bÃƒÂ¡o thÃ¡Â»Â©c?</string>
+    <string name="delete_alarm_msg">BÃ¡ÂºÂ¡n cÃƒÂ³ chÃ¡ÂºÂ¯c muÃ¡Â»â€˜n xÃƒÂ³a bÃƒÂ¡o thÃ¡Â»Â©c \"%s\"?</string>
 
     <!-- ===== DAYS ===== -->
     <string name="day_mon">T2</string>
@@ -23,148 +23,152 @@
     <string name="day_fri">T6</string>
     <string name="day_sat">T7</string>
     <string name="day_sun">CN</string>
-    <string name="repeat_once">Má»™t láº§n</string>
-    <string name="repeat_weekdays">Thá»© 2â€“6</string>
-    <string name="repeat_weekend">Cuá»‘i tuáº§n</string>
-    <string name="repeat_everyday">Háº±ng ngÃ y</string>
+    <string name="repeat_once">MÃ¡Â»â„¢t lÃ¡ÂºÂ§n</string>
+    <string name="repeat_weekdays">ThÃ¡Â»Â© 2Ã¢â‚¬â€œ6</string>
+    <string name="repeat_weekend">CuÃ¡Â»â€˜i tuÃ¡ÂºÂ§n</string>
+    <string name="repeat_everyday">HÃ¡ÂºÂ±ng ngÃƒÂ y</string>
 
     <!-- ===== EDIT ALARM ===== -->
-    <string name="edit_alarm_title_add">ThÃªm bÃ¡o thá»©c</string>
-    <string name="edit_alarm_title_edit">Sá»­a bÃ¡o thá»©c</string>
-    <string name="step_time">Giá» &amp; NgÃ y</string>
-    <string name="step_sound">Ã‚m thanh</string>
-    <string name="step_challenge">Thá»©c dáº­y</string>
-    <string name="label_hint">TÃªn bÃ¡o thá»©c</string>
-    <string name="ringtone_label">Nháº¡c chuÃ´ng</string>
-    <string name="ringtone_default">Máº·c Ä‘á»‹nh</string>
-    <string name="ringtone_silent">Im láº·ng</string>
-    <string name="volume_label">Ã‚m lÆ°á»£ng</string>
+    <string name="edit_alarm_title_add">ThÃƒÂªm bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="edit_alarm_title_edit">SÃ¡Â»Â­a bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="step_time">GiÃ¡Â»Â &amp; NgÃƒÂ y</string>
+    <string name="step_sound">Ãƒâ€šm thanh</string>
+    <string name="step_challenge">ThÃ¡Â»Â©c dÃ¡ÂºÂ­y</string>
+    <string name="label_hint">TÃƒÂªn bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="ringtone_label">NhÃ¡ÂºÂ¡c chuÃƒÂ´ng</string>
+    <string name="ringtone_default">MÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh</string>
+    <string name="ringtone_silent">Im lÃ¡ÂºÂ·ng</string>
+    <string name="volume_label">Ãƒâ€šm lÃ†Â°Ã¡Â»Â£ng</string>
     <string name="vibrate_label">Rung</string>
-    <string name="gradual_volume_label">TÄƒng Ã¢m lÆ°á»£ng dáº§n</string>
-    <string name="snooze_label">HoÃ£n bÃ¡o thá»©c</string>
-    <string name="snooze_minutes">%d phÃºt</string>
-    <string name="auto_action_label">Tá»± Ä‘á»™ng</string>
-    <string name="auto_action_none">KhÃ´ng lÃ m gÃ¬</string>
-    <string name="auto_action_snooze">Tá»± hoÃ£n</string>
-    <string name="auto_action_dismiss">Tá»± táº¯t</string>
-    <string name="auto_after_minutes">Sau %d phÃºt</string>
-    <string name="save">LÆ°u</string>
-    <string name="cancel">Há»§y</string>
-    <string name="next">Tiáº¿p</string>
-    <string name="back">Quay láº¡i</string>
+    <string name="gradual_volume_label">TÃ„Æ’ng ÃƒÂ¢m lÃ†Â°Ã¡Â»Â£ng dÃ¡ÂºÂ§n</string>
+    <string name="snooze_label">HoÃƒÂ£n bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="snooze_minutes">%d phÃƒÂºt</string>
+    <string name="auto_action_label">TÃ¡Â»Â± Ã„â€˜Ã¡Â»â„¢ng</string>
+    <string name="auto_action_none">KhÃƒÂ´ng lÃƒÂ m gÃƒÂ¬</string>
+    <string name="auto_action_snooze">TÃ¡Â»Â± hoÃƒÂ£n</string>
+    <string name="auto_action_dismiss">TÃ¡Â»Â± tÃ¡ÂºÂ¯t</string>
+    <string name="auto_after_minutes">Sau %d phÃƒÂºt</string>
+    <string name="save">LÃ†Â°u</string>
+    <string name="cancel">HÃ¡Â»Â§y</string>
+    <string name="next">TiÃ¡ÂºÂ¿p</string>
+    <string name="back">Quay lÃ¡ÂºÂ¡i</string>
 
     <!-- ===== CHALLENGE SELECTION ===== -->
-    <string name="challenge_none">Táº¯t bÃ¬nh thÆ°á»ng</string>
-    <string name="challenge_math">Giáº£i toÃ¡n</string>
-    <string name="challenge_shake">Láº¯c Ä‘iá»‡n thoáº¡i</string>
-    <string name="challenge_squat">Squat</string>
-    <string name="challenge_step">Äáº¿m bÆ°á»›c</string>
-    <string name="challenge_qr">QuÃ©t QR</string>
-    <string name="difficulty_label">Äá»™ khÃ³</string>
-    <string name="difficulty_easy">Dá»…</string>
-    <string name="difficulty_medium">Trung bÃ¬nh</string>
-    <string name="difficulty_hard">KhÃ³</string>
-    <string name="difficulty_custom">TÃ¹y chá»‰nh</string>
+    <string name="difficulty_label">Ã„ÂÃ¡Â»â„¢ khÃƒÂ³</string>
+    <string name="difficulty_easy">DÃ¡Â»â€¦</string>
+    <string name="difficulty_medium">Trung bÃƒÂ¬nh</string>
+    <string name="difficulty_hard">KhÃƒÂ³</string>
+    <string name="difficulty_custom">TÃƒÂ¹y chÃ¡Â»â€°nh</string>
 
     <!-- ===== RING SCREEN ===== -->
-    <string name="ring_snooze">HoÃ£n %d phÃºt</string>
-    <string name="ring_dismiss">Thá»©c dáº­y</string>
-    <string name="ring_solve_challenge">Giáº£i thá»­ thÃ¡ch</string>
-    <string name="snoozed_until">ÄÃ£ hoÃ£n Ä‘áº¿n %s</string>
+    <string name="ring_snooze">HoÃƒÂ£n %d phÃƒÂºt</string>
+    <string name="ring_dismiss">ThÃ¡Â»Â©c dÃ¡ÂºÂ­y</string>
+    <string name="ring_solve_challenge">GiÃ¡ÂºÂ£i thÃ¡Â»Â­ thÃƒÂ¡ch</string>
+    <string name="snoozed_until">Ã„ÂÃƒÂ£ hoÃƒÂ£n Ã„â€˜Ã¡ÂºÂ¿n %s</string>
 
     <!-- ===== MATH CHALLENGE ===== -->
-    <string name="math_instruction">Giáº£i Ä‘Ãºng Ä‘á»ƒ táº¯t bÃ¡o thá»©c</string>
-    <string name="math_wrong">Sai rá»“i! Thá»­ láº¡i</string>
-    <string name="math_wrong_reduce">Sai nhiá»u quÃ¡. Giáº£m Ä‘á»™ khÃ³ giÃºp báº¡n</string>
-    <string name="math_wrong_switch">Báº¡n muá»‘n chuyá»ƒn sang láº¯c Ä‘iá»‡n thoáº¡i?</string>
-    <string name="math_switch_yes">Chuyá»ƒn sang láº¯c</string>
-    <string name="math_switch_no">Tiáº¿p tá»¥c giáº£i toÃ¡n</string>
-    <string name="math_correct">ChÃ­nh xÃ¡c!</string>
-    <string name="math_attempts">Sai %d láº§n</string>
+    <string name="math_instruction">GiÃ¡ÂºÂ£i Ã„â€˜ÃƒÂºng Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="math_wrong">Sai rÃ¡Â»â€œi! ThÃ¡Â»Â­ lÃ¡ÂºÂ¡i</string>
+    <string name="math_wrong_reduce">Sai nhiÃ¡Â»Âu quÃƒÂ¡. GiÃ¡ÂºÂ£m Ã„â€˜Ã¡Â»â„¢ khÃƒÂ³ giÃƒÂºp bÃ¡ÂºÂ¡n</string>
+    <string name="math_wrong_switch">BÃ¡ÂºÂ¡n muÃ¡Â»â€˜n chuyÃ¡Â»Æ’n sang lÃ¡ÂºÂ¯c Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i?</string>
+    <string name="math_switch_yes">ChuyÃ¡Â»Æ’n sang lÃ¡ÂºÂ¯c</string>
+    <string name="math_switch_no">TiÃ¡ÂºÂ¿p tÃ¡Â»Â¥c giÃ¡ÂºÂ£i toÃƒÂ¡n</string>
+    <string name="math_correct">ChÃƒÂ­nh xÃƒÂ¡c!</string>
+    <string name="math_attempts">Sai %d lÃ¡ÂºÂ§n</string>
 
     <!-- ===== SHAKE CHALLENGE ===== -->
-    <string name="shake_instruction">Láº¯c Ä‘iá»‡n thoáº¡i %d láº§n Ä‘á»ƒ táº¯t</string>
+    <string name="shake_instruction">LÃ¡ÂºÂ¯c Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i %d lÃ¡ÂºÂ§n Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
     <string name="shake_progress">%1$d / %2$d</string>
-    <string name="shake_hint">Cáº§m cháº¯c Ä‘iá»‡n thoáº¡i, láº¯c máº¡nh</string>
+    <string name="shake_hint">CÃ¡ÂºÂ§m chÃ¡ÂºÂ¯c Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i, lÃ¡ÂºÂ¯c mÃ¡ÂºÂ¡nh</string>
 
     <!-- ===== SQUAT CHALLENGE ===== -->
-    <string name="squat_instruction">Thá»±c hiá»‡n %d squat Ä‘á»ƒ táº¯t</string>
+    <string name="squat_instruction">ThÃ¡Â»Â±c hiÃ¡Â»â€¡n %d squat Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
     <string name="squat_progress">%1$d / %2$d</string>
-    <string name="squat_hint">Cáº§m Ä‘iá»‡n thoáº¡i trÃªn tay, ngá»“i xuá»‘ng rá»“i Ä‘á»©ng lÃªn</string>
-    <string name="squat_detected">Squat %d! Tiáº¿p tá»¥c</string>
+    <string name="squat_hint">CÃ¡ÂºÂ§m Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i trÃƒÂªn tay, ngÃ¡Â»â€œi xuÃ¡Â»â€˜ng rÃ¡Â»â€œi Ã„â€˜Ã¡Â»Â©ng lÃƒÂªn</string>
+    <string name="squat_detected">Squat %d! TiÃ¡ÂºÂ¿p tÃ¡Â»Â¥c</string>
 
     <!-- ===== STEP CHALLENGE ===== -->
-    <string name="step_instruction">Äi %d bÆ°á»›c Ä‘á»ƒ táº¯t</string>
-    <string name="step_progress">%1$d / %2$d bÆ°á»›c</string>
-    <string name="step_hint">Cáº§m Ä‘iá»‡n thoáº¡i, bÆ°á»›c Ä‘i bÃ¬nh thÆ°á»ng</string>
+    <string name="step_instruction">Ã„Âi %d bÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
+    <string name="step_progress">%1$d / %2$d bÃ†Â°Ã¡Â»â€ºc</string>
+    <string name="step_hint">CÃ¡ÂºÂ§m Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i, bÃ†Â°Ã¡Â»â€ºc Ã„â€˜i bÃƒÂ¬nh thÃ†Â°Ã¡Â»Âng</string>
 
     <!-- ===== QR CHALLENGE ===== -->
-    <string name="qr_instruction">QuÃ©t mÃ£ QR Ä‘Ã£ Ä‘Äƒng kÃ½ Ä‘á»ƒ táº¯t</string>
-    <string name="qr_wrong">MÃ£ QR khÃ´ng Ä‘Ãºng, thá»­ láº¡i</string>
-    <string name="qr_success">ÄÃºng rá»“i! Táº¯t bÃ¡o thá»©c</string>
-    <string name="qr_no_setup">ChÆ°a cÃ³ mÃ£ QR. VÃ o CÃ i Ä‘áº·t QR Ä‘á»ƒ táº¡o</string>
-    <string name="qr_setup_now">Táº¡o QR ngay</string>
+    <string name="qr_instruction">QuÃƒÂ©t mÃƒÂ£ QR Ã„â€˜ÃƒÂ£ Ã„â€˜Ã„Æ’ng kÃƒÂ½ Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
+    <string name="qr_wrong">MÃƒÂ£ QR khÃƒÂ´ng Ã„â€˜ÃƒÂºng, thÃ¡Â»Â­ lÃ¡ÂºÂ¡i</string>
+    <string name="qr_success">Ã„ÂÃƒÂºng rÃ¡Â»â€œi! TÃ¡ÂºÂ¯t bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="qr_no_setup">ChÃ†Â°a cÃƒÂ³ mÃƒÂ£ QR. VÃƒÂ o CÃƒÂ i Ã„â€˜Ã¡ÂºÂ·t QR Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¡o</string>
+    <string name="qr_setup_now">TÃ¡ÂºÂ¡o QR ngay</string>
 
     <!-- ===== QR GENERATOR ===== -->
-    <string name="qr_generator_title">Quáº£n lÃ½ mÃ£ QR</string>
-    <string name="qr_generate">Táº¡o mÃ£ QR má»›i</string>
-    <string name="qr_save_gallery">LÆ°u vÃ o thÆ° viá»‡n</string>
-    <string name="qr_print">In mÃ£ QR</string>
-    <string name="qr_saved">ÄÃ£ lÆ°u vÃ o thÆ° viá»‡n áº£nh</string>
-    <string name="qr_print_hint">DÃ¡n mÃ£ QR á»Ÿ nÆ¡i xa giÆ°á»ng (phÃ²ng táº¯m, báº¿p...)</string>
+    <string name="qr_generator_title">QuÃ¡ÂºÂ£n lÃƒÂ½ mÃƒÂ£ QR</string>
+    <string name="qr_generate">TÃ¡ÂºÂ¡o mÃƒÂ£ QR mÃ¡Â»â€ºi</string>
+    <string name="qr_save_gallery">LÃ†Â°u vÃƒÂ o thÃ†Â° viÃ¡Â»â€¡n</string>
+    <string name="qr_print">In mÃƒÂ£ QR</string>
+    <string name="qr_saved">Ã„ÂÃƒÂ£ lÃ†Â°u vÃƒÂ o thÃ†Â° viÃ¡Â»â€¡n Ã¡ÂºÂ£nh</string>
+    <string name="qr_print_hint">DÃƒÂ¡n mÃƒÂ£ QR Ã¡Â»Å¸ nÃ†Â¡i xa giÃ†Â°Ã¡Â»Âng (phÃƒÂ²ng tÃ¡ÂºÂ¯m, bÃ¡ÂºÂ¿p...)</string>
 
     <!-- ===== TIMER ===== -->
-    <string name="timer_start">Báº¯t Ä‘áº§u</string>
-    <string name="timer_pause">Táº¡m dá»«ng</string>
-    <string name="timer_reset">Äáº·t láº¡i</string>
-    <string name="timer_done">Háº¿t giá»!</string>
-    <string name="timer_set_time">Äáº·t thá»i gian</string>
+    <string name="timer_start">BÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u</string>
+    <string name="timer_pause">TÃ¡ÂºÂ¡m dÃ¡Â»Â«ng</string>
+    <string name="timer_reset">Ã„ÂÃ¡ÂºÂ·t lÃ¡ÂºÂ¡i</string>
+    <string name="timer_done">HÃ¡ÂºÂ¿t giÃ¡Â»Â!</string>
+    <string name="timer_set_time">Ã„ÂÃ¡ÂºÂ·t thÃ¡Â»Âi gian</string>
 
     <!-- ===== STOPWATCH ===== -->
-    <string name="stopwatch_lap">VÃ²ng</string>
-    <string name="stopwatch_lap_n">VÃ²ng %d</string>
+    <string name="stopwatch_lap">VÃƒÂ²ng</string>
+    <string name="stopwatch_lap_n">VÃƒÂ²ng %d</string>
 
     <!-- ===== SETTINGS ===== -->
-    <string name="settings_title">CÃ i Ä‘áº·t</string>
-    <string name="settings_display">Giao diá»‡n</string>
-    <string name="settings_theme">Chá»§ Ä‘á»</string>
-    <string name="settings_theme_dark">Tá»‘i</string>
-    <string name="settings_theme_light">SÃ¡ng</string>
-    <string name="settings_theme_system">Há»‡ thá»‘ng</string>
-    <string name="settings_language">NgÃ´n ngá»¯</string>
-    <string name="settings_alarm">BÃ¡o thá»©c</string>
-    <string name="settings_snooze_enabled">Báº­t tÃ­nh nÄƒng hoÃ£n</string>
-    <string name="settings_snooze_enabled_desc">Táº¯t Ä‘á»ƒ khÃ´ng hiá»‡n nÃºt HoÃ£n khi bÃ¡o thá»©c</string>
-    <string name="settings_snooze_duration">Thá»i gian hoÃ£n máº·c Ä‘á»‹nh</string>
-    <string name="settings_qr_manager">Quáº£n lÃ½ mÃ£ QR</string>
-    <string name="settings_qr_manager_desc">Táº¡o vÃ  in mÃ£ QR cho thá»­ thÃ¡ch quÃ©t QR</string>
+    <string name="settings_title">CÃƒÂ i Ã„â€˜Ã¡ÂºÂ·t</string>
+    <string name="settings_display">Giao diÃ¡Â»â€¡n</string>
+    <string name="settings_theme">ChÃ¡Â»Â§ Ã„â€˜Ã¡Â»Â</string>
+    <string name="settings_theme_dark">TÃ¡Â»â€˜i</string>
+    <string name="settings_theme_light">SÃƒÂ¡ng</string>
+    <string name="settings_theme_system">HÃ¡Â»â€¡ thÃ¡Â»â€˜ng</string>
+    <string name="settings_language">NgÃƒÂ´n ngÃ¡Â»Â¯</string>
+    <string name="settings_alarm">BÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="settings_snooze_enabled">BÃ¡ÂºÂ­t tÃƒÂ­nh nÃ„Æ’ng hoÃƒÂ£n</string>
+    <string name="settings_snooze_enabled_desc">TÃ¡ÂºÂ¯t Ã„â€˜Ã¡Â»Æ’ khÃƒÂ´ng hiÃ¡Â»â€¡n nÃƒÂºt HoÃƒÂ£n khi bÃƒÂ¡o thÃ¡Â»Â©c</string>
+    <string name="settings_snooze_duration">ThÃ¡Â»Âi gian hoÃƒÂ£n mÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh</string>
+    <string name="settings_qr_manager">QuÃ¡ÂºÂ£n lÃƒÂ½ mÃƒÂ£ QR</string>
+    <string name="settings_qr_manager_desc">TÃ¡ÂºÂ¡o vÃƒÂ  in mÃƒÂ£ QR cho thÃ¡Â»Â­ thÃƒÂ¡ch quÃƒÂ©t QR</string>
 
     <!-- ===== PERMISSION ===== -->
-    <string name="perm_exact_alarm_title">Cáº§n quyá»n bÃ¡o thá»©c chÃ­nh xÃ¡c</string>
-    <string name="perm_exact_alarm_msg">á»¨ng dá»¥ng cáº§n quyá»n nÃ y Ä‘á»ƒ bÃ¡o thá»©c Ä‘Ãºng giá», ngay cáº£ khi mÃ n hÃ¬nh táº¯t.</string>
-    <string name="perm_notification_title">Cáº§n quyá»n thÃ´ng bÃ¡o</string>
-    <string name="perm_notification_msg">Cho phÃ©p á»©ng dá»¥ng hiá»ƒn thá»‹ thÃ´ng bÃ¡o bÃ¡o thá»©c.</string>
-    <string name="perm_open_settings">Má»Ÿ cÃ i Ä‘áº·t</string>
-    <string name="perm_activity_recognition">Cáº§n quyá»n nháº­n diá»‡n hoáº¡t Ä‘á»™ng</string>
-    <string name="perm_activity_recognition_msg">Quyá»n nÃ y cáº§n thiáº¿t cho tÃ­nh nÄƒng Ä‘áº¿m bÆ°á»›c chÃ¢n.</string>
+    <string name="perm_exact_alarm_title">CÃ¡ÂºÂ§n quyÃ¡Â»Ân bÃƒÂ¡o thÃ¡Â»Â©c chÃƒÂ­nh xÃƒÂ¡c</string>
+    <string name="perm_exact_alarm_msg">Ã¡Â»Â¨ng dÃ¡Â»Â¥ng cÃ¡ÂºÂ§n quyÃ¡Â»Ân nÃƒÂ y Ã„â€˜Ã¡Â»Æ’ bÃƒÂ¡o thÃ¡Â»Â©c Ã„â€˜ÃƒÂºng giÃ¡Â»Â, ngay cÃ¡ÂºÂ£ khi mÃƒÂ n hÃƒÂ¬nh tÃ¡ÂºÂ¯t.</string>
+    <string name="perm_notification_title">CÃ¡ÂºÂ§n quyÃ¡Â»Ân thÃƒÂ´ng bÃƒÂ¡o</string>
+    <string name="perm_notification_msg">Cho phÃƒÂ©p Ã¡Â»Â©ng dÃ¡Â»Â¥ng hiÃ¡Â»Æ’n thÃ¡Â»â€¹ thÃƒÂ´ng bÃƒÂ¡o bÃƒÂ¡o thÃ¡Â»Â©c.</string>
+    <string name="perm_open_settings">MÃ¡Â»Å¸ cÃƒÂ i Ã„â€˜Ã¡ÂºÂ·t</string>
+    <string name="perm_activity_recognition">CÃ¡ÂºÂ§n quyÃ¡Â»Ân nhÃ¡ÂºÂ­n diÃ¡Â»â€¡n hoÃ¡ÂºÂ¡t Ã„â€˜Ã¡Â»â„¢ng</string>
+    <string name="perm_activity_recognition_msg">QuyÃ¡Â»Ân nÃƒÂ y cÃ¡ÂºÂ§n thiÃ¡ÂºÂ¿t cho tÃƒÂ­nh nÃ„Æ’ng Ã„â€˜Ã¡ÂºÂ¿m bÃ†Â°Ã¡Â»â€ºc chÃƒÂ¢n.</string>
 
     <!-- ===== COMMON ===== -->
     <string name="ok">OK</string>
-    <string name="yes">CÃ³</string>
-    <string name="no">KhÃ´ng</string>
-    <string name="confirm">XÃ¡c nháº­n</string>
-    <string name="delete">XÃ³a</string>
-    <string name="add">ThÃªm</string>
-    <string name="edit">Sá»­a</string>
+    <string name="yes">CÃƒÂ³</string>
+    <string name="no">KhÃƒÂ´ng</string>
+    <string name="confirm">XÃƒÂ¡c nhÃ¡ÂºÂ­n</string>
+    <string name="delete">XÃƒÂ³a</string>
+    <string name="add">ThÃƒÂªm</string>
+    <string name="edit">SÃ¡Â»Â­a</string>
     <string name="done">Xong</string>
-    <string name="skip">Bá» qua láº§n nÃ y</string>
-    <string name="upcoming_channel_name">BÃ¡o thá»©c sáº¯p tá»›i</string>
-    <string name="ringing_channel_name">Äang reo</string>
-    <string name="notification_action_snooze">HoÃ£n</string>
-    <string name="notification_action_dismiss">Táº¯t</string>
-    <string name="repeat_label">Lặp lại</string>
-    <string name="snooze_time_label">Thời gian hoãn</string>
-    <string name="minutes_unit"> phút</string>
+    <string name="skip">BÃ¡Â»Â qua lÃ¡ÂºÂ§n nÃƒÂ y</string>
+    <string name="upcoming_channel_name">BÃƒÂ¡o thÃ¡Â»Â©c sÃ¡ÂºÂ¯p tÃ¡Â»â€ºi</string>
+    <string name="ringing_channel_name">Ã„Âang reo</string>
+    <string name="notification_action_snooze">HoÃƒÂ£n</string>
+    <string name="notification_action_dismiss">TÃ¡ÂºÂ¯t</string>
+    <string name="repeat_label">Láº·p láº¡i</string>
+    <string name="snooze_time_label">Thá»i gian hoÃ£n</string>
+    <string name="minutes_unit"> phÃºt</string>
+    <string name="no_alarm_title">ChÆ°a cÃ³ bÃ¡o thá»©c</string>
+    <string name="no_alarm_desc">Nháº¥n + Ä‘á»ƒ thÃªm bÃ¡o thá»©c Ä‘áº§u tiÃªn</string>
+    <string name="emergency_stop">Táº¯t kháº©n cáº¥p</string>
+    <string name="action_check">Kiá»ƒm tra</string>
+    <string name="math_invalid_input">Nháº­p sá»‘ há»£p lá»‡</string>
+    <string name="qr_no_setup_toast">ChÆ°a cÃ³ mÃ£ QR! Táº¯t bÃ¡o thá»©c tá»± Ä‘á»™ng.</string>
+    <string name="qr_camera_permission">Cáº§n quyá»n camera Ä‘á»ƒ quÃ©t QR</string>
+    <string name="qr_save_error">Lá»—i khi lÆ°u áº£nh</string>
+    <string name="skip_once">Táº¯t hÃ´m nay</string>
+    <string name="disable_alarm">Táº¯t háº³n</string>
     <string name="challenge_title">Thử thách thức dậy</string>
     <string name="challenge_subtitle">Chọn cách bạn muốn tắt báo thức</string>
     <string name="challenge_none">Tắt bình thường</string>
@@ -179,14 +183,5 @@
     <string name="challenge_step_desc">Đi bộ một đoạn ngắn để tắt</string>
     <string name="challenge_qr">Quét QR</string>
     <string name="challenge_qr_desc">Quét mã QR đặt ở nơi xa giường</string>
-    <string name="no_alarm_title">Chưa có báo thức</string>
-    <string name="no_alarm_desc">Nhấn + để thêm báo thức đầu tiên</string>
-    <string name="emergency_stop">Tắt khẩn cấp</string>
-    <string name="action_check">Kiểm tra</string>
-    <string name="math_invalid_input">Nhập số hợp lệ</string>
-    <string name="qr_no_setup_toast">Chưa có mã QR! Tắt báo thức tự động.</string>
-    <string name="qr_camera_permission">Cần quyền camera để quét QR</string>
-    <string name="qr_save_error">Lỗi khi lưu ảnh</string>
-    <string name="skip_once">Tắt hôm nay</string>
-    <string name="disable_alarm">Tắt hẳn</string>
 </resources>
+

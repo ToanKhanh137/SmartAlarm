@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -48,14 +48,14 @@
             android:textColor="@color/text_secondary"/>
     </LinearLayout>
 
-    <!-- ViewFlipper cho 3 bÆ°á»›c -->
+    <!-- ViewFlipper cho 3 bước -->
     <ViewFlipper
         android:id="@+id/stepFlipper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- === BÆ¯á»šC 1: Giá» & NgÃ y === -->
+        <!-- === BƯỚC 1: Giờ & Ngày === -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -99,11 +99,11 @@
                         android:maxLength="50"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- NgÃ y láº·p -->
+                <!-- Ngày lặp -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Láº·p láº¡i"
+                    android:text="@string/repeat_label"
                     style="@style/TextSectionHeader"
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="12dp"/>
@@ -126,7 +126,7 @@
             </LinearLayout>
         </ScrollView>
 
-        <!-- === BÆ¯á»šC 2: Ã‚m thanh === -->
+        <!-- === BƯỚC 2: Âm thanh === -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -137,7 +137,7 @@
                 android:paddingHorizontal="24dp"
                 android:paddingBottom="24dp">
 
-                <!-- Nháº¡c chuÃ´ng -->
+                <!-- Nhạc chuông -->
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:text="@string/ringtone_label" style="@style/TextSectionHeader"
                     android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
@@ -154,7 +154,7 @@
                         android:textSize="14sp"/>
                 </LinearLayout>
 
-                <!-- Ã‚m lÆ°á»£ng -->
+                <!-- Âm lượng -->
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:text="@string/volume_label" style="@style/TextSectionHeader"
                     android:layout_marginTop="20dp" android:layout_marginBottom="8dp"/>
@@ -162,7 +162,7 @@
                     android:layout_height="wrap_content" android:max="100" android:progress="80"
                     android:progressTint="@color/accent" android:thumbTint="@color/accent"/>
 
-                <!-- TÄƒng dáº§n -->
+                <!-- Tăng dần -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
                     android:orientation="horizontal" android:gravity="center_vertical"
                     android:layout_marginTop="16dp">
@@ -194,18 +194,18 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:gravity="center_vertical">
                     <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="1" android:text="Thá»i gian hoÃ£n"
+                        android:layout_weight="1" android:text="@string/snooze_time_label"
                         android:textColor="@color/text_primary" android:textSize="16sp"/>
                     <NumberPicker android:id="@+id/pickerSnooze" android:layout_width="80dp"
                         android:layout_height="wrap_content"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text=" phÃºt" android:textColor="@color/text_secondary" android:textSize="16sp"/>
+                        android:text="@string/minutes_unit" android:textColor="@color/text_secondary" android:textSize="16sp"/>
                 </LinearLayout>
 
             </LinearLayout>
         </ScrollView>
 
-        <!-- === BÆ¯á»šC 3: Thá»­ thÃ¡ch thá»©c dáº­y === -->
+        <!-- === BƯỚC 3: Thử thách thức dậy === -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -217,15 +217,15 @@
                 android:paddingBottom="24dp">
 
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Thá»­ thÃ¡ch thá»©c dáº­y" style="@style/TextSectionHeader"
+                    android:text="@string/challenge_title" style="@style/TextSectionHeader"
                     android:layout_marginTop="12dp" android:layout_marginBottom="4dp"/>
 
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="Chá»n cÃ¡ch báº¡n muá»‘n táº¯t bÃ¡o thá»©c"
+                    android:text="@string/challenge_subtitle"
                     android:textColor="@color/text_secondary" android:textSize="13sp"
                     android:layout_marginBottom="16dp"/>
 
-                <!-- Váº«n cáº§n RadioGroup áº©n Ä‘á»ƒ giá»¯ logic Java tÆ°Æ¡ng thÃ­ch -->
+                <!-- Vẫn cần RadioGroup ẩn để giữ logic Java tương thích -->
                 <RadioGroup android:id="@+id/rgChallenge" android:layout_width="0dp"
                     android:layout_height="0dp" android:visibility="gone">
                     <RadioButton android:id="@+id/rbNone"  android:layout_width="0dp" android:layout_height="0dp" android:checked="true"/>
@@ -236,7 +236,7 @@
                     <RadioButton android:id="@+id/rbQr"    android:layout_width="0dp" android:layout_height="0dp"/>
                 </RadioGroup>
 
-                <!-- Card: Táº¯t bÃ¬nh thÆ°á»ng -->
+                <!-- Card: Tắt bình thường -->
                 <LinearLayout
                     android:id="@+id/cardChallengeNone"
                     android:layout_width="match_parent" android:layout_height="72dp"
@@ -248,10 +248,10 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Táº¯t bÃ¬nh thÆ°á»ng"
+                            android:text="@string/challenge_none"
                             android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Chá»‰ cáº§n nháº¥n nÃºt Ä‘á»ƒ táº¯t"
+                            android:text="@string/challenge_none_desc"
                             android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                     <ImageView android:id="@+id/ivCheckNone"
@@ -259,7 +259,7 @@
                         android:src="@drawable/ic_check" android:visibility="visible"/>
                 </LinearLayout>
 
-                <!-- Card: Giáº£i toÃ¡n -->
+                <!-- Card: Giải toán -->
                 <LinearLayout
                     android:id="@+id/cardChallengeMath"
                     android:layout_width="match_parent" android:layout_height="72dp"
@@ -271,10 +271,10 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Giáº£i toÃ¡n"
+                            android:text="@string/challenge_math"
                             android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Giáº£i phÃ©p tÃ­nh Ä‘á»ƒ táº¯t bÃ¡o thá»©c"
+                            android:text="@string/challenge_math_desc"
                             android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                     <ImageView android:id="@+id/ivCheckMath"
@@ -282,7 +282,7 @@
                         android:src="@drawable/ic_check" android:visibility="gone"/>
                 </LinearLayout>
 
-                <!-- Card: Láº¯c Ä‘iá»‡n thoáº¡i -->
+                <!-- Card: Lắc điện thoại -->
                 <LinearLayout
                     android:id="@+id/cardChallengeShake"
                     android:layout_width="match_parent" android:layout_height="72dp"
@@ -294,10 +294,10 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Láº¯c Ä‘iá»‡n thoáº¡i"
+                            android:text="@string/challenge_shake"
                             android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Láº¯c máº¡nh má»™t sá»‘ láº§n Ä‘á»ƒ táº¯t"
+                            android:text="@string/challenge_shake_desc"
                             android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                     <ImageView android:id="@+id/ivCheckShake"
@@ -320,7 +320,7 @@
                             android:text="@string/challenge_squat"
                             android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Thá»±c hiá»‡n squat Ä‘á»ƒ táº¯t bÃ¡o thá»©c"
+                            android:text="@string/challenge_squat_desc"
                             android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                     <ImageView android:id="@+id/ivCheckSquat"
@@ -328,7 +328,7 @@
                         android:src="@drawable/ic_check" android:visibility="gone"/>
                 </LinearLayout>
 
-                <!-- Card: Äáº¿m bÆ°á»›c chÃ¢n -->
+                <!-- Card: Đếm bước chân -->
                 <LinearLayout
                     android:id="@+id/cardChallengeStep"
                     android:layout_width="match_parent" android:layout_height="72dp"
@@ -340,10 +340,10 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Äáº¿m bÆ°á»›c chÃ¢n"
+                            android:text="@string/challenge_step"
                             android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Äi bá»™ má»™t Ä‘oáº¡n ngáº¯n Ä‘á»ƒ táº¯t"
+                            android:text="@string/challenge_step_desc"
                             android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                     <ImageView android:id="@+id/ivCheckStep"
@@ -351,7 +351,7 @@
                         android:src="@drawable/ic_check" android:visibility="gone"/>
                 </LinearLayout>
 
-                <!-- Card: QuÃ©t QR -->
+                <!-- Card: Quét QR -->
                 <LinearLayout
                     android:id="@+id/cardChallengeQr"
                     android:layout_width="match_parent" android:layout_height="72dp"
@@ -363,10 +363,10 @@
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                         android:layout_weight="1" android:orientation="vertical">
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="QuÃ©t QR"
+                            android:text="@string/challenge_qr"
                             android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="QuÃ©t mÃ£ QR Ä‘áº·t á»Ÿ nÆ¡i xa giÆ°á»ng"
+                            android:text="@string/challenge_qr_desc"
                             android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                     <ImageView android:id="@+id/ivCheckQr"
@@ -374,7 +374,7 @@
                         android:src="@drawable/ic_check" android:visibility="gone"/>
                 </LinearLayout>
 
-                <!-- Äá»™ khÃ³ (áº©n náº¿u chá»n None/QR) -->
+                <!-- Độ khó (ẩn nếu chọn None/QR) -->
                 <LinearLayout android:id="@+id/llDifficulty" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:orientation="vertical"
                     android:visibility="gone">
@@ -406,7 +406,7 @@
                             android:buttonTint="@color/accent"/>
                     </RadioGroup>
 
-                    <!-- Custom slider (áº©n náº¿u khÃ´ng chá»n Custom) -->
+                    <!-- Custom slider -->
                     <LinearLayout android:id="@+id/llCustomValue" android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:orientation="horizontal"
                         android:gravity="center_vertical" android:layout_marginTop="12dp"
@@ -426,7 +426,7 @@
 
     </ViewFlipper>
 
-    <!-- NÃºt Ä‘iá»u hÆ°á»›ng bÆ°á»›c -->
+    <!-- Nút điều hướng bước -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -458,4 +458,3 @@
     </LinearLayout>
 
 </LinearLayout>
-
