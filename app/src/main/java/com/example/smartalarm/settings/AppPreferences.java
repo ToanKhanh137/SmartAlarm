@@ -3,6 +3,10 @@ package com.example.smartalarm.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Wrapper cho SharedPreferences – lưu cài đặt toàn cục của app.
  *
@@ -21,6 +25,12 @@ public class AppPreferences {
     private static final String KEY_SNOOZE_ON   = "snooze_enabled";
     private static final String KEY_SNOOZE_MIN  = "snooze_duration";
     private static final String KEY_QR_CODE     = "qr_code";
+    private static final String KEY_TIMER_RINGTONE = "timer_ringtone";
+    private static final String KEY_WORLD_CLOCKS   = "world_clocks";
+
+    private static final String[] DEFAULT_WORLD_CLOCKS = {
+            "America/New_York", "Europe/London", "Asia/Tokyo", "Australia/Sydney"
+    };
 
     public static final String THEME_DARK   = "dark";
     public static final String THEME_LIGHT  = "light";
@@ -106,5 +116,36 @@ public class AppPreferences {
 
     public boolean hasQrCode() {
         return getQrCode() != null && !getQrCode().isEmpty();
+    }
+
+    // ===== TIMER RINGTONE =====
+
+    /** null = dùng nhạc báo thức mặc định của hệ thống. */
+    public String getTimerRingtone() {
+        return prefs.getString(KEY_TIMER_RINGTONE, null);
+    }
+
+    public void setTimerRingtone(String uri) {
+        prefs.edit().putString(KEY_TIMER_RINGTONE, uri).apply();
+    }
+
+    // ===== WORLD CLOCKS =====
+
+    /**
+     * Danh sách múi giờ người dùng chọn cho Đồng hồ thế giới, lưu dạng chuỗi ngăn bởi "\n"
+     * (ID múi giờ không chứa ký tự này nên không cần escape).
+     */
+    public List<String> getWorldClocks() {
+        String raw = prefs.getString(KEY_WORLD_CLOCKS, null);
+        if (raw == null) return new ArrayList<>(Arrays.asList(DEFAULT_WORLD_CLOCKS));
+        List<String> result = new ArrayList<>();
+        for (String id : raw.split("\n")) {
+            if (!id.isEmpty()) result.add(id);
+        }
+        return result;
+    }
+
+    public void setWorldClocks(List<String> timezoneIds) {
+        prefs.edit().putString(KEY_WORLD_CLOCKS, String.join("\n", timezoneIds)).apply();
     }
 }

@@ -1,12 +1,15 @@
 package com.example.smartalarm.ui.common;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import com.example.smartalarm.settings.AppPreferences;
 import com.example.smartalarm.settings.LocaleHelper;
@@ -32,6 +35,32 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         applyNightMode(this);
         super.onCreate(savedInstanceState);
+    }
+
+    /**
+     * onResume không chạy lại nếu Activity vốn đã ở tiền cảnh, nên chỉ dựa vào nó thì
+     * đang mở app mà báo thức reo sẽ không tự chuyển màn hình. Service phát broadcast
+     * ngay khi bắt đầu reo để xử lý trường hợp đó.
+     */
+    private final BroadcastReceiver ringingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!isAlarmScreen()) returnToRingScreen();
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ContextCompat.registerReceiver(this, ringingReceiver,
+                new IntentFilter(AlarmRingingService.ACTION_RINGING_STARTED),
+                ContextCompat.RECEIVER_NOT_EXPORTED);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(ringingReceiver);
     }
 
     @Override

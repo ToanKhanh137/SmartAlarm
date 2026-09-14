@@ -96,6 +96,10 @@
     <string name="timer_pause">Pause</string>
     <string name="timer_reset">Reset</string>
     <string name="timer_done">Time\'s up!</string>
+    <string name="timer_preset_5">5m</string>
+    <string name="timer_preset_10">10m</string>
+    <string name="timer_preset_25">25m</string>
+    <string name="timer_preset_30">30m</string>
     <string name="timer_set_time">Set time</string>
 
     <string name="stopwatch_lap">Lap</string>
@@ -190,7 +194,10 @@
     <!-- ===== RINGING NOTIFICATION ===== -->
     <string name="notification_ringing_challenge">%s required to stop the alarm</string>
     <string name="notification_ringing_plain">Tap to turn off the alarm</string>
-    <string name="notification_action_emergency">Emergency stop</string>
+    <string name="notification_action_open">Open challenge</string>
+    <string name="perm_fullscreen_title">Lock screen permission needed</string>
+    <string name="perm_fullscreen_msg">To let the alarm open its dismiss screen while the phone is locked, enable the "Full screen notifications" permission for this app.</string>
+    <string name="perm_later">Later</string>
 
     <!-- ===== PERMISSIONS ===== -->
     <string name="perm_camera_title">Camera permission needed</string>
@@ -200,5 +207,15 @@
     <!-- ===== SQUAT / STEP HINTS ===== -->
     <string name="squat_hold_phone">Hold the phone at your chest and squat slowly</string>
     <string name="squat_too_fast">Shaking will not count — squat slower and deeper</string>
+    <string name="squat_phase_down">Going down… pause at the bottom</string>
+    <string name="squat_phase_bottom">Good! Now stand up</string>
+    <string name="shuffle_ringtone_label">Shuffle ringtone</string>
+    <string name="shuffle_ringtone_desc">Pick a different alarm sound each time it rings</string>
+    <string name="timer_sound_label">Timer sound</string>
+    <string name="world_clock_add">Add city</string>
+    <string name="world_clock_search_hint">Search city or timezone</string>
+    <string name="world_clock_added">Added %s</string>
+    <string name="world_clock_remove">Remove this city?</string>
+    <string name="timer_stop">Stop</string>
 </resources>
 

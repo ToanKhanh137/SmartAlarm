@@ -109,6 +109,10 @@
     <string name="timer_pause">Tạm dừng</string>
     <string name="timer_reset">Đặt lại</string>
     <string name="timer_done">Hết giờ!</string>
+    <string name="timer_preset_5">5m</string>
+    <string name="timer_preset_10">10m</string>
+    <string name="timer_preset_25">25m</string>
+    <string name="timer_preset_30">30m</string>
     <string name="timer_set_time">Đặt thời gian</string>
 
     <!-- ===== STOPWATCH ===== -->
@@ -207,7 +211,10 @@
     <!-- ===== RINGING NOTIFICATION ===== -->
     <string name="notification_ringing_challenge">Cần %s để tắt báo thức</string>
     <string name="notification_ringing_plain">Nhấn để tắt báo thức</string>
-    <string name="notification_action_emergency">Tắt khẩn cấp</string>
+    <string name="notification_action_open">Mở thử thách</string>
+    <string name="perm_fullscreen_title">Cần quyền hiện trên màn hình khóa</string>
+    <string name="perm_fullscreen_msg">Để báo thức tự mở màn hình tắt báo thức khi điện thoại đang khóa, hãy bật quyền "Thông báo toàn màn hình" cho ứng dụng.</string>
+    <string name="perm_later">Để sau</string>
 
     <!-- ===== PERMISSIONS ===== -->
     <string name="perm_camera_title">Cần quyền camera</string>
@@ -217,5 +224,15 @@
     <!-- ===== SQUAT / STEP HINTS ===== -->
     <string name="squat_hold_phone">Giữ điện thoại trước ngực và squat thật chậm</string>
     <string name="squat_too_fast">Lắc không tính đâu — hãy squat chậm và sâu hơn</string>
+    <string name="squat_phase_down">Đang hạ người… giữ một nhịp ở đáy</string>
+    <string name="squat_phase_bottom">Tốt! Giờ đứng lên</string>
+    <string name="shuffle_ringtone_label">Ngẫu nhiên nhạc chuông</string>
+    <string name="shuffle_ringtone_desc">Mỗi lần reo tự chọn một nhạc báo thức khác</string>
+    <string name="timer_sound_label">Nhạc báo hết giờ</string>
+    <string name="world_clock_add">Thêm thành phố</string>
+    <string name="world_clock_search_hint">Tìm thành phố hoặc múi giờ</string>
+    <string name="world_clock_added">Đã thêm %s</string>
+    <string name="world_clock_remove">Xóa thành phố này?</string>
+    <string name="timer_stop">Dừng</string>
 </resources>
 

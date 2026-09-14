@@ -24,6 +24,11 @@ public class AlarmScheduler {
     // Request code offset để tránh conflict PendingIntent giữa các alarm
     private static final int PENDING_INTENT_BASE = 1000;
 
+    /** Thông báo "sắp tới" hiện trước giờ reo bao lâu. */
+    private static final long UPCOMING_LEAD_MS = 30 * 60 * 1000L;
+    /** Gần hơn mức này thì không cần thông báo "sắp tới" nữa. */
+    private static final long UPCOMING_MIN_LEAD_MS = 45 * 1000L;
+
     public AlarmScheduler(Context context) {
         this.context = context.getApplicationContext();
         this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -46,12 +51,25 @@ public class AlarmScheduler {
                 new AlarmManager.AlarmClockInfo(triggerTime, pi);
         alarmManager.setAlarmClock(info, pi);
 
-        // Đặt Upcoming Notification trước 30 phút
-        long upcomingTime = triggerTime - (30 * 60 * 1000);
-        if (upcomingTime > System.currentTimeMillis()) {
-            PendingIntent piUpcoming = buildUpcomingPendingIntent(alarm, PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, upcomingTime, piUpcoming);
+        scheduleUpcomingNotification(alarm, triggerTime);
+    }
+
+    /**
+     * Thông báo "sắp tới" mặc định hiện trước 30 phút. Nếu báo thức gần hơn thế thì mốc
+     * đó đã ở quá khứ và thông báo sẽ không bao giờ chạy, nên trường hợp đó hiện luôn –
+     * miễn là còn kịp trước khi reo.
+     */
+    private void scheduleUpcomingNotification(Alarm alarm, long triggerTime) {
+        long now = System.currentTimeMillis();
+        long upcomingTime = triggerTime - UPCOMING_LEAD_MS;
+
+        if (upcomingTime <= now) {
+            if (triggerTime - now < UPCOMING_MIN_LEAD_MS) return; // quá sát giờ reo
+            upcomingTime = now + 5000;
         }
+
+        PendingIntent piUpcoming = buildUpcomingPendingIntent(alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, upcomingTime, piUpcoming);
     }
 
     /**

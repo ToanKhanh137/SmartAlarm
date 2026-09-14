@@ -117,15 +117,32 @@
             android:background="@color/bg_primary"
             android:paddingHorizontal="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/nav_clock"
-                android:textSize="28sp"
-                android:textColor="@color/text_primary"
-                android:textStyle="bold"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:paddingTop="16dp"
-                android:paddingBottom="12dp"/>
+                android:paddingBottom="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nav_clock"
+                    android:textSize="28sp"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddCity"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/world_clock_add"
+                    android:textSize="13sp"
+                    android:textColor="@color/accent"/>
+            </LinearLayout>
 
             <!-- Digital clock lớn ở giữa -->
             <TextClock
@@ -237,52 +254,33 @@
                     android:paddingStart="4dp"/>
             </LinearLayout>
 
-            <!-- Quick preset buttons -->
+            <!-- Quick preset buttons – chia đều theo chiều ngang để nhãn không bị cắt -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_gravity="center"
+                android:paddingHorizontal="20dp"
                 android:paddingBottom="24dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn5min"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="5m"
-                    android:textColor="@color/accent"
-                    app:strokeColor="@color/accent"
-                    android:layout_marginEnd="8dp"/>
+                    style="@style/TimerPreset"
+                    android:text="@string/timer_preset_5"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn10min"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="10m"
-                    android:textColor="@color/accent"
-                    app:strokeColor="@color/accent"
-                    android:layout_marginEnd="8dp"/>
+                    style="@style/TimerPreset"
+                    android:text="@string/timer_preset_10"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn25min"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="25m"
-                    android:textColor="@color/accent"
-                    app:strokeColor="@color/accent"
-                    android:layout_marginEnd="8dp"/>
+                    style="@style/TimerPreset"
+                    android:text="@string/timer_preset_25"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn30min"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="30m"
-                    android:textColor="@color/accent"
-                    app:strokeColor="@color/accent"/>
+                    style="@style/TimerPreset"
+                    android:text="@string/timer_preset_30"/>
             </LinearLayout>
 
             <!-- Controls -->
@@ -311,6 +309,39 @@
                     android:backgroundTint="@color/accent"
                     android:textColor="@color/text_on_accent"
                     app:cornerRadius="28dp"/>
+            </LinearLayout>
+
+            <!-- Nhạc báo khi hết giờ -->
+            <LinearLayout
+                android:id="@+id/rowTimerSound"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="24dp"
+                android:paddingHorizontal="16dp"
+                android:background="@drawable/bg_challenge_card"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/timer_sound_label"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"/>
+
+                <TextView
+                    android:id="@+id/tvTimerSoundName"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ringtone_default"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginStart="12dp"/>
             </LinearLayout>
         </LinearLayout>
 

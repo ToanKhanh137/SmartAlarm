@@ -8,6 +8,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,18 +23,28 @@ import com.example.smartalarm.data.model.Alarm;
  * StepChallengeActivity – đi X bước để tắt báo thức.
  *
  * Dùng TYPE_STEP_DETECTOR: mỗi bước là một event nên chỉ cần cộng dồn.
- * (TYPE_STEP_COUNTER trả về tổng số bước từ lúc boot và event đầu tiên có thể là
- * giá trị cũ đã cache, khiến bộ đếm nhảy vọt ngay khi vừa bước vài bước.)
  *
- * Nếu máy không có step detector, hoặc chưa có quyền ACTIVITY_RECOGNITION,
- * sẽ chuyển sang đếm bằng accelerometer – cách này không cần quyền nên thử thách
- * không bao giờ bị kẹt vì thiếu quyền.
+ * Hai cái bẫy đã gặp và phải chặn:
+ *  - TYPE_STEP_COUNTER trả tổng số bước từ lúc boot, và event đầu tiên có thể là
+ *    giá trị cũ đã cache → baseline lệch → bộ đếm nhảy vọt. Không dùng nữa.
+ *  - Step detector có thể BATCH: lúc đăng ký listener, phần cứng xả cả hàng đợi
+ *    những bước đã đi TRƯỚC khi mở màn hình, làm số bước vọt lên ngay lập tức.
+ *    Nên phải tắt batching và bỏ qua event cũ hơn thời điểm đăng ký.
+ *
+ * Nếu máy không có step detector hoặc chưa có quyền ACTIVITY_RECOGNITION thì đếm
+ * bằng accelerometer – cách này không cần quyền nên thử thách không bao giờ bị kẹt.
  */
 public class StepChallengeActivity extends ChallengeActivity implements SensorEventListener {
 
-    // Đếm bằng accelerometer: ngưỡng và nhịp bước tối thiểu
-    private static final float STEP_PEAK_THRESHOLD = 3.2f;
-    private static final long  MIN_STEP_INTERVAL_MS = 260;
+    private static final String TAG = "StepChallenge";
+
+    /** Bỏ qua event trong khoảng này sau khi đăng ký, để loại phần hàng đợi cũ. */
+    private static final long WARMUP_MS = 700;
+
+    // Đếm bằng accelerometer: cần một đỉnh rồi tụt hẳn xuống mới tính 1 bước
+    private static final float STEP_PEAK_THRESHOLD  = 3.2f;
+    private static final float STEP_VALLEY_THRESHOLD = 1.4f;
+    private static final long  MIN_STEP_INTERVAL_MS = 320;
     private static final float ALPHA = 0.2f;
 
     private SensorManager sensorManager;
@@ -42,8 +54,12 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
     private int targetSteps = 50;
     private int stepCount = 0;
 
+    private long listenerStartMs = 0;
+    private long listenerStartNanos = 0;
+
     // State cho bộ đếm accelerometer
     private final float[] gravity = new float[3];
+    private boolean gravityReady = false;
     private long lastStepMs = 0;
     private boolean abovePeak = false;
 
@@ -66,7 +82,6 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
         setupChallenge();
     }
 
-    /** Chọn step detector nếu dùng được, nếu không thì accelerometer. */
     private void pickSensor() {
         if (hasActivityPermission()) {
             stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
@@ -75,6 +90,7 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
             stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             usingAccelerometer = true;
         }
+        Log.i(TAG, "Đếm bước bằng " + (usingAccelerometer ? "accelerometer" : "step detector"));
     }
 
     private boolean hasActivityPermission() {
@@ -95,9 +111,15 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
     @Override
     protected void onResume() {
         super.onResume();
-        if (stepSensor != null) {
-            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_GAME);
-        }
+        if (stepSensor == null) return;
+
+        listenerStartMs = System.currentTimeMillis();
+        listenerStartNanos = SystemClock.elapsedRealtimeNanos();
+        abovePeak = false;
+        gravityReady = false;
+
+        // maxReportLatencyUs = 0 → yêu cầu không batch, gửi từng event ngay.
+        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_GAME, 0);
     }
 
     @Override
@@ -108,21 +130,27 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // Bỏ qua khoảng đầu: đây là lúc phần cứng xả hàng đợi bước cũ.
+        if (System.currentTimeMillis() - listenerStartMs < WARMUP_MS) return;
+
         if (usingAccelerometer) {
             detectStepFromAccelerometer(event);
         } else if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            // Mỗi event là đúng 1 bước
+            // Event có dấu thời gian trước lúc đăng ký là bước đã đi từ trước.
+            if (event.timestamp > 0 && event.timestamp < listenerStartNanos) return;
             addStep();
         }
     }
 
-    /**
-     * Đếm bước bằng biên độ gia tốc: mỗi lần vượt ngưỡng rồi tụt xuống là 1 bước,
-     * kèm khoảng cách tối thiểu giữa 2 bước để không đếm trùng do rung lắc.
-     */
+    /** Một bước = một đỉnh gia tốc rồi tụt hẳn xuống, cách bước trước đủ lâu. */
     private void detectStepFromAccelerometer(SensorEvent event) {
         if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
 
+        if (!gravityReady) {
+            System.arraycopy(event.values, 0, gravity, 0, 3);
+            gravityReady = true;
+            return;
+        }
         for (int i = 0; i < 3; i++) {
             gravity[i] = (1 - ALPHA) * gravity[i] + ALPHA * event.values[i];
         }
@@ -132,13 +160,13 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
         float magnitude = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
 
         long now = System.currentTimeMillis();
-        if (magnitude > STEP_PEAK_THRESHOLD) {
-            if (!abovePeak && now - lastStepMs > MIN_STEP_INTERVAL_MS) {
-                abovePeak = true;
+        if (!abovePeak && magnitude > STEP_PEAK_THRESHOLD) {
+            abovePeak = true;
+            if (now - lastStepMs > MIN_STEP_INTERVAL_MS) {
                 lastStepMs = now;
                 addStep();
             }
-        } else if (magnitude < STEP_PEAK_THRESHOLD * 0.5f) {
+        } else if (abovePeak && magnitude < STEP_VALLEY_THRESHOLD) {
             abovePeak = false;
         }
     }

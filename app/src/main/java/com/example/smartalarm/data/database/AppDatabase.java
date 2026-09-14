@@ -2,9 +2,12 @@ package com.example.smartalarm.data.database;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.smartalarm.data.model.Alarm;
 
@@ -13,12 +16,21 @@ import com.example.smartalarm.data.model.Alarm;
  *
  * Version history:
  *  1 – khởi tạo (tất cả thuộc tính hiện tại)
+ *  2 – thêm cột shuffleRingtone
  *
  * Chỉ có một instance duy nhất trong toàn app (Singleton pattern).
  * Truy cập thông qua AppDatabase.getInstance(context).
  */
-@Database(entities = {Alarm.class}, version = 1, exportSchema = false)
+@Database(entities = {Alarm.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
+
+    /** Giữ lại báo thức người dùng đã đặt khi cập nhật app. */
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE alarms ADD COLUMN shuffleRingtone INTEGER NOT NULL DEFAULT 0");
+        }
+    };
 
     private static final String DB_NAME = "smart_alarm_db";
     private static volatile AppDatabase instance;
@@ -39,8 +51,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             DB_NAME
                     )
-                    // Nếu sau này cần migration, thêm .addMigrations(MIGRATION_1_2) ở đây
-                    .fallbackToDestructiveMigration() // chỉ dùng khi dev, xóa khi release
+                    .addMigrations(MIGRATION_1_2)
                     .build();
                 }
             }

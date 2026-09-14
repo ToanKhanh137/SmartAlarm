@@ -123,6 +123,34 @@
                     <TextView android:id="@+id/daySun" style="@style/DayChipLarge" android:text="@string/day_sun"/>
                 </LinearLayout>
 
+                <!-- Chọn nhanh các kiểu lặp thường dùng -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="14dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRepeatOnce"
+                        style="@style/RepeatPreset"
+                        android:text="@string/repeat_once"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRepeatWeekdays"
+                        style="@style/RepeatPreset"
+                        android:text="@string/repeat_weekdays"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRepeatWeekend"
+                        style="@style/RepeatPreset"
+                        android:text="@string/repeat_weekend"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRepeatDaily"
+                        style="@style/RepeatPreset"
+                        android:text="@string/repeat_everyday"/>
+                </LinearLayout>
+
             </LinearLayout>
         </ScrollView>
 
@@ -146,12 +174,15 @@
                     android:background="@color/bg_card" android:orientation="horizontal"
                     android:gravity="center_vertical" android:paddingHorizontal="16dp"
                     android:id="@+id/rowRingtone">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="1" android:textColor="@color/text_primary"
-                        android:text="@string/ringtone_default" android:textSize="16sp"/>
-                    <TextView android:id="@+id/tvRingtoneName" android:layout_width="wrap_content"
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"
+                        android:text="@string/ringtone_label" android:textSize="16sp"/>
+                    <TextView android:id="@+id/tvRingtoneName" android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content" android:textColor="@color/text_secondary"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" android:text="@string/ringtone_default"
+                        android:gravity="end" android:maxLines="1" android:ellipsize="end"
+                        android:layout_marginStart="12dp"/>
                 </LinearLayout>
 
                 <!-- Âm lượng -->
@@ -171,6 +202,25 @@
                         android:textColor="@color/text_primary" android:textSize="16sp"/>
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchGradual" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Ngẫu nhiên nhạc mỗi lần reo -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingVertical="10dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:text="@string/shuffle_ringtone_label"
+                            android:textColor="@color/text_primary" android:textSize="16sp"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:text="@string/shuffle_ringtone_desc"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchShuffle" android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 

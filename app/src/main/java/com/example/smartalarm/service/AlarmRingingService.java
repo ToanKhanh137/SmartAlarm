@@ -43,6 +43,12 @@ public class AlarmRingingService extends Service {
     /** Dừng hẳn báo thức. Dùng thay stopService() để tránh race khi service đang load DB. */
     public static final String ACTION_STOP = "com.example.smartalarm.service.STOP";
 
+    /**
+     * Phát khi báo thức bắt đầu reo, để Activity đang mở nhảy sang màn hình báo thức
+     * ngay lập tức (onResume không chạy lại nếu Activity vốn đã ở tiền cảnh).
+     */
+    public static final String ACTION_RINGING_STARTED = "com.example.smartalarm.service.RINGING_STARTED";
+
     private static final int NOTIF_ID_RINGING = 1001;
 
     // Tăng âm lượng dần trong 60 giây
@@ -139,8 +145,21 @@ public class AlarmRingingService extends Service {
         // 2. Force start Activity để đảm bảo UI luôn hiện
         Intent fullScreenIntent = new Intent(this, RingActivity.class);
         fullScreenIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
-        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
-        startActivity(fullScreenIntent);
+        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_NO_USER_ACTION
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try {
+            startActivity(fullScreenIntent);
+        } catch (Exception e) {
+            // Bị hạn chế mở Activity từ nền – full-screen intent của notification sẽ lo
+            Log.w(TAG, "Không mở được RingActivity trực tiếp", e);
+        }
+
+        // Activity nào đang mở thì tự nhảy sang màn hình báo thức
+        Intent started = new Intent(ACTION_RINGING_STARTED);
+        started.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
+        started.setPackage(getPackageName());
+        sendBroadcast(started);
 
         // 3. Phát nhạc
         startMedia(alarm);
@@ -165,13 +184,36 @@ public class AlarmRingingService extends Service {
         if ("silent".equals(alarm.ringtoneUri)) return;
 
         Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        boolean hasCustom = alarm.ringtoneUri != null && !alarm.ringtoneUri.isEmpty();
-        Uri wanted = hasCustom ? Uri.parse(alarm.ringtoneUri) : defaultUri;
+
+        Uri wanted = null;
+        boolean hasCustom = false;
+        if (alarm.shuffleRingtone) {
+            wanted = pickRandomAlarmSound();
+            hasCustom = wanted != null;
+        }
+        if (wanted == null) {
+            hasCustom = alarm.ringtoneUri != null && !alarm.ringtoneUri.isEmpty();
+            wanted = hasCustom ? Uri.parse(alarm.ringtoneUri) : defaultUri;
+        }
 
         if (!play(alarm, wanted) && hasCustom) {
             // Nhạc người dùng chọn không đọc được (thường do thiếu quyền READ_MEDIA_AUDIO)
             Log.w(TAG, "Không phát được nhạc chuông đã chọn, dùng mặc định: " + alarm.ringtoneUri);
             play(alarm, defaultUri);
+        }
+    }
+
+    /** Chọn ngẫu nhiên một nhạc báo thức của hệ thống. null nếu máy không có gì để chọn. */
+    private Uri pickRandomAlarmSound() {
+        try {
+            RingtoneManager manager = new RingtoneManager(this);
+            manager.setType(RingtoneManager.TYPE_ALARM);
+            int count = manager.getCursor().getCount();
+            if (count <= 0) return null;
+            return manager.getRingtoneUri(new java.util.Random().nextInt(count));
+        } catch (Exception e) {
+            Log.w(TAG, "Không lấy được danh sách nhạc báo thức để shuffle", e);
+            return null;
         }
     }
 
@@ -322,17 +364,21 @@ public class AlarmRingingService extends Service {
         AppPreferences prefs = AppPreferences.getInstance(this);
         boolean plainAlarm = alarm.challengeType == Alarm.CHALLENGE_NONE;
 
-        if (prefs.isSnoozeEnabled() && plainAlarm) {
+        if (prefs.isSnoozeEnabled()) {
             builder.addAction(R.drawable.ic_snooze,
                     localeContext.getString(R.string.notification_action_snooze), snoozePI);
         }
 
-        // Luôn có đường tắt báo thức từ notification: nếu challenge bị lỗi
-        // (mất quyền camera, cảm biến không hoạt động) người dùng vẫn tắt được.
-        builder.addAction(R.drawable.ic_dismiss,
-                localeContext.getString(plainAlarm
-                        ? R.string.notification_action_dismiss
-                        : R.string.notification_action_emergency), dismissPI);
+        // Chỉ báo thức không có thử thách mới tắt được thẳng từ notification.
+        // Báo thức có thử thách phải mở màn hình thử thách (ở đó vẫn có nút bỏ qua
+        // sau 60 giây nếu cảm biến/quyền có vấn đề), nếu không thì thử thách vô nghĩa.
+        if (plainAlarm) {
+            builder.addAction(R.drawable.ic_dismiss,
+                    localeContext.getString(R.string.notification_action_dismiss), dismissPI);
+        } else {
+            builder.addAction(R.drawable.ic_alarm,
+                    localeContext.getString(R.string.notification_action_open), fullScreenPI);
+        }
 
         return builder.build();
     }

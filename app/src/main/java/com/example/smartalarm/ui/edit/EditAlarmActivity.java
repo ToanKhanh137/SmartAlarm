@@ -112,6 +112,7 @@ public class EditAlarmActivity extends BaseActivity {
         b.seekVolume.setProgress(alarm.volume);
         b.switchGradual.setChecked(alarm.gradualVolume);
         b.switchVibrate.setChecked(alarm.vibrate);
+        b.switchShuffle.setChecked(alarm.shuffleRingtone);
         b.pickerSnooze.setValue(alarm.snoozeMinutes);
 
         // Ringtone name
@@ -200,6 +201,17 @@ public class EditAlarmActivity extends BaseActivity {
                 refreshDayChips();
             });
         }
+
+        // T2..T6 là index 0..4, T7 và CN là 5, 6
+        b.btnRepeatOnce.setOnClickListener(v -> setDays(false, false, false, false, false, false, false));
+        b.btnRepeatWeekdays.setOnClickListener(v -> setDays(true, true, true, true, true, false, false));
+        b.btnRepeatWeekend.setOnClickListener(v -> setDays(false, false, false, false, false, true, true));
+        b.btnRepeatDaily.setOnClickListener(v -> setDays(true, true, true, true, true, true, true));
+    }
+
+    private void setDays(boolean... days) {
+        System.arraycopy(days, 0, daySelected, 0, daySelected.length);
+        refreshDayChips();
     }
 
     private void refreshDayChips() {
@@ -441,6 +453,7 @@ public class EditAlarmActivity extends BaseActivity {
         alarm.volume        = b.seekVolume.getProgress();
         alarm.gradualVolume = b.switchGradual.isChecked();
         alarm.vibrate       = b.switchVibrate.isChecked();
+        alarm.shuffleRingtone = b.switchShuffle.isChecked();
         alarm.snoozeMinutes = b.pickerSnooze.getValue();
 
         // Bước 3: Challenge

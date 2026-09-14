@@ -72,6 +72,8 @@ public class Alarm {
     public int volume;          // 0–100
     public boolean gradualVolume; // tăng âm lượng dần trong 60 giây
     public boolean vibrate;
+    /** Mỗi lần reo chọn ngẫu nhiên một nhạc báo thức của hệ thống, bỏ qua ringtoneUri. */
+    public boolean shuffleRingtone;
 
     // ===== SNOOZE =====
     public int snoozeMinutes;   // số phút hoãn, mặc định 5
@@ -127,6 +129,7 @@ public class Alarm {
         volume = 80;
         gradualVolume = false;
         vibrate = true;
+        shuffleRingtone = false;
         snoozeMinutes = 5;
         autoAction = AUTO_NONE;
         autoAfterMinutes = 5;
