@@ -1,21 +1,19 @@
 package com.example.smartalarm.ui.edit;
 
-import android.media.RingtoneManager;
+import android.Manifest;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.view.View;
-import android.widget.NumberPicker;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.smartalarm.R;
 import com.example.smartalarm.data.model.Alarm;
@@ -37,6 +35,12 @@ public class EditAlarmActivity extends BaseActivity {
 
     public static final String EXTRA_ALARM_ID = "alarm_id";
     private static final int REQUEST_RINGTONE = 2001;
+    private static final int PERM_CAMERA = 302;
+    private static final int PERM_ACTIVITY = 301;
+    private static final int PERM_AUDIO = 303;
+
+    private static final int MATH_QUESTIONS_MIN = 1;
+    private static final int MATH_QUESTIONS_MAX = 15;
 
     private ActivityEditAlarmBinding b;
     private AlarmRepository repository;
@@ -237,6 +241,9 @@ public class EditAlarmActivity extends BaseActivity {
         boolean showDiff = (radioId == R.id.rbMath || radioId == R.id.rbShake
                 || radioId == R.id.rbSquat || radioId == R.id.rbStep);
         b.llDifficulty.setVisibility(showDiff ? android.view.View.VISIBLE : android.view.View.GONE);
+
+        // Đổi loại thử thách thì phạm vi giá trị tùy chỉnh cũng khác
+        if (showDiff) refreshCustomSection();
     }
 
     private void setupChallengeRadio() {
@@ -244,74 +251,140 @@ public class EditAlarmActivity extends BaseActivity {
         b.cardChallengeMath.setOnClickListener(v  -> selectChallengeCard(R.id.rbMath));
         b.cardChallengeShake.setOnClickListener(v -> selectChallengeCard(R.id.rbShake));
         b.cardChallengeSquat.setOnClickListener(v -> selectChallengeCard(R.id.rbSquat));
+        // Xin quyền ngay lúc chọn thử thách, không đợi đến lúc báo thức reo mới xin –
+        // khi đó màn hình đang khóa và hộp thoại quyền rất dễ bị bỏ qua.
         b.cardChallengeStep.setOnClickListener(v  -> {
             selectChallengeCard(R.id.rbStep);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 301);
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                requestIfMissing(Manifest.permission.ACTIVITY_RECOGNITION, PERM_ACTIVITY);
             }
         });
         b.cardChallengeQr.setOnClickListener(v    -> {
             selectChallengeCard(R.id.rbQr);
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 302);
-            }
+            requestIfMissing(Manifest.permission.CAMERA, PERM_CAMERA);
         });
 
-        b.rgDifficulty.setOnCheckedChangeListener((group, checkedId) -> {
-            boolean showCustom = checkedId == R.id.rbCustom;
+        b.rgDifficulty.setOnCheckedChangeListener((group, checkedId) -> refreshCustomSection());
 
-            if (showCustom) {
-                  int checkedChallenge = b.rgChallenge.getCheckedRadioButtonId();
-                  if (checkedChallenge == R.id.rbMath) {
-                      b.llCustomMath.setVisibility(View.VISIBLE);
-                      b.llCustomGeneric.setVisibility(View.GONE);
-                  } else {
-                      b.llCustomMath.setVisibility(View.GONE);
-                      b.llCustomGeneric.setVisibility(View.VISIBLE);
-                  }
-              } else {
-                  b.llCustomMath.setVisibility(View.GONE);
-                  b.llCustomGeneric.setVisibility(View.GONE);
-              }
-            if (showCustom) setupCustomSlider();
-        });
-    }
-
-    private void setupCustomSlider() {
-        int checkedChallenge = b.rgChallenge.getCheckedRadioButtonId();
-        int max = 50;
-        int min = 5;
-        if (checkedChallenge == R.id.rbSquat) { max = 30; min = 3; }
-        else if (checkedChallenge == R.id.rbStep) { max = 200; min = 10; }
-        b.seekCustomValue.setMax(max - min);
-        int current = alarm != null && alarm.customValue > 0 ? alarm.customValue : (max + min) / 2;
-        b.seekCustomValue.setProgress(current - min);
-        b.tvCustomValue.setText(String.valueOf(current));
-        int finalMin = min;
         b.seekCustomValue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar s, int p, boolean f) {
-                b.tvCustomValue.setText(String.valueOf(p + finalMin));
+                b.tvCustomValue.setText(String.valueOf(p + customMin()));
+            }
+            @Override public void onStartTrackingTouch(SeekBar s) {}
+            @Override public void onStopTrackingTouch(SeekBar s) {}
+        });
+
+        b.seekMathQuestions.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar s, int p, boolean f) {
+                b.tvMathQuestions.setText(String.valueOf(p + MATH_QUESTIONS_MIN));
             }
             @Override public void onStartTrackingTouch(SeekBar s) {}
             @Override public void onStopTrackingTouch(SeekBar s) {}
         });
     }
 
+    /**
+     * Phần Tùy chỉnh hiển thị bộ điều khiển khác nhau tùy loại thử thách:
+     * Toán cần số câu hỏi + tập phép tính, các loại còn lại chỉ cần một con số.
+     */
+    private void refreshCustomSection() {
+        boolean isCustom = b.rgDifficulty.getCheckedRadioButtonId() == R.id.rbCustom;
+        boolean isMath = b.rgChallenge.getCheckedRadioButtonId() == R.id.rbMath;
+
+        b.llCustomMath.setVisibility(isCustom && isMath ? View.VISIBLE : View.GONE);
+        b.llCustomGeneric.setVisibility(isCustom && !isMath ? View.VISIBLE : View.GONE);
+
+        if (!isCustom) return;
+
+        if (isMath) {
+            b.seekMathQuestions.setMax(MATH_QUESTIONS_MAX - MATH_QUESTIONS_MIN);
+            int questions = alarm != null && alarm.difficulty == Alarm.DIFFICULTY_CUSTOM
+                    ? alarm.mathQuestionCount() : 3;
+            questions = clamp(questions, MATH_QUESTIONS_MIN, MATH_QUESTIONS_MAX);
+            b.seekMathQuestions.setProgress(questions - MATH_QUESTIONS_MIN);
+            b.tvMathQuestions.setText(String.valueOf(questions));
+
+            int ops = alarm != null && alarm.difficulty == Alarm.DIFFICULTY_CUSTOM
+                    ? alarm.mathOpsMask() : Alarm.OPS_DEFAULT;
+            b.cbMathAdd.setChecked((ops & Alarm.OP_ADD) != 0);
+            b.cbMathSub.setChecked((ops & Alarm.OP_SUB) != 0);
+            b.cbMathMul.setChecked((ops & Alarm.OP_MUL) != 0);
+            b.cbMathDiv.setChecked((ops & Alarm.OP_DIV) != 0);
+        } else {
+            int min = customMin(), max = customMax();
+            b.seekCustomValue.setMax(max - min);
+            int current = alarm != null && alarm.difficulty == Alarm.DIFFICULTY_CUSTOM
+                    && alarm.customValue > 0 ? alarm.customValue : (max + min) / 2;
+            current = clamp(current, min, max);
+            b.seekCustomValue.setProgress(current - min);
+            b.tvCustomValue.setText(String.valueOf(current));
+        }
+    }
+
+    private int customMin() {
+        int challenge = b.rgChallenge.getCheckedRadioButtonId();
+        if (challenge == R.id.rbSquat) return 3;
+        if (challenge == R.id.rbStep) return 10;
+        return 5;
+    }
+
+    private int customMax() {
+        int challenge = b.rgChallenge.getCheckedRadioButtonId();
+        if (challenge == R.id.rbSquat) return 30;
+        if (challenge == R.id.rbStep) return 200;
+        return 50;
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private void requestIfMissing(String permission, int requestCode) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+        }
+    }
+
     // ===== RINGTONE PICKER =====
 
     private void setupRingtoneRow() {
         b.rowRingtone.setOnClickListener(v -> {
-            Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
-            if (ringtoneUri != null) {
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, ringtoneUri);
-            }
-            startActivityForResult(intent, REQUEST_RINGTONE);
+            // Không có quyền đọc nhạc thì nhạc chuông tự chọn sẽ không phát được
+            // và báo thức âm thầm quay về nhạc mặc định.
+            requestAudioPermissionIfNeeded();
+            openRingtonePicker();
         });
+    }
+
+    private void openRingtonePicker() {
+        Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+        if (ringtoneUri != null) {
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, ringtoneUri);
+        }
+        startActivityForResult(intent, REQUEST_RINGTONE);
+    }
+
+    private boolean canRead(Uri uri) {
+        // content://settings/... (nhạc mặc định hệ thống) không mở được bằng openInputStream
+        // nhưng MediaPlayer vẫn phát được, nên không coi là lỗi.
+        if ("settings".equals(uri.getAuthority())) return true;
+        try (java.io.InputStream in = getContentResolver().openInputStream(uri)) {
+            return in != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void requestAudioPermissionIfNeeded() {
+        String permission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                ? Manifest.permission.READ_MEDIA_AUDIO
+                : Manifest.permission.READ_EXTERNAL_STORAGE;
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{permission}, PERM_AUDIO);
+        }
     }
 
     @Override
@@ -324,8 +397,15 @@ public class EditAlarmActivity extends BaseActivity {
                 b.tvRingtoneName.setText(getString(R.string.ringtone_silent));
             } else {
                 this.ringtoneUri = uri;
-                android.media.Ringtone r = android.media.RingtoneManager.getRingtone(this, uri);
+                android.media.Ringtone r = RingtoneManager.getRingtone(this, uri);
                 b.tvRingtoneName.setText(r != null ? r.getTitle(this) : uri.getLastPathSegment());
+
+                // Báo ngay nếu không mở được file: lúc báo thức reo nó sẽ âm thầm
+                // quay về nhạc mặc định và rất khó hiểu tại sao.
+                if (!canRead(uri)) {
+                    Toast.makeText(this, getString(R.string.ringtone_unreadable),
+                            Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -373,15 +453,15 @@ public class EditAlarmActivity extends BaseActivity {
         else                                        alarm.challengeType = Alarm.CHALLENGE_NONE;
 
         int diffChecked = b.rgDifficulty.getCheckedRadioButtonId();
-        if (diffChecked == R.id.rbEasy)        alarm.difficulty = Alarm.DIFFICULTY_EASY;
-        else if (diffChecked == R.id.rbHard)   alarm.difficulty = Alarm.DIFFICULTY_HARD;
-        else if (diffChecked == R.id.rbCustom) {
-            alarm.difficulty  = Alarm.DIFFICULTY_CUSTOM;
-            int minVal = 5;
-            if (alarm.challengeType == Alarm.CHALLENGE_SQUAT) minVal = 3;
-            else if (alarm.challengeType == Alarm.CHALLENGE_STEP) minVal = 10;
-            alarm.customValue = b.seekCustomValue.getProgress() + minVal;
-        } else alarm.difficulty = Alarm.DIFFICULTY_MEDIUM;
+        if (diffChecked == R.id.rbEasy) {
+            alarm.difficulty = Alarm.DIFFICULTY_EASY;
+        } else if (diffChecked == R.id.rbHard) {
+            alarm.difficulty = Alarm.DIFFICULTY_HARD;
+        } else if (diffChecked == R.id.rbCustom) {
+            if (!saveCustomDifficulty()) return; // thiếu phép tính → ở lại để người dùng chọn
+        } else {
+            alarm.difficulty = Alarm.DIFFICULTY_MEDIUM;
+        }
 
         alarm.isActive = true;
 
@@ -389,5 +469,30 @@ public class EditAlarmActivity extends BaseActivity {
             setResult(RESULT_OK);
             finish();
         }));
+    }
+
+    /** Trả về false nếu người dùng chưa chọn phép tính nào cho thử thách Toán. */
+    private boolean saveCustomDifficulty() {
+        alarm.difficulty = Alarm.DIFFICULTY_CUSTOM;
+
+        if (alarm.challengeType == Alarm.CHALLENGE_MATH) {
+            int opsMask = 0;
+            if (b.cbMathAdd.isChecked()) opsMask |= Alarm.OP_ADD;
+            if (b.cbMathSub.isChecked()) opsMask |= Alarm.OP_SUB;
+            if (b.cbMathMul.isChecked()) opsMask |= Alarm.OP_MUL;
+            if (b.cbMathDiv.isChecked()) opsMask |= Alarm.OP_DIV;
+
+            if (opsMask == 0) {
+                Toast.makeText(this, getString(R.string.math_operators_required),
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            int questions = b.seekMathQuestions.getProgress() + MATH_QUESTIONS_MIN;
+            alarm.customValue = Alarm.packMathCustom(opsMask, questions);
+        } else {
+            alarm.customValue = b.seekCustomValue.getProgress() + customMin();
+        }
+        return true;
     }
 }

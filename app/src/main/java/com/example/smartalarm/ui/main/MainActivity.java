@@ -1,20 +1,16 @@
 package com.example.smartalarm.ui.main;
 
 import android.content.Intent;
-import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.content.SharedPreferences;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.util.ArrayList;
-import java.util.List;
-
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.smartalarm.R;
@@ -26,11 +22,9 @@ import com.example.smartalarm.ui.common.BaseActivity;
 import com.example.smartalarm.ui.edit.EditAlarmActivity;
 import com.example.smartalarm.ui.settings.SettingsActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import android.os.CountDownTimer;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,6 +44,7 @@ public class MainActivity extends BaseActivity
     private static final int TAB_STOPWATCH = 3;
 
     public static final int REQUEST_EDIT_ALARM = 1001;
+    private static final int PERM_REQUEST = 100;
 
     // ===== VIEW BINDING =====
     private ActivityMainBinding binding;
@@ -92,22 +87,32 @@ public class MainActivity extends BaseActivity
         checkPermissions();
     }
 
+    /**
+     * Chỉ xin những quyền đã khai báo trong manifest và hợp lệ với API level đang chạy.
+     * Gộp một quyền chưa khai báo vào mảng sẽ làm cả lần xin quyền bị hệ thống bỏ qua
+     * mà không hiện hộp thoại nào.
+     */
     private void checkPermissions() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            String[] perms = {
-                android.Manifest.permission.POST_NOTIFICATIONS,
-                android.Manifest.permission.READ_MEDIA_AUDIO,
-                android.Manifest.permission.ACTIVITY_RECOGNITION
-            };
-            requestPermissions(perms, 100);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            String[] perms = {
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.ACTIVITY_RECOGNITION
-            };
-            requestPermissions(perms, 100);
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+        List<String> needed = new ArrayList<>();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            addIfMissing(needed, android.Manifest.permission.POST_NOTIFICATIONS);
+            addIfMissing(needed, android.Manifest.permission.READ_MEDIA_AUDIO);
+        } else {
+            addIfMissing(needed, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            addIfMissing(needed, android.Manifest.permission.ACTIVITY_RECOGNITION);
+        }
+
+        if (!needed.isEmpty()) {
+            ActivityCompat.requestPermissions(this, needed.toArray(new String[0]), PERM_REQUEST);
+        }
+    }
+
+    private void addIfMissing(List<String> target, String permission) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            target.add(permission);
         }
     }
 
@@ -185,13 +190,9 @@ public class MainActivity extends BaseActivity
             long diff = nearest - System.currentTimeMillis();
             long hours   = TimeUnit.MILLISECONDS.toHours(diff);
             long minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60;
-            String text;
-            if (hours > 0) {
-                text = String.format(Locale.getDefault(), "Còn %d giờ %d phút", hours, minutes);
-            } else {
-                text = String.format(Locale.getDefault(), "Còn %d phút", minutes);
-            }
-            binding.tvNextAlarm.setText(text);
+            binding.tvNextAlarm.setText(hours > 0
+                    ? getString(R.string.next_in_hours_minutes, hours, minutes)
+                    : getString(R.string.next_in_minutes, minutes));
         }
     }
 
@@ -362,9 +363,7 @@ public class MainActivity extends BaseActivity
         long m = elapsed / 60000;
         long s = (elapsed % 60000) / 1000;
         long c = (elapsed % 1000) / 10;
-        String lapText = String.format(Locale.getDefault(),
-                "Vòng %d  %02d:%02d.%02d", lapCount, m, s, c);
-        lapAdapter.addLap(lapText);
+        lapAdapter.addLap(getString(R.string.lap_format, lapCount, m, s, c));
     }
 
     // ===== LIFECYCLE CLEANUP =====

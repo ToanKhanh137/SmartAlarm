@@ -37,6 +37,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"/>
 
+    <!-- Đọc nhạc chuông người dùng chọn (Android 13+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -139,12 +142,6 @@
             android:exported="false"
             android:foregroundServiceType="mediaPlayback"/>
 
-        <!-- StepCounterService – đếm bước chân khi challenge đang chạy -->
-        <service
-            android:name=".service.StepCounterService"
-            android:exported="false"
-            android:foregroundServiceType="health"/>
-
         <!-- ===== RECEIVERS ===== -->
 
         <!-- AlarmReceiver – nhận trigger/snooze/dismiss từ AlarmManager -->
@@ -156,6 +153,7 @@
                 <action android:name="com.example.smartalarm.SNOOZE"/>
                 <action android:name="com.example.smartalarm.DISMISS"/>
                 <action android:name="com.example.smartalarm.DISABLE"/>
+                <action android:name="com.example.smartalarm.SKIP_ONCE"/>
             </intent-filter>
         </receiver>
 

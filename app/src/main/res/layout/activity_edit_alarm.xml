@@ -412,7 +412,7 @@
                         android:gravity="center_vertical" android:layout_marginTop="12dp"
                         android:visibility="gone">
                         <TextView android:id="@+id/tvCustomLabel" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:text="Giá trị:"
+                            android:layout_height="wrap_content" android:text="@string/custom_value_label"
                             android:textColor="@color/text_secondary" android:textSize="14sp"
                             android:layout_marginEnd="8dp"/>
                         <SeekBar android:id="@+id/seekCustomValue" android:layout_width="0dp"
@@ -430,7 +430,7 @@
                         android:layout_marginTop="12dp" android:visibility="gone">
                         
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Số câu hỏi" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            android:text="@string/math_questions_label" android:textColor="@color/text_secondary" android:textSize="14sp"/>
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
                             <SeekBar android:id="@+id/seekMathQuestions" android:layout_width="0dp"
@@ -444,7 +444,7 @@
                         </LinearLayout>
                         
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Phép tính" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            android:text="@string/math_operators_label" android:textColor="@color/text_secondary" android:textSize="14sp"/>
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:layout_marginTop="4dp">
                             <CheckBox android:id="@+id/cbMathAdd" android:layout_width="wrap_content"
@@ -491,7 +491,7 @@
             android:layout_weight="2"
             android:text="@string/next"
             android:backgroundTint="@color/accent"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/text_on_accent"
             app:cornerRadius="12dp"/>
     </LinearLayout>
 
