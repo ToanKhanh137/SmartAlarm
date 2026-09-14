@@ -1,50 +1,51 @@
 package com.example.smartalarm.ui.challenge;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Button;
-import android.view.View;
-
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.example.smartalarm.R;
-import com.example.smartalarm.data.database.AppDatabase;
 import com.example.smartalarm.data.model.Alarm;
-import com.example.smartalarm.service.AlarmReceiver;
-import com.example.smartalarm.ui.common.BaseActivity;
-
-import java.util.concurrent.Executors;
 
 /**
  * StepChallengeActivity – đi X bước để tắt báo thức.
- * Dùng TYPE_STEP_COUNTER để lấy tổng số bước từ lúc boot, dùng baseline để tính toán số bước thực tế đã đi được sau khi báo thức kêu.
+ *
+ * Dùng TYPE_STEP_DETECTOR: mỗi bước là một event nên chỉ cần cộng dồn.
+ * (TYPE_STEP_COUNTER trả về tổng số bước từ lúc boot và event đầu tiên có thể là
+ * giá trị cũ đã cache, khiến bộ đếm nhảy vọt ngay khi vừa bước vài bước.)
+ *
+ * Nếu máy không có step detector, hoặc chưa có quyền ACTIVITY_RECOGNITION,
+ * sẽ chuyển sang đếm bằng accelerometer – cách này không cần quyền nên thử thách
+ * không bao giờ bị kẹt vì thiếu quyền.
  */
-public class StepChallengeActivity extends BaseActivity implements SensorEventListener {
-    private Handler fallbackHandler = new Handler(Looper.getMainLooper());
-    private Runnable fallbackRunnable;
+public class StepChallengeActivity extends ChallengeActivity implements SensorEventListener {
 
-
-    private static final int PERM_REQUEST_CODE = 301;
+    // Đếm bằng accelerometer: ngưỡng và nhịp bước tối thiểu
+    private static final float STEP_PEAK_THRESHOLD = 3.2f;
+    private static final long  MIN_STEP_INTERVAL_MS = 260;
+    private static final float ALPHA = 0.2f;
 
     private SensorManager sensorManager;
-    private Sensor stepCounter;
+    private Sensor stepSensor;
+    private boolean usingAccelerometer;
 
-    private int alarmId;
-    private int targetSteps;
+    private int targetSteps = 50;
     private int stepCount = 0;
-    private int baseline = -1;
+
+    // State cho bộ đếm accelerometer
+    private final float[] gravity = new float[3];
+    private long lastStepMs = 0;
+    private boolean abovePeak = false;
 
     private TextView tvInstruction, tvProgress, tvHint;
     private ProgressBar progressBar;
@@ -52,65 +53,51 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        fallbackRunnable = () -> {
-            Button btnFallback = new Button(this);
-            btnFallback.setText("Bỏ qua thử thách");
-            btnFallback.setBackgroundColor(android.graphics.Color.RED);
-            btnFallback.setTextColor(android.graphics.Color.WHITE);
-            btnFallback.setOnClickListener(v -> dismissAlarm());
-            
-            // Add to root layout
-            android.view.ViewGroup root = (android.view.ViewGroup) ((android.view.ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-            if (root instanceof android.widget.LinearLayout) {
-                root.addView(btnFallback);
-            } else if (root instanceof android.widget.RelativeLayout) {
-                android.widget.RelativeLayout.LayoutParams params = new android.widget.RelativeLayout.LayoutParams(
-                    android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 
-                    android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
-                params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
-                root.addView(btnFallback, params);
-            }
-        };
-        fallbackHandler.postDelayed(fallbackRunnable, 60000); // 60 seconds timeout
-
         setContentView(R.layout.activity_challenge_step);
 
-        alarmId = getIntent().getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, -1);
         tvInstruction = findViewById(R.id.tvInstruction);
         tvProgress    = findViewById(R.id.tvProgress);
         tvHint        = findViewById(R.id.tvHint);
         progressBar   = findViewById(R.id.progressBar);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        stepCounter  = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        pickSensor();
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            Alarm alarm = AppDatabase.getInstance(this).alarmDao().getByIdSync(alarmId);
-            targetSteps = alarm != null ? alarm.getEffectiveCount() : 50;
-            if (targetSteps <= 0) targetSteps = 50;
-            runOnUiThread(() -> {
-                tvInstruction.setText(getString(R.string.step_instruction, targetSteps));
-                tvHint.setText(getString(R.string.step_hint));
-                progressBar.setMax(targetSteps);
-                updateUI();
-            });
-        });
+        setupChallenge();
+    }
 
-        // Xin quyền ACTIVITY_RECOGNITION (Android 10+)
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACTIVITY_RECOGNITION},
-                    PERM_REQUEST_CODE);
+    /** Chọn step detector nếu dùng được, nếu không thì accelerometer. */
+    private void pickSensor() {
+        if (hasActivityPermission()) {
+            stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         }
+        if (stepSensor == null) {
+            stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            usingAccelerometer = true;
+        }
+    }
+
+    private boolean hasActivityPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return true;
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    protected void onAlarmLoaded(@Nullable Alarm alarm) {
+        targetSteps = effectiveCount(alarm, 50);
+        tvInstruction.setText(getString(R.string.step_instruction, targetSteps));
+        tvHint.setText(getString(R.string.step_hint));
+        progressBar.setMax(targetSteps);
+        updateUI();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (stepCounter != null)
-            sensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_UI);
+        if (stepSensor != null) {
+            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     @Override
@@ -121,18 +108,48 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            int totalSteps = (int) event.values[0];
-            if (baseline == -1) {
-                baseline = totalSteps;
+        if (usingAccelerometer) {
+            detectStepFromAccelerometer(event);
+        } else if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            // Mỗi event là đúng 1 bước
+            addStep();
+        }
+    }
+
+    /**
+     * Đếm bước bằng biên độ gia tốc: mỗi lần vượt ngưỡng rồi tụt xuống là 1 bước,
+     * kèm khoảng cách tối thiểu giữa 2 bước để không đếm trùng do rung lắc.
+     */
+    private void detectStepFromAccelerometer(SensorEvent event) {
+        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
+
+        for (int i = 0; i < 3; i++) {
+            gravity[i] = (1 - ALPHA) * gravity[i] + ALPHA * event.values[i];
+        }
+        float dx = event.values[0] - gravity[0];
+        float dy = event.values[1] - gravity[1];
+        float dz = event.values[2] - gravity[2];
+        float magnitude = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        long now = System.currentTimeMillis();
+        if (magnitude > STEP_PEAK_THRESHOLD) {
+            if (!abovePeak && now - lastStepMs > MIN_STEP_INTERVAL_MS) {
+                abovePeak = true;
+                lastStepMs = now;
+                addStep();
             }
-            stepCount = totalSteps - baseline;
-            if (stepCount < 0) stepCount = 0;
-            
-            runOnUiThread(() -> {
-                updateUI();
-                if (stepCount >= targetSteps) dismissAlarm();
-            });
+        } else if (magnitude < STEP_PEAK_THRESHOLD * 0.5f) {
+            abovePeak = false;
+        }
+    }
+
+    private void addStep() {
+        if (stepCount >= targetSteps) return;
+        stepCount++;
+        updateUI();
+        if (stepCount >= targetSteps) {
+            sensorManager.unregisterListener(this);
+            dismissAlarm();
         }
     }
 
@@ -141,26 +158,6 @@ public class StepChallengeActivity extends BaseActivity implements SensorEventLi
         progressBar.setProgress(stepCount);
     }
 
-    private void dismissAlarm() {
-        sensorManager.unregisterListener(this);
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.setAction(AlarmReceiver.ACTION_DISMISS);
-        intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId);
-        sendBroadcast(intent);
-        finishAffinity();
-    }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
-    @Override
-    public void onBackPressed() {}
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (fallbackHandler != null && fallbackRunnable != null) {
-            fallbackHandler.removeCallbacks(fallbackRunnable);
-        }
-    }
 }

@@ -33,6 +33,17 @@ public class Alarm {
     public static final int DIFFICULTY_HARD   = 2;
     public static final int DIFFICULTY_CUSTOM = 3;
 
+    // ===== CONSTANTS – phép tính cho MATH custom (bitmask) =====
+    public static final int OP_ADD = 1;
+    public static final int OP_SUB = 2;
+    public static final int OP_MUL = 4;
+    public static final int OP_DIV = 8;
+
+    /** Tập phép tính mặc định khi người dùng chưa chọn gì: cộng và trừ. */
+    public static final int OPS_DEFAULT = OP_ADD | OP_SUB;
+
+    private static final int MATH_OPS_MULTIPLIER = 1000;
+
     // ===== CONSTANTS – auto action =====
     public static final int AUTO_NONE    = 0;
     public static final int AUTO_SNOOZE  = 1;
@@ -151,6 +162,9 @@ public class Alarm {
      * Dùng khi người dùng chọn Easy/Medium/Hard (không phải Custom).
      */
     public int getEffectiveCount() {
+        // MATH không dùng số lần: customValue của nó là giá trị đóng gói,
+        // đọc qua mathQuestionCount() / mathOpsMask().
+        if (challengeType == CHALLENGE_MATH) return 0;
         if (difficulty == DIFFICULTY_CUSTOM) return customValue;
         switch (challengeType) {
             case CHALLENGE_SHAKE:
@@ -162,6 +176,26 @@ public class Alarm {
             default:
                 return 0;
         }
+    }
+
+    /**
+     * MATH custom cần lưu 2 thông tin (tập phép tính + số câu hỏi) trong một cột int,
+     * nên đóng gói dạng opsMask * 1000 + questionCount.
+     */
+    public static int packMathCustom(int opsMask, int questionCount) {
+        return opsMask * MATH_OPS_MULTIPLIER + questionCount;
+    }
+
+    /** Số câu hỏi phải trả lời đúng khi độ khó là Custom. */
+    public int mathQuestionCount() {
+        int count = customValue % MATH_OPS_MULTIPLIER;
+        return count > 0 ? count : 5;
+    }
+
+    /** Bitmask các phép tính được dùng khi độ khó là Custom. */
+    public int mathOpsMask() {
+        int mask = customValue / MATH_OPS_MULTIPLIER;
+        return mask > 0 ? mask : OPS_DEFAULT;
     }
 
     /**

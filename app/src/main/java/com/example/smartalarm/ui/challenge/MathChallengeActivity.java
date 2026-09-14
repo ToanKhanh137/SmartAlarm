@@ -2,251 +2,297 @@ package com.example.smartalarm.ui.challenge;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.example.smartalarm.R;
-import com.example.smartalarm.data.database.AppDatabase;
 import com.example.smartalarm.data.model.Alarm;
 import com.example.smartalarm.service.AlarmReceiver;
-import com.example.smartalarm.ui.common.BaseActivity;
-import com.example.smartalarm.ui.ring.RingActivity;
-import com.example.smartalarm.ui.ring.RingActivity;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executors;
 
 /**
  * MathChallengeActivity – giải toán để tắt báo thức.
  *
  * Adaptive difficulty:
- *  - Sai 1–2 lần: Toast "Thử lại"
- *  - Sai 3 lần: tự giảm 1 bậc độ khó + thông báo
+ *  - Sai 1–2 lần: nhắc thử lại
+ *  - Sai 3 lần: tự giảm 1 bậc độ khó
  *  - Sai 5+ lần: hỏi có muốn chuyển sang Lắc không
  */
-public class MathChallengeActivity extends BaseActivity {
+public class MathChallengeActivity extends ChallengeActivity {
 
-    private int alarmId;
-    private int currentDifficulty;
+    private static final int WRONG_REDUCE_AT = 3;
+    private static final int WRONG_OFFER_SWITCH_AT = 5;
+
+    private int currentDifficulty = Alarm.DIFFICULTY_MEDIUM;
+    private int opsMask = Alarm.OPS_DEFAULT;
     private int wrongCount = 0;
-    private int customOpsMask = 3;
 
-    private TextView tvInstruction, tvQuestion, tvAttempts;
-    private EditText etAnswer;
-    private Button btnSubmit;
-
-    private int correctAnswer;
-    private final Random random = new Random();
     private int targetCount = 1;
     private int currentCorrect = 0;
-    
-    private Handler fallbackHandler = new Handler(Looper.getMainLooper());
-    private Runnable fallbackRunnable;
+    private int correctAnswer;
+
+    private TextView tvInstruction, tvQuestion, tvAttempts, tvProgress;
+    private TextInputEditText etAnswer;
+    private MaterialButton btnSubmit;
+    private ProgressBar progressBar;
+
+    private final Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenge_math);
 
-        alarmId = getIntent().getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, -1);
-        
-        fallbackRunnable = () -> {
-            Button btnFallback = new Button(this);
-            btnFallback.setText("Bỏ qua thử thách");
-            btnFallback.setBackgroundColor(android.graphics.Color.RED);
-            btnFallback.setTextColor(android.graphics.Color.WHITE);
-            btnFallback.setOnClickListener(v -> dismissAlarm());
-            
-            android.view.ViewGroup root = (android.view.ViewGroup) ((android.view.ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-            if (root instanceof android.widget.LinearLayout) {
-                root.addView(btnFallback);
-            } else if (root instanceof android.widget.RelativeLayout) {
-                android.widget.RelativeLayout.LayoutParams params = new android.widget.RelativeLayout.LayoutParams(
-                    android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 
-                    android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
-                params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
-                root.addView(btnFallback, params);
-            }
-        };
-        fallbackHandler.postDelayed(fallbackRunnable, 60000);
-
         tvInstruction = findViewById(R.id.tvInstruction);
         tvQuestion    = findViewById(R.id.tvQuestion);
         tvAttempts    = findViewById(R.id.tvAttempts);
+        tvProgress    = findViewById(R.id.tvProgress);
         etAnswer      = findViewById(R.id.etAnswer);
         btnSubmit     = findViewById(R.id.btnSubmit);
+        progressBar   = findViewById(R.id.progressBar);
 
         tvInstruction.setText(getString(R.string.math_instruction));
-        tvAttempts.setVisibility(View.GONE);
-
-        // Load difficulty từ DB
-        Executors.newSingleThreadExecutor().execute(() -> {
-            Alarm alarm = AppDatabase.getInstance(this).alarmDao().getByIdSync(alarmId);
-            currentDifficulty = alarm != null ? alarm.difficulty : Alarm.DIFFICULTY_MEDIUM;
-            
-            if (currentDifficulty == Alarm.DIFFICULTY_CUSTOM && alarm != null) {
-                int val = alarm.customValue;
-                targetCount = val > 0 ? (val % 1000) : 5;
-                customOpsMask = val > 0 ? (val / 1000) : 3;
-            } else if (currentDifficulty == Alarm.DIFFICULTY_HARD) {
-                targetCount = 3;
+        btnSubmit.setOnClickListener(v -> checkAnswer());
+        etAnswer.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                checkAnswer();
+                return true;
             }
-            
-            runOnUiThread(() -> {
-                updateInstruction();
-                generateQuestion();
-            });
+            return false;
         });
 
-        btnSubmit.setOnClickListener(v -> checkAnswer());
+        setupChallenge();
     }
 
-    private void updateInstruction() {
-        if (targetCount > 1) {
-            tvInstruction.setText(getString(R.string.math_instruction) + " (" + currentCorrect + "/" + targetCount + ")");
+    @Override
+    protected void onAlarmLoaded(@Nullable Alarm alarm) {
+        currentDifficulty = alarm != null ? alarm.difficulty : Alarm.DIFFICULTY_MEDIUM;
+
+        if (currentDifficulty == Alarm.DIFFICULTY_CUSTOM && alarm != null) {
+            targetCount = alarm.mathQuestionCount();
+            opsMask = alarm.mathOpsMask();
+        } else if (currentDifficulty == Alarm.DIFFICULTY_HARD) {
+            targetCount = 3;
         } else {
-            tvInstruction.setText(getString(R.string.math_instruction));
+            targetCount = 1;
+        }
+
+        progressBar.setMax(targetCount);
+        updateProgress();
+        generateQuestion();
+    }
+
+    private void updateProgress() {
+        boolean multi = targetCount > 1;
+        tvProgress.setVisibility(multi ? View.VISIBLE : View.GONE);
+        progressBar.setVisibility(multi ? View.VISIBLE : View.GONE);
+        if (multi) {
+            tvProgress.setText(getString(R.string.math_progress,
+                    Math.min(currentCorrect + 1, targetCount), targetCount));
+            progressBar.setProgress(currentCorrect);
         }
     }
+
+    // ===== SINH ĐỀ =====
 
     private void generateQuestion() {
-        String question;
-        int diffToUse = currentDifficulty;
-        if (diffToUse == Alarm.DIFFICULTY_CUSTOM) {
-            java.util.List<Integer> ops = new java.util.ArrayList<>();
-            if ((customOpsMask & 1) != 0) ops.add(0);
-            if ((customOpsMask & 2) != 0) ops.add(1);
-            if ((customOpsMask & 4) != 0) ops.add(2);
-            if ((customOpsMask & 8) != 0) ops.add(3);
-            if (ops.isEmpty()) ops.add(0);
-            
-            int op = ops.get(random.nextInt(ops.size()));
-            int a, b;
-            if (op == 0 || op == 1) {
-                a = random.nextInt(90) + 10;
-                b = random.nextInt(90) + 10;
-            } else {
-                a = random.nextInt(10) + 2;
-                b = random.nextInt(10) + 2;
-            }
-            
-            if (op == 0) {
-                correctAnswer = a + b;
-                question = a + " + " + b + " = ?";
-            } else if (op == 1) {
-                if (a < b) { int t = a; a = b; b = t; }
-                correctAnswer = a - b;
-                question = a + " − " + b + " = ?";
-            } else if (op == 2) {
-                correctAnswer = a * b;
-                question = a + " × " + b + " = ?";
-            } else {
-                correctAnswer = a;
-                a = a * b;
-                question = a + " ÷ " + b + " = ?";
-            }
-        } else {
-            switch (diffToUse) {
-                case Alarm.DIFFICULTY_EASY:
-                    int a1 = random.nextInt(10) + 1;
-                    int b1 = random.nextInt(10) + 1;
-                    if (random.nextBoolean()) {
-                        question = a1 + " + " + b1 + " = ?";
-                        correctAnswer = a1 + b1;
-                    } else {
-                        int big = Math.max(a1, b1), small = Math.min(a1, b1);
-                        question = big + " − " + small + " = ?";
-                        correctAnswer = big - small;
-                    }
-                    break;
-    
-                case Alarm.DIFFICULTY_HARD:
-                    int a3 = random.nextInt(19) + 2;
-                    int b3 = random.nextInt(19) + 2;
-                    int c3 = random.nextInt(99) + 1;
-                    boolean add = random.nextBoolean();
-                    question = "(" + a3 + " × " + b3 + ") " + (add ? "+ " : "− ") + c3 + " = ?";
-                    correctAnswer = add ? (a3 * b3 + c3) : (a3 * b3 - c3);
-                    break;
-    
-                default: // MEDIUM (1)
-                    if (random.nextBoolean()) {
-                        int a2 = random.nextInt(90) + 10;
-                        int b2 = random.nextInt(8) + 2;
-                        question = a2 + " × " + b2 + " = ?";
-                        correctAnswer = a2 * b2;
-                    } else {
-                        int a2 = random.nextInt(90) + 10;
-                        int b2 = random.nextInt(90) + 10;
-                        int c2 = random.nextInt(90) + 10;
-                        question = a2 + " + " + b2 + " + " + c2 + " = ?";
-                        correctAnswer = a2 + b2 + c2;
-                    }
-                    break;
-            }
-        }
+        String question = currentDifficulty == Alarm.DIFFICULTY_CUSTOM
+                ? buildCustomQuestion()
+                : buildQuestionForDifficulty(currentDifficulty);
+
         tvQuestion.setText(question);
         etAnswer.setText("");
         etAnswer.requestFocus();
     }
 
+    private String buildQuestionForDifficulty(int difficulty) {
+        switch (difficulty) {
+            case Alarm.DIFFICULTY_EASY:   return buildEasy();
+            case Alarm.DIFFICULTY_HARD:   return buildHard();
+            default:                      return buildMedium();
+        }
+    }
+
+    /** Hai toán hạng, cộng hoặc trừ, số nhỏ. */
+    private String buildEasy() {
+        int a = rand(2, 20);
+        int b = rand(2, 20);
+        if (random.nextBoolean()) {
+            correctAnswer = a + b;
+            return a + " + " + b + " = ?";
+        }
+        int big = Math.max(a, b), small = Math.min(a, b);
+        correctAnswer = big - small;
+        return big + " − " + small + " = ?";
+    }
+
+    /** Ba toán hạng, có nhân – không nhẩm ngay được nhưng vẫn làm trong đầu. */
+    private String buildMedium() {
+        switch (random.nextInt(3)) {
+            case 0: {
+                int a = rand(11, 29), b = rand(3, 9), c = rand(10, 99);
+                boolean add = random.nextBoolean();
+                correctAnswer = add ? a * b + c : a * b - c;
+                return a + " × " + b + (add ? " + " : " − ") + c + " = ?";
+            }
+            case 1: {
+                int a = rand(10, 99), b = rand(10, 99), c = rand(10, 99);
+                correctAnswer = a + b + c;
+                return a + " + " + b + " + " + c + " = ?";
+            }
+            default: {
+                int b = rand(4, 12), result = rand(6, 40);
+                int a = b * result;
+                int d = rand(10, 60);
+                boolean add = random.nextBoolean();
+                correctAnswer = add ? result + d : result - d;
+                return a + " ÷ " + b + (add ? " + " : " − ") + d + " = ?";
+            }
+        }
+    }
+
+    /** Bốn toán hạng hoặc số lớn – phải tính ra giấy hoặc tỉnh hẳn mới làm được. */
+    private String buildHard() {
+        switch (random.nextInt(4)) {
+            case 0: {
+                int a = rand(12, 24), b = rand(11, 19), c = rand(5, 15), d = rand(4, 12);
+                boolean add = random.nextBoolean();
+                correctAnswer = add ? a * b + c * d : a * b - c * d;
+                return "(" + a + " × " + b + ")" + (add ? " + " : " − ") + "(" + c + " × " + d + ") = ?";
+            }
+            case 1: {
+                int a = rand(23, 59), b = rand(7, 19), c = rand(100, 999);
+                boolean add = random.nextBoolean();
+                correctAnswer = add ? a * b + c : a * b - c;
+                return a + " × " + b + (add ? " + " : " − ") + c + " = ?";
+            }
+            case 2: {
+                int c = rand(6, 16), quotient = rand(11, 40);
+                int a = c * quotient;
+                int d = rand(11, 29), e = rand(3, 9);
+                boolean add = random.nextBoolean();
+                correctAnswer = add ? quotient + d * e : quotient - d * e;
+                return "(" + a + " ÷ " + c + ")" + (add ? " + " : " − ") + "(" + d + " × " + e + ") = ?";
+            }
+            default: {
+                int a = rand(13, 39), b = rand(13, 39);
+                int c = rand(100, 500);
+                correctAnswer = a * b - c;
+                return a + " × " + b + " − " + c + " = ?";
+            }
+        }
+    }
+
+    /** Người dùng tự chọn tập phép tính trong phần Tùy chỉnh. */
+    private String buildCustomQuestion() {
+        List<Integer> ops = new ArrayList<>();
+        if ((opsMask & Alarm.OP_ADD) != 0) ops.add(Alarm.OP_ADD);
+        if ((opsMask & Alarm.OP_SUB) != 0) ops.add(Alarm.OP_SUB);
+        if ((opsMask & Alarm.OP_MUL) != 0) ops.add(Alarm.OP_MUL);
+        if ((opsMask & Alarm.OP_DIV) != 0) ops.add(Alarm.OP_DIV);
+        if (ops.isEmpty()) ops.add(Alarm.OP_ADD);
+
+        int op = ops.get(random.nextInt(ops.size()));
+        switch (op) {
+            case Alarm.OP_MUL: {
+                int a = rand(12, 39), b = rand(4, 19);
+                correctAnswer = a * b;
+                return a + " × " + b + " = ?";
+            }
+            case Alarm.OP_DIV: {
+                int b = rand(3, 19), quotient = rand(4, 40);
+                int a = b * quotient;
+                correctAnswer = quotient;
+                return a + " ÷ " + b + " = ?";
+            }
+            case Alarm.OP_SUB: {
+                int a = rand(30, 199), b = rand(10, 99);
+                int big = Math.max(a, b), small = Math.min(a, b);
+                correctAnswer = big - small;
+                return big + " − " + small + " = ?";
+            }
+            default: {
+                int a = rand(15, 199), b = rand(15, 199);
+                correctAnswer = a + b;
+                return a + " + " + b + " = ?";
+            }
+        }
+    }
+
+    private int rand(int minInclusive, int maxInclusive) {
+        return minInclusive + random.nextInt(maxInclusive - minInclusive + 1);
+    }
+
+    // ===== TRẢ LỜI =====
+
     private void checkAnswer() {
         String input = etAnswer.getText() != null ? etAnswer.getText().toString().trim() : "";
         if (input.isEmpty()) return;
 
+        int answer;
         try {
-            int answer = Integer.parseInt(input);
-            if (answer == correctAnswer) {
-                // Đúng
-                currentCorrect++;
-                if (currentCorrect >= targetCount) {
-                    Toast.makeText(this, getString(R.string.math_correct), Toast.LENGTH_SHORT).show();
-                    dismissAlarm();
-                } else {
-                    updateInstruction();
-                    generateQuestion();
-                }
-            } else {
-                // Sai
-                wrongCount++;
-                handleWrongAnswer();
-            }
+            answer = Integer.parseInt(input);
         } catch (NumberFormatException e) {
             Toast.makeText(this, getString(R.string.math_invalid_input), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (answer != correctAnswer) {
+            wrongCount++;
+            handleWrongAnswer();
+            return;
+        }
+
+        currentCorrect++;
+        if (currentCorrect >= targetCount) {
+            Toast.makeText(this, getString(R.string.math_correct), Toast.LENGTH_SHORT).show();
+            dismissAlarm();
+        } else {
+            updateProgress();
+            generateQuestion();
         }
     }
 
     private void handleWrongAnswer() {
         tvAttempts.setVisibility(View.VISIBLE);
         tvAttempts.setText(getString(R.string.math_attempts, wrongCount));
+        etAnswer.setText("");
 
-        if (wrongCount >= 5) {
-            // Đề xuất chuyển sang lắc
-            new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                    .setTitle("Khó quá?")
-                    .setMessage(getString(R.string.math_wrong_switch))
-                    .setPositiveButton(getString(R.string.math_switch_yes), (d, w) -> switchToShake())
-                    .setNegativeButton(getString(R.string.math_switch_no), (d, w) -> generateQuestion())
-                    .setCancelable(false)
-                    .show();
-        } else if (wrongCount == 3) {
-            // Giảm độ khó
-            if (currentDifficulty > Alarm.DIFFICULTY_EASY) {
-                currentDifficulty--;
-                Toast.makeText(this, getString(R.string.math_wrong_reduce), Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, getString(R.string.math_wrong), Toast.LENGTH_SHORT).show();
-            }
-            generateQuestion();
-        } else {
-            Toast.makeText(this, getString(R.string.math_wrong), Toast.LENGTH_SHORT).show();
-            etAnswer.setText("");
+        if (wrongCount >= WRONG_OFFER_SWITCH_AT) {
+            offerSwitchToShake();
+            return;
         }
+
+        if (wrongCount == WRONG_REDUCE_AT && currentDifficulty > Alarm.DIFFICULTY_EASY
+                && currentDifficulty != Alarm.DIFFICULTY_CUSTOM) {
+            currentDifficulty--;
+            Toast.makeText(this, getString(R.string.math_wrong_reduce), Toast.LENGTH_LONG).show();
+            generateQuestion();
+            return;
+        }
+
+        Toast.makeText(this, getString(R.string.math_wrong), Toast.LENGTH_SHORT).show();
+    }
+
+    private void offerSwitchToShake() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.challenge_switch_title))
+                .setMessage(getString(R.string.challenge_switch_message, wrongCount))
+                .setPositiveButton(getString(R.string.math_switch_yes), (d, w) -> switchToShake())
+                .setNegativeButton(getString(R.string.math_switch_no), (d, w) -> generateQuestion())
+                .setCancelable(false)
+                .show();
     }
 
     private void switchToShake() {
@@ -255,26 +301,4 @@ public class MathChallengeActivity extends BaseActivity {
         startActivity(intent);
         finish();
     }
-
-    private void dismissAlarm() {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.setAction(AlarmReceiver.ACTION_DISMISS);
-        intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId);
-        sendBroadcast(intent);
-        finish();
-        // Finish RingActivity cũng
-        finishAffinity();
-    }
-
-    @Override
-    public void onBackPressed() { /* Không cho back */ }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (fallbackHandler != null && fallbackRunnable != null) {
-            fallbackHandler.removeCallbacks(fallbackRunnable);
-        }
-    }
 }
-

@@ -1,64 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Layout dÃ¹ng chung cho Math/Shake/Squat/Step challenge -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:gravity="center"
-    android:background="@color/ring_bg" android:padding="32dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@color/ring_bg"
+    android:paddingHorizontal="28dp"
+    android:paddingTop="48dp"
+    android:paddingBottom="24dp">
 
-    <TextView android:id="@+id/tvInstruction" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:textSize="18sp"
-        android:textColor="@color/text_secondary" android:gravity="center"
-        android:layout_marginBottom="32dp" android:lineSpacingMultiplier="1.4"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/challenge_math"
+        android:textColor="@color/challenge_math"
+        android:textSize="13sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.14"/>
 
-    <!-- Sá»‘ lá»›n giá»¯a mÃ n hÃ¬nh (cÃ¢u toÃ¡n hoáº·c sá»‘ Ä‘áº¿m) -->
-    <TextView android:id="@+id/tvQuestion" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:textSize="56sp"
-        android:textColor="@color/text_primary" android:gravity="center"
-        android:fontFamily="sans-serif-light" android:layout_marginBottom="24dp"/>
+    <TextView android:id="@+id/tvInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:layout_marginTop="10dp"/>
 
-    <!-- Progress bar -->
-    <ProgressBar android:id="@+id/progressBar" style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent" android:layout_height="8dp"
-        android:progressTint="@color/accent" android:progressBackgroundTint="@color/bg_card"
-        android:layout_marginBottom="16dp"/>
+    <Space android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
 
-    <!-- Progress text -->
-    <TextView android:id="@+id/tvProgress" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:textSize="16sp"
-        android:textColor="@color/accent" android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+    <!-- Câu hỏi -->
+    <TextView android:id="@+id/tvQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="44sp"
+        android:textColor="@color/text_primary"
+        android:gravity="center"
+        android:fontFamily="sans-serif-medium"/>
 
-    <!-- Sá»‘ láº§n sai (Math) -->
-    <TextView android:id="@+id/tvAttempts" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:textSize="13sp"
-        android:textColor="@color/color_warning" android:gravity="center"
-        android:layout_marginBottom="16dp" android:visibility="gone"/>
+    <!-- Tiến độ nhiều câu -->
+    <TextView android:id="@+id/tvProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/accent"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
 
-    <!-- Hint text (Shake/Squat/Step) -->
-    <TextView android:id="@+id/tvHint" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:textSize="14sp"
-        android:textColor="@color/text_hint" android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+    <ProgressBar android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="160dp"
+        android:layout_height="6dp"
+        android:progressDrawable="@drawable/progress_challenge"
+        android:progressTint="@color/challenge_math"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"/>
 
-    <!-- Input answer (Math) -->
+    <!-- Ô trả lời -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilAnswer"
-        android:layout_width="200dp" android:layout_height="wrap_content"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_marginBottom="16dp">
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp">
+
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etAnswer" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:inputType="numberSigned"
-            android:textColor="@color/text_primary" android:textSize="24sp"
-            android:gravity="center" android:hint="?" android:maxLength="6"/>
+            android:id="@+id/etAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:imeOptions="actionDone"
+            android:textColor="@color/text_primary"
+            android:textSize="26sp"
+            android:gravity="center"
+            android:hint="?"
+            android:maxLength="8"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Submit button (Math) -->
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSubmit" android:layout_width="200dp" android:layout_height="52dp"
-        android:text="Kiá»ƒm tra" android:backgroundTint="@color/accent"
-        android:textColor="@color/text_primary" app:cornerRadius="12dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto"/>
+        android:id="@+id/btnSubmit"
+        android:layout_width="220dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="14dp"
+        android:text="@string/action_check"
+        android:textSize="16sp"
+        android:backgroundTint="@color/accent"
+        android:textColor="@color/text_on_accent"
+        app:cornerRadius="27dp"/>
 
+    <!-- Số lần sai -->
+    <TextView android:id="@+id/tvAttempts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="@color/color_warning"
+        android:gravity="center"
+        android:layout_marginTop="14dp"
+        android:visibility="gone"/>
+
+    <Space android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+
+    <include layout="@layout/view_challenge_skip"/>
 </LinearLayout>
-
