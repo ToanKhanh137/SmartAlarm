@@ -1,12 +1,15 @@
 package com.example.smartalarm.data.repository;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.lifecycle.LiveData;
 
 import com.example.smartalarm.data.database.AlarmDao;
 import com.example.smartalarm.data.database.AppDatabase;
 import com.example.smartalarm.data.model.Alarm;
+import com.example.smartalarm.service.AlarmReceiver;
+import com.example.smartalarm.service.AlarmRingingService;
 import com.example.smartalarm.service.AlarmScheduler;
 
 import java.util.List;
@@ -82,6 +85,10 @@ public class AlarmRepository {
      * Nếu bật: cần load alarm đầy đủ để schedule lại.
      */
     public void setActive(int alarmId, boolean active) {
+        // Tắt toggle lúc đang reo thì phải im ngay.
+        if (!active && AlarmRingingService.isRinging && AlarmRingingService.ringingAlarmId == alarmId) {
+            stopRinging(alarmId);
+        }
         executor.execute(() -> {
             dao.setActive(alarmId, active);
             if (!active) {
@@ -96,14 +103,22 @@ public class AlarmRepository {
     // ===== DELETE =====
 
     public void delete(int alarmId) {
+        // Nếu báo thức này đang reo thì phải tắt nhạc ngay, không đợi ghi DB xong.
+        if (AlarmRingingService.isRinging && AlarmRingingService.ringingAlarmId == alarmId) {
+            stopRinging(alarmId);
+        }
         executor.execute(() -> {
             scheduler.cancel(alarmId);
             dao.deleteById(alarmId);
-            
-            // Fix BUG-02: Dừng service nếu đang reo
-            android.content.Intent stopIntent = new android.content.Intent(appContext, com.example.smartalarm.service.AlarmRingingService.class);
-            appContext.stopService(stopIntent);
         });
+    }
+
+    /** Tắt báo thức đang reo (dùng khi người dùng xóa hoặc tắt báo thức lúc đang reo). */
+    private void stopRinging(int alarmId) {
+        Intent intent = new Intent(appContext, AlarmReceiver.class);
+        intent.setAction(AlarmReceiver.ACTION_DISMISS);
+        intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId);
+        appContext.sendBroadcast(intent);
     }
 
     // ===== SNOOZE =====

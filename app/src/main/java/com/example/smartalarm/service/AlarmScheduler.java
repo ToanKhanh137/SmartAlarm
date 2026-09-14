@@ -49,20 +49,7 @@ public class AlarmScheduler {
         // Đặt Upcoming Notification trước 30 phút
         long upcomingTime = triggerTime - (30 * 60 * 1000);
         if (upcomingTime > System.currentTimeMillis()) {
-            Intent upIntent = new Intent(context, UpcomingReceiver.class);
-            upIntent.setAction(UpcomingReceiver.ACTION_UPCOMING);
-            upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_ID, alarm.id);
-            upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_LABEL, alarm.label);
-            upIntent.putExtra("alarm_hour", alarm.hour);
-            upIntent.putExtra("alarm_minute", alarm.minute);
-            upIntent.putExtra("alarm_challenge_type", alarm.challengeType);
-            
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                flags |= PendingIntent.FLAG_IMMUTABLE;
-            }
-            PendingIntent piUpcoming = PendingIntent.getBroadcast(
-                    context, PENDING_INTENT_BASE + alarm.id + 10000, upIntent, flags);
+            PendingIntent piUpcoming = buildUpcomingPendingIntent(alarm, PendingIntent.FLAG_UPDATE_CURRENT);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, upcomingTime, piUpcoming);
         }
     }
@@ -80,11 +67,17 @@ public class AlarmScheduler {
 
     // ===== CANCEL =====
 
-    /** Hủy báo thức khỏi AlarmManager. */
+    /** Hủy báo thức khỏi AlarmManager, kể cả thông báo "sắp tới" đã đặt trước 30 phút. */
     public void cancel(int alarmId) {
         PendingIntent pi = buildPendingIntent(alarmId);
         alarmManager.cancel(pi);
         pi.cancel();
+
+        PendingIntent piUpcoming = buildUpcomingPendingIntent(alarmId, PendingIntent.FLAG_NO_CREATE);
+        if (piUpcoming != null) {
+            alarmManager.cancel(piUpcoming);
+            piUpcoming.cancel();
+        }
     }
 
     // ===== CALCULATE NEXT TRIGGER =====
@@ -176,5 +169,37 @@ public class AlarmScheduler {
                 intent,
                 flags
         );
+    }
+
+    private PendingIntent buildUpcomingPendingIntent(Alarm alarm, int extraFlags) {
+        Intent upIntent = new Intent(context, UpcomingReceiver.class);
+        upIntent.setAction(UpcomingReceiver.ACTION_UPCOMING);
+        upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_ID, alarm.id);
+        upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_LABEL, alarm.label);
+        upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_HOUR, alarm.hour);
+        upIntent.putExtra(UpcomingReceiver.EXTRA_ALARM_MINUTE, alarm.minute);
+        upIntent.putExtra(UpcomingReceiver.EXTRA_CHALLENGE_TYPE, alarm.challengeType);
+        return PendingIntent.getBroadcast(context,
+                upcomingRequestCode(alarm.id), upIntent, pendingFlags(extraFlags));
+    }
+
+    /** Dùng khi hủy: chỉ cần trùng requestCode + Intent component, không cần extras. */
+    private PendingIntent buildUpcomingPendingIntent(int alarmId, int extraFlags) {
+        Intent upIntent = new Intent(context, UpcomingReceiver.class);
+        upIntent.setAction(UpcomingReceiver.ACTION_UPCOMING);
+        return PendingIntent.getBroadcast(context,
+                upcomingRequestCode(alarmId), upIntent, pendingFlags(extraFlags));
+    }
+
+    private static int upcomingRequestCode(int alarmId) {
+        return PENDING_INTENT_BASE + alarmId + 10000;
+    }
+
+    private static int pendingFlags(int extraFlags) {
+        int flags = extraFlags;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        return flags;
     }
 }

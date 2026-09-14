@@ -77,10 +77,20 @@ public class AlarmReceiver extends BroadcastReceiver {
             context.startService(serviceIntent);
         }
 
-        // Schedule lần tiếp theo nếu là báo thức lặp (chạy trên background thread)
+        // Schedule lần reo tiếp theo nếu là báo thức lặp.
+        // calculateNextTrigger() tính từ "hôm nay hh:mm" – thời điểm đó vừa qua nên
+        // nó sẽ tự nhảy sang ngày được bật kế tiếp.
+        PendingResult pending = goAsync();
         new Thread(() -> {
-            AlarmRepository repo = AlarmRepository.getInstance(context);
-            // repo sẽ tự xử lý logic reschedule nếu cần
+            try {
+                Alarm alarm = com.example.smartalarm.data.database.AppDatabase
+                        .getInstance(context).alarmDao().getByIdSync(alarmId);
+                if (alarm != null && alarm.isActive && alarm.repeats()) {
+                    new AlarmScheduler(context).schedule(alarm);
+                }
+            } finally {
+                pending.finish();
+            }
         }).start();
     }
 
@@ -146,8 +156,24 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // ===== HELPER =====
 
-    private void stopRingingService(Context context) {
-        Intent stopIntent = new Intent(context, AlarmRingingService.class);
-        context.stopService(stopIntent);
+    /**
+     * Dừng báo thức qua ACTION_STOP thay vì stopService().
+     * stopService() có thể chạy khi service còn đang load alarm từ DB, khiến nhạc
+     * vẫn được bật lên sau đó và không còn service nào để tắt nó.
+     */
+    static void stopRingingService(Context context) {
+        if (AlarmRingingService.isRinging) {
+            // Service đang là foreground service nên startService() được phép,
+            // và không bị giới hạn 5 giây của startForegroundService().
+            Intent stopIntent = new Intent(context, AlarmRingingService.class);
+            stopIntent.setAction(AlarmRingingService.ACTION_STOP);
+            try {
+                context.startService(stopIntent);
+                return;
+            } catch (Exception ignored) {
+                // rơi xuống stopService bên dưới
+            }
+        }
+        context.stopService(new Intent(context, AlarmRingingService.class));
     }
 }

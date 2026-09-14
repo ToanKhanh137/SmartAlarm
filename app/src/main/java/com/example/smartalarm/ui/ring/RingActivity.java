@@ -13,6 +13,7 @@ import com.example.smartalarm.data.model.Alarm;
 import com.example.smartalarm.data.repository.AlarmRepository;
 import com.example.smartalarm.databinding.ActivityRingBinding;
 import com.example.smartalarm.service.AlarmReceiver;
+import com.example.smartalarm.service.AlarmRingingService;
 import com.example.smartalarm.settings.AppPreferences;
 import com.example.smartalarm.ui.challenge.MathChallengeActivity;
 import com.example.smartalarm.ui.challenge.QrChallengeActivity;
@@ -144,15 +145,18 @@ public class RingActivity extends BaseActivity {
         // KHÔNG finish() ở đây – challenge sẽ finish() và quay về đây, rồi đây mới finish()
     }
 
-    /** Gọi khi challenge hoàn thành (challenge Activity gọi finish → onResume được gọi) */
+    @Override
+    protected boolean isAlarmScreen() {
+        return true;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        // Nếu alarm đã được dismiss từ challenge, tự đóng
-        // Challenge Activity sẽ set result trước khi finish
+        // Báo thức đã tắt (từ challenge, notification hoặc do bị xóa) → không giữ màn hình này.
+        if (!AlarmRingingService.isRinging) finish();
     }
 
-    /** Được gọi từ Challenge Activity khi hoàn thành */
     public void doDismiss() {
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.setAction(AlarmReceiver.ACTION_DISMISS);

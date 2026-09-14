@@ -5,9 +5,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -17,13 +17,14 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.smartalarm.R;
 import com.example.smartalarm.data.model.Alarm;
-import com.example.smartalarm.data.repository.AlarmRepository;
 import com.example.smartalarm.settings.AppPreferences;
+import com.example.smartalarm.settings.LocaleHelper;
 import com.example.smartalarm.ui.ring.RingActivity;
 
 /**
@@ -31,12 +32,16 @@ import com.example.smartalarm.ui.ring.RingActivity;
  *
  * Là foreground service nên tiếp tục chạy dù app bị đóng.
  * Khi khởi động: load alarm từ DB → tạo notification → phát nhạc + rung.
- * Khi dừng: giải phóng MediaPlayer, Vibrator, Handler.
  */
 public class AlarmRingingService extends Service {
 
+    private static final String TAG = "AlarmRingingService";
+
     public static final String CHANNEL_ID_RINGING  = "alarm_ringing";
     public static final String CHANNEL_ID_UPCOMING = "alarm_upcoming";
+
+    /** Dừng hẳn báo thức. Dùng thay stopService() để tránh race khi service đang load DB. */
+    public static final String ACTION_STOP = "com.example.smartalarm.service.STOP";
 
     private static final int NOTIF_ID_RINGING = 1001;
 
@@ -47,10 +52,20 @@ public class AlarmRingingService extends Service {
     public static boolean isRinging = false;
     public static int ringingAlarmId = -1;
 
-    private MediaPlayer mediaPlayer;
+    /**
+     * MediaPlayer đang phát, giữ ở static để instance sau có thể thu hồi player mồ côi
+     * của instance trước (xảy ra nếu process bị kill giữa lúc đang phát).
+     */
+    private static MediaPlayer activePlayer;
+
     private Vibrator vibrator;
     private Handler handler;
+    private Context localeContext;
     private Alarm currentAlarm;
+
+    /** Đã có yêu cầu dừng → mọi việc còn dở (load DB xong mới phát nhạc) phải bỏ qua. */
+    private volatile boolean stopRequested = false;
+
     private int currentVolume = 0;
     private int gradualStep = 0;
 
@@ -58,128 +73,142 @@ public class AlarmRingingService extends Service {
     public void onCreate() {
         super.onCreate();
         handler = new Handler(Looper.getMainLooper());
+        localeContext = LocaleHelper.wrap(this);
+        releaseActivePlayer(); // thu hồi player mồ côi nếu có
         createNotificationChannels();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
-            stopSelf();
+            stopEverything();
+            return START_NOT_STICKY;
+        }
+
+        if (ACTION_STOP.equals(intent.getAction())) {
+            stopEverything();
             return START_NOT_STICKY;
         }
 
         int alarmId = intent.getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, -1);
         if (alarmId == -1) {
-            stopSelf();
+            stopEverything();
             return START_NOT_STICKY;
         }
 
+        stopRequested = false;
+
         // Load alarm từ database trên background thread
         new Thread(() -> {
-            // Thay bằng direct DB access:
-            currentAlarm = com.example.smartalarm.data.database.AppDatabase
+            Alarm loaded = com.example.smartalarm.data.database.AppDatabase
                     .getInstance(this).alarmDao().getByIdSync(alarmId);
 
-            if (currentAlarm == null) {
-                stopSelf();
+            if (loaded == null || stopRequested) {
+                handler.post(this::stopEverything);
                 return;
             }
-            
+
+            currentAlarm = loaded;
             isRinging = true;
             ringingAlarmId = alarmId;
-            
-            // Chuyển lên main thread để cập nhật UI và khởi động media
-            handler.post(() -> startRinging(currentAlarm));
+
+            handler.post(() -> {
+                // Người dùng có thể đã tắt/xóa báo thức trong lúc đang load DB.
+                if (stopRequested) {
+                    stopEverything();
+                    return;
+                }
+                startRinging(loaded);
+            });
         }).start();
 
-        return START_STICKY;
+        // START_NOT_STICKY: không tự khởi động lại với intent null nếu process bị kill,
+        // vì AlarmManager mới là nguồn duy nhất quyết định khi nào báo thức reo.
+        return START_NOT_STICKY;
     }
 
     // ===== START RINGING =====
 
     private void startRinging(Alarm alarm) {
-        // 1. Tạo notification full-screen (hiển thị kể cả khi màn hình khóa)
-        Notification notification = buildRingingNotification(alarm);
-        startForeground(NOTIF_ID_RINGING, notification);
+        // Bỏ các tác vụ hẹn của báo thức trước (tăng âm lượng dần, auto snooze/dismiss)
+        handler.removeCallbacksAndMessages(null);
 
-        // Force start Activity để đảm bảo UI luôn hiện
+        // 1. Notification full-screen (hiển thị kể cả khi màn hình khóa)
+        startForeground(NOTIF_ID_RINGING, buildRingingNotification(alarm));
+
+        // 2. Force start Activity để đảm bảo UI luôn hiện
         Intent fullScreenIntent = new Intent(this, RingActivity.class);
         fullScreenIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
         fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         startActivity(fullScreenIntent);
 
-        // 2. Phát nhạc
+        // 3. Phát nhạc
         startMedia(alarm);
 
-        // 3. Rung (nếu bật)
-        if (alarm.vibrate) {
-            startVibration();
-        }
+        // 4. Rung (nếu bật)
+        if (alarm.vibrate) startVibration();
 
-        // 4. Auto action (nếu cài đặt)
-        if (alarm.autoAction != Alarm.AUTO_NONE) {
-            scheduleAutoAction(alarm);
-        }
+        // 5. Auto action (nếu cài đặt)
+        if (alarm.autoAction != Alarm.AUTO_NONE) scheduleAutoAction(alarm);
     }
 
     // ===== MEDIA =====
 
     private void startMedia(Alarm alarm) {
+        if (stopRequested) return;
+
+        // Báo thức khác có thể đang reo (hai báo thức cùng giờ) – giải phóng trước
+        // để không phát chồng hai bản nhạc.
+        releaseActivePlayer();
+
+        // Im lặng: chỉ rung, không phát nhạc
+        if ("silent".equals(alarm.ringtoneUri)) return;
+
+        Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        boolean hasCustom = alarm.ringtoneUri != null && !alarm.ringtoneUri.isEmpty();
+        Uri wanted = hasCustom ? Uri.parse(alarm.ringtoneUri) : defaultUri;
+
+        if (!play(alarm, wanted) && hasCustom) {
+            // Nhạc người dùng chọn không đọc được (thường do thiếu quyền READ_MEDIA_AUDIO)
+            Log.w(TAG, "Không phát được nhạc chuông đã chọn, dùng mặc định: " + alarm.ringtoneUri);
+            play(alarm, defaultUri);
+        }
+    }
+
+    /** Trả về true nếu phát thành công. */
+    private boolean play(Alarm alarm, Uri uri) {
+        if (uri == null) return false;
+        MediaPlayer player = new MediaPlayer();
         try {
-            // Chọn URI nhạc
-            Uri ringtoneUri;
-            if ("silent".equals(alarm.ringtoneUri)) {
-                // Im lặng: chỉ rung, không phát nhạc
-                return;
-            } else if (alarm.ringtoneUri == null || alarm.ringtoneUri.isEmpty()) {
-                ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-            } else {
-                ringtoneUri = Uri.parse(alarm.ringtoneUri);
-            }
+            player.setAudioAttributes(new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build());
+            player.setDataSource(this, uri);
+            player.setLooping(true);
 
-            mediaPlayer = new MediaPlayer();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build());
-            } else {
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-            }
-            mediaPlayer.setDataSource(this, ringtoneUri);
-            mediaPlayer.setLooping(true);
-
-            // Cài đặt âm lượng ban đầu
             float vol = alarm.gradualVolume ? 0f : alarm.volume / 100f;
-            mediaPlayer.setVolume(vol, vol);
+            player.setVolume(vol, vol);
+            player.prepare();
 
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-
-            // Tăng âm lượng dần nếu bật
-            if (alarm.gradualVolume) {
-                startGradualVolume(alarm.volume);
+            // Kiểm tra lần cuối: nếu đã có yêu cầu dừng thì không phát,
+            // tránh để lại MediaPlayer mồ côi kêu mãi không tắt được.
+            if (stopRequested) {
+                player.release();
+                return true;
             }
 
+            player.start();
+            activePlayer = player;
+
+            if (alarm.gradualVolume) startGradualVolume(alarm.volume);
+            return true;
         } catch (Exception e) {
-            // Fallback: thử dùng ringtone mặc định
+            Log.w(TAG, "Không phát được " + uri, e);
             try {
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
-                Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-                mediaPlayer.setDataSource(this, defaultUri);
-                mediaPlayer.setLooping(true);
-                float vol = alarm.volume / 100f;
-                mediaPlayer.setVolume(vol, vol);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                player.release();
+            } catch (Exception ignored) {}
+            return false;
         }
     }
 
@@ -189,13 +218,18 @@ public class AlarmRingingService extends Service {
         Runnable gradualRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mediaPlayer == null || !mediaPlayer.isPlaying()) return;
+                MediaPlayer player = activePlayer;
+                if (player == null || stopRequested) return;
                 if (gradualStep >= GRADUAL_STEPS) return;
 
                 gradualStep++;
                 currentVolume = (targetVolume * gradualStep) / GRADUAL_STEPS;
                 float vol = currentVolume / 100f;
-                mediaPlayer.setVolume(vol, vol);
+                try {
+                    player.setVolume(vol, vol);
+                } catch (IllegalStateException e) {
+                    return; // player đã release
+                }
 
                 if (gradualStep < GRADUAL_STEPS) {
                     handler.postDelayed(this, GRADUAL_INTERVAL);
@@ -208,6 +242,7 @@ public class AlarmRingingService extends Service {
     // ===== VIBRATION =====
 
     private void startVibration() {
+        stopVibration();
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         if (vibrator == null) return;
 
@@ -226,59 +261,56 @@ public class AlarmRingingService extends Service {
     private void scheduleAutoAction(Alarm alarm) {
         long delayMs = (long) alarm.autoAfterMinutes * 60 * 1000;
         handler.postDelayed(() -> {
-            if (alarm.autoAction == Alarm.AUTO_SNOOZE) {
-                // Gửi broadcast snooze
-                Intent intent = new Intent(this, AlarmReceiver.class);
-                intent.setAction(AlarmReceiver.ACTION_SNOOZE);
-                intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
-                sendBroadcast(intent);
-            } else if (alarm.autoAction == Alarm.AUTO_DISMISS) {
-                Intent intent = new Intent(this, AlarmReceiver.class);
-                intent.setAction(AlarmReceiver.ACTION_DISMISS);
-                intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
-                sendBroadcast(intent);
-            }
+            String action = alarm.autoAction == Alarm.AUTO_SNOOZE
+                    ? AlarmReceiver.ACTION_SNOOZE
+                    : AlarmReceiver.ACTION_DISMISS;
+            Intent intent = new Intent(this, AlarmReceiver.class);
+            intent.setAction(action);
+            intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
+            sendBroadcast(intent);
         }, delayMs);
     }
 
     // ===== NOTIFICATION =====
 
     private Notification buildRingingNotification(Alarm alarm) {
-        // Intent mở RingActivity khi tap notification
         Intent fullScreenIntent = new Intent(this, RingActivity.class);
         fullScreenIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
         fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION);
 
-        int piFlags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            piFlags |= PendingIntent.FLAG_IMMUTABLE;
-        }
+        int piFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
 
         PendingIntent fullScreenPI = PendingIntent.getActivity(
                 this, alarm.id, fullScreenIntent, piFlags);
 
-        // Intent Snooze (action button trên notification)
         Intent snoozeIntent = new Intent(this, AlarmReceiver.class);
         snoozeIntent.setAction(AlarmReceiver.ACTION_SNOOZE);
         snoozeIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
         PendingIntent snoozePI = PendingIntent.getBroadcast(
                 this, alarm.id + 2000, snoozeIntent, piFlags);
 
-        // Intent Dismiss (action button trên notification)
         Intent dismissIntent = new Intent(this, AlarmReceiver.class);
         dismissIntent.setAction(AlarmReceiver.ACTION_DISMISS);
         dismissIntent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
         PendingIntent dismissPI = PendingIntent.getBroadcast(
                 this, alarm.id + 3000, dismissIntent, piFlags);
 
-        String title = alarm.getDisplayLabel();
-        String content = String.format("%02d:%02d", alarm.hour, alarm.minute);
+        String time = String.format(java.util.Locale.US, "%02d:%02d", alarm.hour, alarm.minute);
+        boolean hasLabel = alarm.label != null && !alarm.label.isEmpty();
+        String title = hasLabel ? time + " · " + alarm.label : time;
+
+        // Nói rõ cần làm gì để tắt, thay vì chỉ hiện lại giờ.
+        String content = alarm.challengeType == Alarm.CHALLENGE_NONE
+                ? localeContext.getString(R.string.notification_ringing_plain)
+                : localeContext.getString(R.string.notification_ringing_challenge,
+                        challengeName(alarm.challengeType));
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_RINGING)
                 .setSmallIcon(R.drawable.ic_alarm)
                 .setContentTitle(title)
                 .setContentText(content)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -287,20 +319,33 @@ public class AlarmRingingService extends Service {
                 .setFullScreenIntent(fullScreenPI, true)
                 .setContentIntent(fullScreenPI);
 
-        // Thêm nút Snooze nếu được bật trong settings
         AppPreferences prefs = AppPreferences.getInstance(this);
-        if (prefs.isSnoozeEnabled() && alarm.challengeType == Alarm.CHALLENGE_NONE) {
+        boolean plainAlarm = alarm.challengeType == Alarm.CHALLENGE_NONE;
+
+        if (prefs.isSnoozeEnabled() && plainAlarm) {
             builder.addAction(R.drawable.ic_snooze,
-                    getString(R.string.notification_action_snooze), snoozePI);
+                    localeContext.getString(R.string.notification_action_snooze), snoozePI);
         }
 
-        // Nút Tắt (chỉ khi không có challenge)
-        if (alarm.challengeType == Alarm.CHALLENGE_NONE) {
-            builder.addAction(R.drawable.ic_dismiss,
-                    getString(R.string.notification_action_dismiss), dismissPI);
-        }
+        // Luôn có đường tắt báo thức từ notification: nếu challenge bị lỗi
+        // (mất quyền camera, cảm biến không hoạt động) người dùng vẫn tắt được.
+        builder.addAction(R.drawable.ic_dismiss,
+                localeContext.getString(plainAlarm
+                        ? R.string.notification_action_dismiss
+                        : R.string.notification_action_emergency), dismissPI);
 
         return builder.build();
+    }
+
+    private String challengeName(int challengeType) {
+        switch (challengeType) {
+            case Alarm.CHALLENGE_MATH:  return localeContext.getString(R.string.challenge_math);
+            case Alarm.CHALLENGE_SHAKE: return localeContext.getString(R.string.challenge_shake);
+            case Alarm.CHALLENGE_SQUAT: return localeContext.getString(R.string.challenge_squat);
+            case Alarm.CHALLENGE_STEP:  return localeContext.getString(R.string.challenge_step);
+            case Alarm.CHALLENGE_QR:    return localeContext.getString(R.string.challenge_qr);
+            default: return localeContext.getString(R.string.challenge_none);
+        }
     }
 
     // ===== NOTIFICATION CHANNELS =====
@@ -312,18 +357,17 @@ public class AlarmRingingService extends Service {
             // Kênh đang reo – ưu tiên cao, không có âm thanh (âm thanh do MediaPlayer quản lý)
             NotificationChannel ringingChannel = new NotificationChannel(
                     CHANNEL_ID_RINGING,
-                    getString(R.string.ringing_channel_name),
+                    localeContext.getString(R.string.ringing_channel_name),
                     NotificationManager.IMPORTANCE_HIGH
             );
-            ringingChannel.setSound(null, null); // tắt sound của notification
-            ringingChannel.enableVibration(false); // tắt vibration của notification
+            ringingChannel.setSound(null, null);
+            ringingChannel.enableVibration(false);
             ringingChannel.setBypassDnd(true);
             nm.createNotificationChannel(ringingChannel);
 
-            // Kênh sắp tới – ưu tiên mặc định
             NotificationChannel upcomingChannel = new NotificationChannel(
                     CHANNEL_ID_UPCOMING,
-                    getString(R.string.upcoming_channel_name),
+                    localeContext.getString(R.string.upcoming_channel_name),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             nm.createNotificationChannel(upcomingChannel);
@@ -332,27 +376,44 @@ public class AlarmRingingService extends Service {
 
     // ===== STOP =====
 
+    private void stopEverything() {
+        stopRequested = true;
+        isRinging = false;
+        ringingAlarmId = -1;
+        if (handler != null) handler.removeCallbacksAndMessages(null);
+        releaseActivePlayer();
+        stopVibration();
+        stopForeground(true);
+        stopSelf();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopRequested = true;
         isRinging = false;
         ringingAlarmId = -1;
-        stopMedia();
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-        }
+        if (handler != null) handler.removeCallbacksAndMessages(null);
+        releaseActivePlayer();
+        stopVibration();
     }
 
-    private void stopMedia() {
-        if (mediaPlayer != null) {
-            try {
-                if (mediaPlayer.isPlaying()) mediaPlayer.stop();
-                mediaPlayer.release();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            mediaPlayer = null;
+    private static synchronized void releaseActivePlayer() {
+        if (activePlayer == null) return;
+        try {
+            if (activePlayer.isPlaying()) activePlayer.stop();
+        } catch (Exception e) {
+            Log.w(TAG, "stop() thất bại", e);
         }
+        try {
+            activePlayer.release();
+        } catch (Exception e) {
+            Log.w(TAG, "release() thất bại", e);
+        }
+        activePlayer = null;
+    }
+
+    private void stopVibration() {
         if (vibrator != null) {
             vibrator.cancel();
             vibrator = null;

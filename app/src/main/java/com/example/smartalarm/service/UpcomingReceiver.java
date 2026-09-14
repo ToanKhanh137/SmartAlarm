@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.example.smartalarm.R;
+import com.example.smartalarm.settings.LocaleHelper;
 import com.example.smartalarm.ui.main.MainActivity;
 
 public class UpcomingReceiver extends BroadcastReceiver {
@@ -19,15 +20,21 @@ public class UpcomingReceiver extends BroadcastReceiver {
     public static final String ACTION_UPCOMING = "com.example.smartalarm.ACTION_UPCOMING";
     public static final String EXTRA_ALARM_ID = "alarm_id";
     public static final String EXTRA_ALARM_LABEL = "alarm_label";
+    public static final String EXTRA_ALARM_HOUR = "alarm_hour";
+    public static final String EXTRA_ALARM_MINUTE = "alarm_minute";
+    public static final String EXTRA_CHALLENGE_TYPE = "alarm_challenge_type";
 
     private static final String CHANNEL_ID = "upcoming_alarm_channel";
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context rawContext, Intent intent) {
         if (ACTION_UPCOMING.equals(intent.getAction())) {
             int alarmId = intent.getIntExtra(EXTRA_ALARM_ID, -1);
             String label = intent.getStringExtra(EXTRA_ALARM_LABEL);
             if (alarmId == -1) return;
+
+            // Receiver không tự dùng ngôn ngữ đã chọn trong app → phải bọc context.
+            Context context = LocaleHelper.wrap(rawContext);
 
             createNotificationChannel(context);
 
@@ -49,11 +56,11 @@ public class UpcomingReceiver extends BroadcastReceiver {
 
 
             String title = context.getString(R.string.upcoming_channel_name);
-            int hour = intent.getIntExtra("alarm_hour", 7);
-            int minute = intent.getIntExtra("alarm_minute", 0);
-            int challengeType = intent.getIntExtra("alarm_challenge_type", 0);
-            
-            String challengeName = "";
+            int hour = intent.getIntExtra(EXTRA_ALARM_HOUR, 7);
+            int minute = intent.getIntExtra(EXTRA_ALARM_MINUTE, 0);
+            int challengeType = intent.getIntExtra(EXTRA_CHALLENGE_TYPE, 0);
+
+            String challengeName;
             switch (challengeType) {
                 case 1: challengeName = context.getString(R.string.challenge_math); break; // CHALLENGE_MATH
                 case 2: challengeName = context.getString(R.string.challenge_shake); break; // CHALLENGE_SHAKE
