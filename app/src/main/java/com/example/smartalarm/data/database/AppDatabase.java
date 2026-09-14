@@ -17,11 +17,12 @@ import com.example.smartalarm.data.model.Alarm;
  * Version history:
  *  1 – khởi tạo (tất cả thuộc tính hiện tại)
  *  2 – thêm cột shuffleRingtone
+ *  3 – thêm cột importantAlarm và snoozeCount
  *
  * Chỉ có một instance duy nhất trong toàn app (Singleton pattern).
  * Truy cập thông qua AppDatabase.getInstance(context).
  */
-@Database(entities = {Alarm.class}, version = 2, exportSchema = false)
+@Database(entities = {Alarm.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     /** Giữ lại báo thức người dùng đã đặt khi cập nhật app. */
@@ -29,6 +30,14 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase db) {
             db.execSQL("ALTER TABLE alarms ADD COLUMN shuffleRingtone INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE alarms ADD COLUMN importantAlarm INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE alarms ADD COLUMN snoozeCount INTEGER NOT NULL DEFAULT 0");
         }
     };
 
@@ -51,7 +60,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             DB_NAME
                     )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build();
                 }
             }

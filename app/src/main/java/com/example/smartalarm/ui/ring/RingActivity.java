@@ -87,17 +87,22 @@ public class RingActivity extends BaseActivity {
             b.tvRingLabel.setVisibility(View.GONE);
         }
 
-        // Snooze button
+        // Snooze – báo thức quan trọng chỉ hoãn được số lần giới hạn
         AppPreferences prefs = AppPreferences.getInstance(this);
-        if (prefs.isSnoozeEnabled()) {
+        if (prefs.isSnoozeEnabled() && alarm.canSnoozeAgain()) {
             int snoozeMins = alarm.snoozeMinutes > 0
                     ? alarm.snoozeMinutes
                     : prefs.getSnoozeDuration();
-            b.btnSnooze.setText(getString(R.string.ring_snooze, snoozeMins));
+            int left = alarm.snoozesLeft();
+            b.btnSnooze.setText(left < 0
+                    ? getString(R.string.ring_snooze, snoozeMins)
+                    : getString(R.string.ring_snooze_left, snoozeMins, left));
             b.btnSnooze.setVisibility(View.VISIBLE);
             b.btnSnooze.setOnClickListener(v -> doSnooze(snoozeMins));
+            b.tvPowerHint.setVisibility(View.VISIBLE);
         } else {
             b.btnSnooze.setVisibility(View.GONE);
+            b.tvPowerHint.setVisibility(View.GONE);
         }
 
         // Dismiss / Challenge button

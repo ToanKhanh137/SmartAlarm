@@ -130,6 +130,9 @@ public class AlarmRepository {
     public void snoozeSync(int alarmId, int snoozeMinutes) {
         Alarm alarm = dao.getByIdSync(alarmId);
         if (alarm == null) return;
+        // Báo thức quan trọng chỉ được hoãn một số lần nhất định
+        if (!alarm.canSnoozeAgain()) return;
+        dao.incrementSnoozeCount(alarmId);
         scheduler.scheduleSnooze(alarm, snoozeMinutes);
     }
 
@@ -144,6 +147,8 @@ public class AlarmRepository {
     public void finishDismissSync(int alarmId) {
         Alarm alarm = dao.getByIdSync(alarmId);
         if (alarm == null) return;
+        // Lần reo này kết thúc → cho phép hoãn lại đủ số lần ở lần reo sau
+        dao.resetSnoozeCount(alarmId);
         if (!alarm.repeats() && !alarm.isQuickAlarm) {
             // Fix BUG-04: Luôn giữ báo thức lại sau khi kêu xong, chỉ tắt toggle
             dao.setActive(alarmId, false);

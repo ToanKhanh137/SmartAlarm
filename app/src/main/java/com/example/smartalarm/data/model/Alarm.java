@@ -42,6 +42,9 @@ public class Alarm {
     /** Tập phép tính mặc định khi người dùng chưa chọn gì: cộng và trừ. */
     public static final int OPS_DEFAULT = OP_ADD | OP_SUB;
 
+    /** Báo thức quan trọng chỉ được hoãn tối đa bấy nhiêu lần. */
+    public static final int MAX_SNOOZE_IMPORTANT = 2;
+
     private static final int MATH_OPS_MULTIPLIER = 1000;
 
     // ===== CONSTANTS – auto action =====
@@ -77,6 +80,13 @@ public class Alarm {
 
     // ===== SNOOZE =====
     public int snoozeMinutes;   // số phút hoãn, mặc định 5
+    /**
+     * Báo thức quan trọng: chỉ hoãn được tối đa MAX_SNOOZE_IMPORTANT lần và âm lượng
+     * không bao giờ tự nhỏ đi. Báo thức thường: hoãn thoải mái, kêu lâu thì nhỏ dần.
+     */
+    public boolean importantAlarm;
+    /** Số lần đã hoãn cho lần reo hiện tại, về 0 khi tắt hẳn. */
+    public int snoozeCount;
 
     // ===== AUTO ACTION =====
     public int autoAction;          // AUTO_NONE / AUTO_SNOOZE / AUTO_DISMISS
@@ -131,6 +141,8 @@ public class Alarm {
         vibrate = true;
         shuffleRingtone = false;
         snoozeMinutes = 5;
+        importantAlarm = false;
+        snoozeCount = 0;
         autoAction = AUTO_NONE;
         autoAfterMinutes = 5;
         challengeType = CHALLENGE_NONE;
@@ -179,6 +191,16 @@ public class Alarm {
             default:
                 return 0;
         }
+    }
+
+    /** Báo thức thường hoãn bao nhiêu lần cũng được; báo thức quan trọng thì có hạn. */
+    public boolean canSnoozeAgain() {
+        return !importantAlarm || snoozeCount < MAX_SNOOZE_IMPORTANT;
+    }
+
+    /** Số lần hoãn còn lại, -1 nghĩa là không giới hạn. */
+    public int snoozesLeft() {
+        return importantAlarm ? Math.max(0, MAX_SNOOZE_IMPORTANT - snoozeCount) : -1;
     }
 
     /**

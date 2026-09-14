@@ -35,16 +35,20 @@ public class SquatChallengeActivity extends ChallengeActivity implements SensorE
     private static final float UP_THRESHOLD   =  1.6f;
     private static final float CALM_THRESHOLD =  1.0f;
 
-    // Ràng buộc thời gian – phần thực sự phân biệt squat với lắc máy
-    private static final long MIN_BOTTOM_MS   = 80;
-    private static final long MIN_REP_MS      = 700;
-    private static final long MAX_REP_MS      = 8000;
-    private static final long REP_COOLDOWN_MS = 300;
+    // Ràng buộc thời gian – phần thực sự phân biệt squat với lắc máy.
+    // Lắc tay không bao giờ có quãng đứng yên ở đáy, nên MIN_BOTTOM_MS mới là chốt chặn;
+    // MIN_REP_MS để thấp để squat nhanh vẫn được tính.
+    private static final long MIN_BOTTOM_MS   = 100;
+    private static final long MIN_REP_MS      = 500;
+    /** Nhịp chậm đến mức này thì chắc chắn không phải lắc máy, tính luôn dù không thấy đáy. */
+    private static final long SLOW_REP_MS     = 1800;
+    private static final long MAX_REP_MS      = 10000;
+    private static final long REP_COOLDOWN_MS = 250;
 
     private static final float GRAVITY_ALPHA = 0.15f;
     private static final float SIGNAL_ALPHA  = 0.35f;
 
-    private enum Phase { IDLE, DOWN, BOTTOM }
+    private enum Phase { IDLE, DOWN }
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -54,7 +58,9 @@ public class SquatChallengeActivity extends ChallengeActivity implements SensorE
 
     private Phase phase = Phase.IDLE;
     private long phaseStartMs = 0;
-    private long bottomStartMs = 0;
+    /** Tổng thời gian đứng yên ở đáy trong nhịp hiện tại. */
+    private long calmMs = 0;
+    private long lastSampleMs = 0;
     private long lastRepMs = 0;
     private long lastHintMs = 0;
 
@@ -129,55 +135,46 @@ public class SquatChallengeActivity extends ChallengeActivity implements SensorE
         verticalAccel = SIGNAL_ALPHA * vertical + (1 - SIGNAL_ALPHA) * verticalAccel;
 
         long now = System.currentTimeMillis();
+        long dt = lastSampleMs == 0 ? 0 : now - lastSampleMs;
+        lastSampleMs = now;
+
         if (now - lastRepMs < REP_COOLDOWN_MS) return;
 
-        if (phase != Phase.IDLE && now - phaseStartMs > MAX_REP_MS) {
+        if (phase == Phase.DOWN && now - phaseStartMs > MAX_REP_MS) {
             resetPhase();
             hint(now, R.string.squat_hold_phone);
             return;
         }
 
-        switch (phase) {
-            case IDLE:
-                if (verticalAccel < DOWN_THRESHOLD) {
-                    phase = Phase.DOWN;
-                    phaseStartMs = now;
-                    hint(now, R.string.squat_phase_down);
-                }
-                break;
+        if (phase == Phase.IDLE) {
+            if (verticalAccel < DOWN_THRESHOLD) {
+                phase = Phase.DOWN;
+                phaseStartMs = now;
+                calmMs = 0;
+                hint(now, R.string.squat_phase_down);
+            }
+            return;
+        }
 
-            case DOWN:
-                if (Math.abs(verticalAccel) < CALM_THRESHOLD) {
-                    phase = Phase.BOTTOM;
-                    bottomStartMs = now;
-                    hint(now, R.string.squat_phase_bottom);
-                } else if (verticalAccel > UP_THRESHOLD) {
-                    // Đi lên mà chưa thấy pha đáy. Trên máy có accelerometer nhiễu thì
-                    // tín hiệu có thể không bao giờ lặng hẳn, nên vẫn tính nếu nhịp đủ
-                    // chậm – thời gian mới là thứ phân biệt squat với lắc máy.
-                    if (now - phaseStartMs >= MIN_REP_MS) {
-                        countRep(now);
-                    } else {
-                        resetPhase();
-                        hint(now, R.string.squat_too_fast);
-                    }
-                }
-                break;
+        // Đang trong một nhịp squat.
+        // Giữa lúc hạ người, cơ thể giảm tốc ở đáy cũng sinh ra gia tốc dương vượt
+        // ngưỡng "đứng lên". Vì vậy KHÔNG được hủy nhịp khi gặp lần vượt ngưỡng quá
+        // sớm – chỉ bỏ qua và chờ lần đứng lên thật, nếu không cú squat sẽ bị mất.
+        if (Math.abs(verticalAccel) < CALM_THRESHOLD) {
+            if (calmMs == 0) hint(now, R.string.squat_phase_bottom);
+            calmMs += dt;
+            return;
+        }
 
-            case BOTTOM:
-                if (verticalAccel > UP_THRESHOLD) {
-                    boolean bottomLongEnough = now - bottomStartMs >= MIN_BOTTOM_MS;
-                    boolean repSlowEnough    = now - phaseStartMs >= MIN_REP_MS;
-                    if (bottomLongEnough && repSlowEnough) {
-                        countRep(now);
-                    } else {
-                        resetPhase();
-                        hint(now, R.string.squat_too_fast);
-                    }
-                } else if (verticalAccel < DOWN_THRESHOLD) {
-                    phase = Phase.DOWN; // vẫn đang hạ người
-                }
-                break;
+        if (verticalAccel > UP_THRESHOLD) {
+            long elapsed = now - phaseStartMs;
+            boolean pausedAtBottom = calmMs >= MIN_BOTTOM_MS && elapsed >= MIN_REP_MS;
+            boolean clearlyTooSlowToBeShaking = elapsed >= SLOW_REP_MS;
+            if (pausedAtBottom || clearlyTooSlowToBeShaking) {
+                countRep(now);
+            } else {
+                hint(now, R.string.squat_too_fast);
+            }
         }
     }
 
@@ -197,7 +194,7 @@ public class SquatChallengeActivity extends ChallengeActivity implements SensorE
     private void resetPhase() {
         phase = Phase.IDLE;
         phaseStartMs = 0;
-        bottomStartMs = 0;
+        calmMs = 0;
     }
 
     /** Đổi gợi ý nhưng không quá nhanh, tránh chữ nhấp nháy liên tục. */

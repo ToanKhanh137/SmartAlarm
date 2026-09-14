@@ -49,9 +49,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Số màn hình báo thức (ring + challenge) đang hiển thị. Cần đếm vì khi chuyển từ
+     * màn hình reo sang màn hình thử thách, màn hình reo cũng bị onStop – nếu không
+     * phân biệt thì nó sẽ tự kéo chính mình đè lên thử thách.
+     */
+    private static int alarmScreensVisible = 0;
+
     @Override
     protected void onStart() {
         super.onStart();
+        if (isAlarmScreen()) alarmScreensVisible++;
         ContextCompat.registerReceiver(this, ringingReceiver,
                 new IntentFilter(AlarmRingingService.ACTION_RINGING_STARTED),
                 ContextCompat.RECEIVER_NOT_EXPORTED);
@@ -61,6 +69,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         unregisterReceiver(ringingReceiver);
+
+        if (!isAlarmScreen()) return;
+        alarmScreensVisible = Math.max(0, alarmScreensVisible - 1);
+
+        // Chỉ kéo lại khi KHÔNG còn màn hình báo thức nào hiện (tức người dùng bấm Home),
+        // chứ không phải khi đang chuyển sang màn hình thử thách.
+        if (isFinishing() || alarmScreensVisible > 0 || !AlarmRingingService.isRinging) return;
+
+        Intent reassert = new Intent(this, AlarmRingingService.class);
+        reassert.setAction(AlarmRingingService.ACTION_REASSERT);
+        try {
+            startService(reassert);
+        } catch (Exception ignored) {
+            // Service đã dừng – không còn báo thức nào để kéo lại
+        }
     }
 
     @Override

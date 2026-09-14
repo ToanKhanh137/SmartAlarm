@@ -234,5 +234,10 @@
     <string name="world_clock_added">Đã thêm %s</string>
     <string name="world_clock_remove">Xóa thành phố này?</string>
     <string name="timer_stop">Dừng</string>
+    <string name="ring_snooze_left">Hoãn %1$d phút (còn %2$d lần)</string>
+    <string name="notification_action_snooze_left">Hoãn (còn %d)</string>
+    <string name="important_alarm_label">Báo thức quan trọng</string>
+    <string name="important_alarm_desc">Chỉ hoãn được tối đa 2 lần và âm lượng không tự nhỏ đi</string>
+    <string name="power_button_snooze_hint">Bấm nút nguồn 2 lần để hoãn</string>
 </resources>
 

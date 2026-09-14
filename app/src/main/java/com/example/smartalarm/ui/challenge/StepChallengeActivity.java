@@ -38,8 +38,12 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
 
     private static final String TAG = "StepChallenge";
 
-    /** Bỏ qua event trong khoảng này sau khi đăng ký, để loại phần hàng đợi cũ. */
-    private static final long WARMUP_MS = 700;
+    /**
+     * Bỏ qua event trong khoảng này sau khi đăng ký, để loại phần hàng đợi cũ.
+     * Để ngắn thôi: lọc theo dấu thời gian mới là cách chính, cửa sổ này chỉ để dự phòng
+     * cho máy báo timestamp không đáng tin – dài quá thì người dùng thấy đếm bị trễ.
+     */
+    private static final long WARMUP_MS = 250;
 
     // Đếm bằng accelerometer: cần một đỉnh rồi tụt hẳn xuống mới tính 1 bước
     private static final float STEP_PEAK_THRESHOLD  = 3.2f;
@@ -118,8 +122,8 @@ public class StepChallengeActivity extends ChallengeActivity implements SensorEv
         abovePeak = false;
         gravityReady = false;
 
-        // maxReportLatencyUs = 0 → yêu cầu không batch, gửi từng event ngay.
-        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_GAME, 0);
+        // SENSOR_DELAY_FASTEST + maxReportLatencyUs = 0 → không batch, gửi ngay từng bước.
+        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_FASTEST, 0);
     }
 
     @Override

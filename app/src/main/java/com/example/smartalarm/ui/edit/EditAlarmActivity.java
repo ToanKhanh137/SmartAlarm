@@ -113,6 +113,7 @@ public class EditAlarmActivity extends BaseActivity {
         b.switchGradual.setChecked(alarm.gradualVolume);
         b.switchVibrate.setChecked(alarm.vibrate);
         b.switchShuffle.setChecked(alarm.shuffleRingtone);
+        b.switchImportant.setChecked(alarm.importantAlarm);
         b.pickerSnooze.setValue(alarm.snoozeMinutes);
 
         // Ringtone name
@@ -454,6 +455,7 @@ public class EditAlarmActivity extends BaseActivity {
         alarm.gradualVolume = b.switchGradual.isChecked();
         alarm.vibrate       = b.switchVibrate.isChecked();
         alarm.shuffleRingtone = b.switchShuffle.isChecked();
+        alarm.importantAlarm = b.switchImportant.isChecked();
         alarm.snoozeMinutes = b.pickerSnooze.getValue();
 
         // Bước 3: Challenge

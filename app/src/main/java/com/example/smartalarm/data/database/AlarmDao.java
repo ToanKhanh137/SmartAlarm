@@ -45,6 +45,14 @@ public interface AlarmDao {
     @Query("UPDATE alarms SET skipUntilMillis = :skipUntilMillis WHERE id = :id")
     void setSkipUntil(int id, long skipUntilMillis);
 
+    /** Đếm số lần đã hoãn cho lần reo hiện tại (để giới hạn báo thức quan trọng). */
+    @Query("UPDATE alarms SET snoozeCount = snoozeCount + 1 WHERE id = :id")
+    void incrementSnoozeCount(int id);
+
+    /** Về 0 khi báo thức được tắt hẳn, để lần reo sau lại được hoãn đủ số lần. */
+    @Query("UPDATE alarms SET snoozeCount = 0 WHERE id = :id")
+    void resetSnoozeCount(int id);
+
     // ===== DELETE =====
 
     /** Xóa báo thức khỏi database. */

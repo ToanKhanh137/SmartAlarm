@@ -66,6 +66,17 @@
         <!-- Bottom spacer -->
         <Space android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
 
+        <!-- Gợi ý bấm nút nguồn 2 lần -->
+        <TextView
+            android:id="@+id/tvPowerHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/power_button_snooze_hint"
+            android:textSize="12sp"
+            android:textColor="@color/text_hint"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"/>
+
         <!-- Snooze -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSnooze"

@@ -5,8 +5,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -15,6 +17,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -49,11 +52,26 @@ public class AlarmRingingService extends Service {
      */
     public static final String ACTION_RINGING_STARTED = "com.example.smartalarm.service.RINGING_STARTED";
 
+    /** Màn hình báo thức bị rời khỏi trong lúc vẫn đang reo → kéo nó trở lại. */
+    public static final String ACTION_REASSERT = "com.example.smartalarm.service.REASSERT";
+
+    /** Không kéo lại dồn dập, tránh tạo vòng lặp làm máy không dùng được. */
+    private static final long REASSERT_INTERVAL_MS = 3000;
+
     private static final int NOTIF_ID_RINGING = 1001;
 
     // Tăng âm lượng dần trong 60 giây
     private static final int GRADUAL_STEPS    = 20;
     private static final int GRADUAL_INTERVAL = 3000; // ms giữa mỗi bước (3s × 20 = 60s)
+
+    /** Hai lần bấm nút nguồn trong khoảng này được coi là bấm đúp. */
+    private static final long DOUBLE_PRESS_WINDOW_MS = 2500;
+
+    // Báo thức thường: kêu quá lâu thì nhỏ dần
+    private static final long FADE_START_MS    = 3 * 60 * 1000L; // sau 3 phút
+    private static final int  FADE_STEPS       = 20;
+    private static final long FADE_INTERVAL_MS = 6000;           // nhỏ dần trong 2 phút
+    private static final int  FADE_FLOOR_PERCENT = 25;           // không nhỏ hơn 25% mức đã đặt
 
     public static boolean isRinging = false;
     public static int ringingAlarmId = -1;
@@ -68,12 +86,15 @@ public class AlarmRingingService extends Service {
     private Handler handler;
     private Context localeContext;
     private Alarm currentAlarm;
+    private PowerManager.WakeLock wakeLock;
+    private ScreenButtonReceiver screenButtonReceiver;
 
     /** Đã có yêu cầu dừng → mọi việc còn dở (load DB xong mới phát nhạc) phải bỏ qua. */
     private volatile boolean stopRequested = false;
 
     private int currentVolume = 0;
     private int gradualStep = 0;
+    private long lastReassertMs = 0;
 
     @Override
     public void onCreate() {
@@ -93,6 +114,11 @@ public class AlarmRingingService extends Service {
 
         if (ACTION_STOP.equals(intent.getAction())) {
             stopEverything();
+            return START_NOT_STICKY;
+        }
+
+        if (ACTION_REASSERT.equals(intent.getAction())) {
+            reassertRingingScreen();
             return START_NOT_STICKY;
         }
 
@@ -139,6 +165,11 @@ public class AlarmRingingService extends Service {
         // Bỏ các tác vụ hẹn của báo thức trước (tăng âm lượng dần, auto snooze/dismiss)
         handler.removeCallbacksAndMessages(null);
 
+        // 0. Bật màn hình. Không có wake lock thì máy đang tắt màn sẽ chỉ kêu
+        // trong bóng tối, RingActivity không bao giờ hiện ra.
+        acquireWakeLock();
+        registerScreenButtonReceiver();
+
         // 1. Notification full-screen (hiển thị kể cả khi màn hình khóa)
         startForeground(NOTIF_ID_RINGING, buildRingingNotification(alarm));
 
@@ -167,8 +198,135 @@ public class AlarmRingingService extends Service {
         // 4. Rung (nếu bật)
         if (alarm.vibrate) startVibration();
 
+        // 4b. Báo thức thường kêu quá lâu thì nhỏ dần cho đỡ phiền.
+        // Báo thức quan trọng thì không, phải giữ nguyên đến khi người dùng dậy.
+        if (!alarm.importantAlarm) scheduleCourtesyFade(alarm);
+
         // 5. Auto action (nếu cài đặt)
         if (alarm.autoAction != Alarm.AUTO_NONE) scheduleAutoAction(alarm);
+    }
+
+    /**
+     * Kéo màn hình báo thức trở lại khi người dùng thoát ra (bấm Home) mà chưa tắt báo thức.
+     * Đăng lại notification để full-screen intent kích hoạt lần nữa – cách mở Activity từ
+     * nền đáng tin cậy nhất, vì startActivity trực tiếp bị hệ thống hạn chế.
+     */
+    private void reassertRingingScreen() {
+        Alarm alarm = currentAlarm;
+        if (!isRinging || alarm == null || stopRequested) return;
+
+        long now = System.currentTimeMillis();
+        if (now - lastReassertMs < REASSERT_INTERVAL_MS) return;
+        lastReassertMs = now;
+
+        acquireWakeLock();
+
+        NotificationManager nm = getSystemService(NotificationManager.class);
+        if (nm != null) {
+            // Hủy rồi đăng lại: đăng đè lên notification cũ sẽ không kích hoạt
+            // full-screen intent thêm lần nào nữa.
+            nm.cancel(NOTIF_ID_RINGING);
+            nm.notify(NOTIF_ID_RINGING, buildRingingNotification(alarm));
+        }
+
+        Intent ring = new Intent(this, RingActivity.class);
+        ring.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
+        ring.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try {
+            startActivity(ring);
+        } catch (Exception e) {
+            Log.w(TAG, "Không kéo lại được màn hình báo thức", e);
+        }
+    }
+
+    // ===== WAKE LOCK =====
+
+    /**
+     * Bật màn hình khi báo thức reo. Dùng SCREEN_BRIGHT_WAKE_LOCK vì
+     * PARTIAL_WAKE_LOCK chỉ giữ CPU chạy chứ không đánh thức màn hình.
+     */
+    private void acquireWakeLock() {
+        releaseWakeLock();
+        try {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (pm == null) return;
+            //noinspection deprecation – các cờ này vẫn là cách duy nhất để bật màn hình
+            wakeLock = pm.newWakeLock(
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                            | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                            | PowerManager.ON_AFTER_RELEASE,
+                    "SmartAlarm:ringing");
+            wakeLock.setReferenceCounted(false);
+            // Tự nhả sau 10 phút phòng khi service chết bất thường, không giữ màn hình mãi
+            wakeLock.acquire(10 * 60 * 1000L);
+        } catch (Exception e) {
+            Log.w(TAG, "Không lấy được wake lock", e);
+        }
+    }
+
+    private void releaseWakeLock() {
+        if (wakeLock == null) return;
+        try {
+            if (wakeLock.isHeld()) wakeLock.release();
+        } catch (Exception ignored) {
+        } finally {
+            wakeLock = null;
+        }
+    }
+
+    // ===== NÚT NGUỒN =====
+
+    /**
+     * Không app nào chặn được nút nguồn trực tiếp, nhưng mỗi lần bấm hệ thống phát
+     * ACTION_SCREEN_ON/OFF. Hai lần đổi trạng thái liên tiếp = bấm nguồn hai lần.
+     */
+    private class ScreenButtonReceiver extends BroadcastReceiver {
+        private int presses = 0;
+        private long firstPressMs = 0;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long now = System.currentTimeMillis();
+            if (now - firstPressMs > DOUBLE_PRESS_WINDOW_MS) {
+                presses = 0;
+                firstPressMs = now;
+            }
+            presses++;
+            if (presses >= 2) {
+                presses = 0;
+                snoozeFromPowerButton();
+            }
+        }
+    }
+
+    private void registerScreenButtonReceiver() {
+        if (screenButtonReceiver != null) return;
+        screenButtonReceiver = new ScreenButtonReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(screenButtonReceiver, filter);
+    }
+
+    private void unregisterScreenButtonReceiver() {
+        if (screenButtonReceiver == null) return;
+        try {
+            unregisterReceiver(screenButtonReceiver);
+        } catch (Exception ignored) {
+        } finally {
+            screenButtonReceiver = null;
+        }
+    }
+
+    private void snoozeFromPowerButton() {
+        Alarm alarm = currentAlarm;
+        if (alarm == null || !AppPreferences.getInstance(this).isSnoozeEnabled()) return;
+        if (!alarm.canSnoozeAgain()) return;
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction(AlarmReceiver.ACTION_SNOOZE);
+        intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id);
+        sendBroadcast(intent);
     }
 
     // ===== MEDIA =====
@@ -281,6 +439,33 @@ public class AlarmRingingService extends Service {
         handler.postDelayed(gradualRunnable, GRADUAL_INTERVAL);
     }
 
+    /**
+     * Sau FADE_START_MS, hạ âm lượng dần xuống FADE_FLOOR_PERCENT của mức đã đặt.
+     * Không bao giờ hạ về 0 – nó vẫn là báo thức, chỉ là bớt chói tai khi kêu mãi.
+     */
+    private void scheduleCourtesyFade(Alarm alarm) {
+        handler.postDelayed(new Runnable() {
+            private int step = 0;
+
+            @Override
+            public void run() {
+                MediaPlayer player = activePlayer;
+                if (player == null || stopRequested || step >= FADE_STEPS) return;
+
+                step++;
+                float startVol = alarm.volume / 100f;
+                float floorVol = startVol * FADE_FLOOR_PERCENT / 100f;
+                float vol = startVol + (floorVol - startVol) * step / FADE_STEPS;
+                try {
+                    player.setVolume(vol, vol);
+                } catch (IllegalStateException e) {
+                    return;
+                }
+                if (step < FADE_STEPS) handler.postDelayed(this, FADE_INTERVAL_MS);
+            }
+        }, FADE_START_MS);
+    }
+
     // ===== VIBRATION =====
 
     private void startVibration() {
@@ -364,9 +549,12 @@ public class AlarmRingingService extends Service {
         AppPreferences prefs = AppPreferences.getInstance(this);
         boolean plainAlarm = alarm.challengeType == Alarm.CHALLENGE_NONE;
 
-        if (prefs.isSnoozeEnabled()) {
-            builder.addAction(R.drawable.ic_snooze,
-                    localeContext.getString(R.string.notification_action_snooze), snoozePI);
+        if (prefs.isSnoozeEnabled() && alarm.canSnoozeAgain()) {
+            int left = alarm.snoozesLeft();
+            String label = left < 0
+                    ? localeContext.getString(R.string.notification_action_snooze)
+                    : localeContext.getString(R.string.notification_action_snooze_left, left);
+            builder.addAction(R.drawable.ic_snooze, label, snoozePI);
         }
 
         // Chỉ báo thức không có thử thách mới tắt được thẳng từ notification.
@@ -429,6 +617,8 @@ public class AlarmRingingService extends Service {
         if (handler != null) handler.removeCallbacksAndMessages(null);
         releaseActivePlayer();
         stopVibration();
+        unregisterScreenButtonReceiver();
+        releaseWakeLock();
         stopForeground(true);
         stopSelf();
     }
@@ -442,6 +632,8 @@ public class AlarmRingingService extends Service {
         if (handler != null) handler.removeCallbacksAndMessages(null);
         releaseActivePlayer();
         stopVibration();
+        unregisterScreenButtonReceiver();
+        releaseWakeLock();
     }
 
     private static synchronized void releaseActivePlayer() {
