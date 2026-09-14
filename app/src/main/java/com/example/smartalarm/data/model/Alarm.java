@@ -75,8 +75,13 @@ public class Alarm {
     public int volume;          // 0–100
     public boolean gradualVolume; // tăng âm lượng dần trong 60 giây
     public boolean vibrate;
-    /** Mỗi lần reo chọn ngẫu nhiên một nhạc báo thức của hệ thống, bỏ qua ringtoneUri. */
+    /** Mỗi lần reo chọn ngẫu nhiên một bài trong shufflePlaylist, bỏ qua ringtoneUri. */
     public boolean shuffleRingtone;
+    /**
+     * Danh sách nhạc để bốc ngẫu nhiên, các URI ngăn nhau bởi "\n".
+     * Rỗng = dùng toàn bộ nhạc báo thức của hệ thống.
+     */
+    public String shufflePlaylist;
 
     // ===== SNOOZE =====
     public int snoozeMinutes;   // số phút hoãn, mặc định 5
@@ -140,6 +145,7 @@ public class Alarm {
         gradualVolume = false;
         vibrate = true;
         shuffleRingtone = false;
+        shufflePlaylist = null;
         snoozeMinutes = 5;
         importantAlarm = false;
         snoozeCount = 0;
@@ -191,6 +197,20 @@ public class Alarm {
             default:
                 return 0;
         }
+    }
+
+    /** Danh sách nhạc đã chọn để shuffle. Rỗng nghĩa là dùng toàn bộ nhạc hệ thống. */
+    public java.util.List<String> shuffleUris() {
+        java.util.List<String> uris = new java.util.ArrayList<>();
+        if (shufflePlaylist == null || shufflePlaylist.isEmpty()) return uris;
+        for (String uri : shufflePlaylist.split("\n")) {
+            if (!uri.isEmpty()) uris.add(uri);
+        }
+        return uris;
+    }
+
+    public void setShuffleUris(java.util.List<String> uris) {
+        shufflePlaylist = (uris == null || uris.isEmpty()) ? null : String.join("\n", uris);
     }
 
     /** Báo thức thường hoãn bao nhiêu lần cũng được; báo thức quan trọng thì có hạn. */

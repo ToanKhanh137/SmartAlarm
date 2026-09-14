@@ -239,5 +239,10 @@
     <string name="important_alarm_label">Báo thức quan trọng</string>
     <string name="important_alarm_desc">Chỉ hoãn được tối đa 2 lần và âm lượng không tự nhỏ đi</string>
     <string name="power_button_snooze_hint">Bấm nút nguồn 2 lần để hoãn</string>
+    <string name="shuffle_playlist_label">Danh sách nhạc</string>
+    <string name="shuffle_playlist_all">Tất cả nhạc trên máy</string>
+    <string name="shuffle_playlist_count">Đã chọn %d bài</string>
+    <string name="shuffle_playlist_title">Chọn nhạc cho shuffle</string>
+    <string name="shuffle_playlist_hint">Chọn ít nhất một bài, hoặc bỏ trống để dùng tất cả</string>
 </resources>
 

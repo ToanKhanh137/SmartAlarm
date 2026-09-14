@@ -222,5 +222,10 @@
     <string name="important_alarm_label">Important alarm</string>
     <string name="important_alarm_desc">Limited to 2 snoozes and the volume never fades</string>
     <string name="power_button_snooze_hint">Press power twice to snooze</string>
+    <string name="shuffle_playlist_label">Playlist</string>
+    <string name="shuffle_playlist_all">All sounds on device</string>
+    <string name="shuffle_playlist_count">%d selected</string>
+    <string name="shuffle_playlist_title">Pick songs to shuffle</string>
+    <string name="shuffle_playlist_hint">Select at least one, or leave empty to use all</string>
 </resources>
 

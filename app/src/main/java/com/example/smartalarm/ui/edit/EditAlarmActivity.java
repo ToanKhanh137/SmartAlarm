@@ -19,8 +19,12 @@ import com.example.smartalarm.R;
 import com.example.smartalarm.data.model.Alarm;
 import com.example.smartalarm.data.repository.AlarmRepository;
 import com.example.smartalarm.databinding.ActivityEditAlarmBinding;
+import com.example.smartalarm.settings.RingtoneCatalog;
 import com.example.smartalarm.ui.common.BaseActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,6 +55,8 @@ public class EditAlarmActivity extends BaseActivity {
     private boolean[] daySelected = new boolean[7]; // T2..CN
 
     private Uri ringtoneUri = null;
+    /** URI các bài đã chọn cho shuffle; rỗng = dùng toàn bộ nhạc trên máy. */
+    private final List<String> shuffleSelection = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,7 @@ public class EditAlarmActivity extends BaseActivity {
         setupDayChips();
         setupChallengeRadio();
         setupRingtoneRow();
+        setupShuffleRow();
         setupSnoozeWheels();
     }
 
@@ -114,6 +121,9 @@ public class EditAlarmActivity extends BaseActivity {
         b.switchVibrate.setChecked(alarm.vibrate);
         b.switchShuffle.setChecked(alarm.shuffleRingtone);
         b.switchImportant.setChecked(alarm.importantAlarm);
+        shuffleSelection.clear();
+        shuffleSelection.addAll(alarm.shuffleUris());
+        refreshShuffleRow();
         b.pickerSnooze.setValue(alarm.snoozeMinutes);
 
         // Ringtone name
@@ -369,6 +379,54 @@ public class EditAlarmActivity extends BaseActivity {
         });
     }
 
+    // ===== DANH SÁCH SHUFFLE =====
+
+    private void setupShuffleRow() {
+        b.switchShuffle.setOnCheckedChangeListener((btn, checked) -> refreshShuffleRow());
+        b.rowShufflePlaylist.setOnClickListener(v -> showShufflePlaylistDialog());
+        refreshShuffleRow();
+    }
+
+    private void refreshShuffleRow() {
+        boolean on = b.switchShuffle.isChecked();
+        b.rowShufflePlaylist.setVisibility(on ? View.VISIBLE : View.GONE);
+        if (!on) return;
+
+        int count = shuffleSelection.size();
+        b.tvShufflePlaylist.setText(count == 0
+                ? getString(R.string.shuffle_playlist_all)
+                : getString(R.string.shuffle_playlist_count, count));
+    }
+
+    private void showShufflePlaylistDialog() {
+        List<RingtoneCatalog.Item> catalog = RingtoneCatalog.load(this);
+        if (catalog.isEmpty()) {
+            Toast.makeText(this, getString(R.string.shuffle_playlist_all), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] titles = new String[catalog.size()];
+        boolean[] checked = new boolean[catalog.size()];
+        for (int i = 0; i < catalog.size(); i++) {
+            titles[i] = catalog.get(i).title;
+            checked[i] = shuffleSelection.contains(catalog.get(i).uri);
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.shuffle_playlist_title))
+                .setMessage(getString(R.string.shuffle_playlist_hint))
+                .setMultiChoiceItems(titles, checked, (d, which, isChecked) -> checked[which] = isChecked)
+                .setPositiveButton(getString(R.string.save), (d, w) -> {
+                    shuffleSelection.clear();
+                    for (int i = 0; i < catalog.size(); i++) {
+                        if (checked[i]) shuffleSelection.add(catalog.get(i).uri);
+                    }
+                    refreshShuffleRow();
+                })
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show();
+    }
+
     private void openRingtonePicker() {
         Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
@@ -455,6 +513,7 @@ public class EditAlarmActivity extends BaseActivity {
         alarm.gradualVolume = b.switchGradual.isChecked();
         alarm.vibrate       = b.switchVibrate.isChecked();
         alarm.shuffleRingtone = b.switchShuffle.isChecked();
+        alarm.setShuffleUris(shuffleSelection);
         alarm.importantAlarm = b.switchImportant.isChecked();
         alarm.snoozeMinutes = b.pickerSnooze.getValue();
 

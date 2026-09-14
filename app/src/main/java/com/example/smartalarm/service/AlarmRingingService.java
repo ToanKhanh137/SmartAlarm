@@ -28,6 +28,7 @@ import com.example.smartalarm.R;
 import com.example.smartalarm.data.model.Alarm;
 import com.example.smartalarm.settings.AppPreferences;
 import com.example.smartalarm.settings.LocaleHelper;
+import com.example.smartalarm.settings.RingtoneCatalog;
 import com.example.smartalarm.ui.ring.RingActivity;
 
 /**
@@ -359,7 +360,7 @@ public class AlarmRingingService extends Service {
         Uri wanted = null;
         boolean hasCustom = false;
         if (alarm.shuffleRingtone) {
-            wanted = pickRandomAlarmSound();
+            wanted = pickRandomFromPlaylist(alarm);
             hasCustom = wanted != null;
         }
         if (wanted == null) {
@@ -374,16 +375,22 @@ public class AlarmRingingService extends Service {
         }
     }
 
-    /** Chọn ngẫu nhiên một nhạc báo thức của hệ thống. null nếu máy không có gì để chọn. */
-    private Uri pickRandomAlarmSound() {
+    /**
+     * Bốc ngẫu nhiên một bài trong danh sách người dùng đã chọn.
+     * Chưa chọn bài nào thì lấy toàn bộ nhạc trên máy.
+     */
+    private Uri pickRandomFromPlaylist(Alarm alarm) {
         try {
-            RingtoneManager manager = new RingtoneManager(this);
-            manager.setType(RingtoneManager.TYPE_ALARM);
-            int count = manager.getCursor().getCount();
-            if (count <= 0) return null;
-            return manager.getRingtoneUri(new java.util.Random().nextInt(count));
+            java.util.List<String> uris = alarm.shuffleUris();
+            if (uris.isEmpty()) {
+                for (RingtoneCatalog.Item item : RingtoneCatalog.load(this)) {
+                    uris.add(item.uri);
+                }
+            }
+            if (uris.isEmpty()) return null;
+            return Uri.parse(uris.get(new java.util.Random().nextInt(uris.size())));
         } catch (Exception e) {
-            Log.w(TAG, "Không lấy được danh sách nhạc báo thức để shuffle", e);
+            Log.w(TAG, "Không chọn được nhạc để shuffle", e);
             return null;
         }
     }
