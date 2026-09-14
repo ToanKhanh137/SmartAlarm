@@ -58,6 +58,7 @@
     <string name="ring_snooze">Snooze %d min</string>
     <string name="ring_dismiss">Wake Up</string>
     <string name="ring_solve_challenge">Complete challenge</string>
+    <string name="snoozed_title">Alarm snoozed</string>
     <string name="snoozed_until">Snoozed until %s</string>
 
     <string name="math_instruction">Solve to dismiss the alarm</string>
@@ -197,7 +198,6 @@
     <string name="notification_action_open">Open challenge</string>
     <string name="perm_fullscreen_title">Lock screen permission needed</string>
     <string name="perm_fullscreen_msg">To let the alarm open its dismiss screen while the phone is locked, enable the "Full screen notifications" permission for this app.</string>
-    <string name="perm_later">Later</string>
 
     <!-- ===== PERMISSIONS ===== -->
     <string name="perm_camera_title">Camera permission needed</string>

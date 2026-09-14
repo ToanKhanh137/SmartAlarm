@@ -131,7 +131,7 @@ public class MainActivity extends BaseActivity
         }
 
         if (needed.isEmpty()) {
-            checkSpecialPermissions();
+            refreshPermissionBanner();
         } else {
             ActivityCompat.requestPermissions(this, needed.toArray(new String[0]), PERM_REQUEST);
         }
@@ -142,7 +142,14 @@ public class MainActivity extends BaseActivity
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // Hỏi tiếp các quyền phải vào Cài đặt, sau khi hộp thoại quyền thường đã xong
-        if (requestCode == PERM_REQUEST) checkSpecialPermissions();
+        if (requestCode == PERM_REQUEST) refreshPermissionBanner();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Người dùng có thể vừa cấp quyền ở màn hình Cài đặt rồi quay lại
+        refreshPermissionBanner();
     }
 
     private void addIfMissing(List<String> target, String permission) {
@@ -156,12 +163,15 @@ public class MainActivity extends BaseActivity
      *  - Thông báo toàn màn hình: Android 14+ mặc định CHẶN với app không phải gọi điện,
      *    thiếu nó thì báo thức không tự mở màn hình tắt khi điện thoại đang khóa.
      *  - Báo thức chính xác: thiếu nó thì báo thức có thể reo trễ.
+     *
+     * Hiện bằng banner thường trực chứ không chỉ một hộp thoại, vì bỏ lỡ hộp thoại là
+     * báo thức im lìm khi khóa máy mà không có dấu hiệu gì để lần ra nguyên nhân.
      */
-    private void checkSpecialPermissions() {
+    private void refreshPermissionBanner() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null && !nm.canUseFullScreenIntent()) {
-                promptForSetting(R.string.perm_fullscreen_title, R.string.perm_fullscreen_msg,
+                showBanner(R.string.perm_fullscreen_title, R.string.perm_fullscreen_msg,
                         new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
                                 Uri.fromParts("package", getPackageName(), null)));
                 return;
@@ -169,26 +179,26 @@ public class MainActivity extends BaseActivity
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && !new AlarmScheduler(this).canScheduleExactAlarms()) {
-            promptForSetting(R.string.perm_exact_alarm_title, R.string.perm_exact_alarm_msg,
+            showBanner(R.string.perm_exact_alarm_title, R.string.perm_exact_alarm_msg,
                     new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
                             Uri.fromParts("package", getPackageName(), null)));
+            return;
         }
+        binding.bannerPermission.setVisibility(View.GONE);
     }
 
-    private void promptForSetting(int titleRes, int messageRes, Intent settingsIntent) {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(getString(titleRes))
-                .setMessage(getString(messageRes))
-                .setPositiveButton(getString(R.string.perm_open_settings), (d, w) -> {
-                    try {
-                        startActivity(settingsIntent);
-                    } catch (Exception ignored) {
-                        startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.fromParts("package", getPackageName(), null)));
-                    }
-                })
-                .setNegativeButton(getString(R.string.perm_later), null)
-                .show();
+    private void showBanner(int titleRes, int messageRes, Intent settingsIntent) {
+        binding.bannerPermission.setVisibility(View.VISIBLE);
+        binding.tvBannerTitle.setText(getString(titleRes));
+        binding.tvBannerDesc.setText(getString(messageRes));
+        binding.btnBannerFix.setOnClickListener(v -> {
+            try {
+                startActivity(settingsIntent);
+            } catch (Exception ignored) {
+                startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", getPackageName(), null)));
+            }
+        });
     }
 
     private void setupWorldClock() {

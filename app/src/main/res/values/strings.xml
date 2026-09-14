@@ -64,6 +64,7 @@
     <string name="ring_snooze">Hoãn %d phút</string>
     <string name="ring_dismiss">Thức dậy</string>
     <string name="ring_solve_challenge">Thực hiện thử thách</string>
+    <string name="snoozed_title">Đã hoãn báo thức</string>
     <string name="snoozed_until">Đã hoãn đến %s</string>
 
     <!-- ===== MATH CHALLENGE ===== -->
@@ -214,7 +215,6 @@
     <string name="notification_action_open">Mở thử thách</string>
     <string name="perm_fullscreen_title">Cần quyền hiện trên màn hình khóa</string>
     <string name="perm_fullscreen_msg">Để báo thức tự mở màn hình tắt báo thức khi điện thoại đang khóa, hãy bật quyền "Thông báo toàn màn hình" cho ứng dụng.</string>
-    <string name="perm_later">Để sau</string>
 
     <!-- ===== PERMISSIONS ===== -->
     <string name="perm_camera_title">Cần quyền camera</string>

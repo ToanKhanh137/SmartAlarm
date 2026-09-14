@@ -66,6 +66,8 @@ public class AlarmRingingService extends Service {
 
     /** Hai lần bấm nút nguồn trong khoảng này được coi là bấm đúp. */
     private static final long DOUBLE_PRESS_WINDOW_MS = 2500;
+    /** Khoảng đầu sau khi bắt đầu reo, mọi thay đổi bật/tắt màn đều bị bỏ qua. */
+    private static final long POWER_BUTTON_GRACE_MS = 3000;
 
     // Báo thức thường: kêu quá lâu thì nhỏ dần
     private static final long FADE_START_MS    = 3 * 60 * 1000L; // sau 3 phút
@@ -95,6 +97,7 @@ public class AlarmRingingService extends Service {
     private int currentVolume = 0;
     private int gradualStep = 0;
     private long lastReassertMs = 0;
+    private long ringingStartedMs = 0;
 
     @Override
     public void onCreate() {
@@ -167,6 +170,7 @@ public class AlarmRingingService extends Service {
 
         // 0. Bật màn hình. Không có wake lock thì máy đang tắt màn sẽ chỉ kêu
         // trong bóng tối, RingActivity không bao giờ hiện ra.
+        ringingStartedMs = System.currentTimeMillis();
         acquireWakeLock();
         registerScreenButtonReceiver();
 
@@ -281,20 +285,29 @@ public class AlarmRingingService extends Service {
      * ACTION_SCREEN_ON/OFF. Hai lần đổi trạng thái liên tiếp = bấm nguồn hai lần.
      */
     private class ScreenButtonReceiver extends BroadcastReceiver {
-        private int presses = 0;
-        private long firstPressMs = 0;
+        private long screenOffMs = 0;
 
         @Override
         public void onReceive(Context context, Intent intent) {
             long now = System.currentTimeMillis();
-            if (now - firstPressMs > DOUBLE_PRESS_WINDOW_MS) {
-                presses = 0;
-                firstPressMs = now;
-            }
-            presses++;
-            if (presses >= 2) {
-                presses = 0;
-                snoozeFromPowerButton();
+
+            // Bỏ qua những thay đổi ngay lúc báo thức mới bắt đầu: chính wake lock và
+            // màn hình báo thức làm màn sáng lên, không phải người dùng bấm nút.
+            if (now - ringingStartedMs < POWER_BUTTON_GRACE_MS) return;
+
+            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                // Bấm lần 1: đang reo, màn đang sáng, người dùng bấm nguồn cho tắt màn.
+                screenOffMs = now;
+            } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+                // Bấm lần 2 phải nối tiếp ngay sau lần 1 thì mới tính là bấm đúp.
+                // Màn hình tự sáng do wake lock không có ACTION_SCREEN_OFF đi trước
+                // nên không bao giờ lọt vào đây.
+                if (screenOffMs != 0 && now - screenOffMs <= DOUBLE_PRESS_WINDOW_MS) {
+                    screenOffMs = 0;
+                    snoozeFromPowerButton();
+                } else {
+                    screenOffMs = 0;
+                }
             }
         }
     }

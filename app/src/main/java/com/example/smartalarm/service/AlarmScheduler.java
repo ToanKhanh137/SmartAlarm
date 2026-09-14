@@ -75,12 +75,14 @@ public class AlarmScheduler {
     /**
      * Đặt báo thức Snooze (N phút từ bây giờ).
      */
-    public void scheduleSnooze(Alarm alarm, int snoozeMinutes) {
+    /** Trả về thời điểm sẽ reo lại (ms). */
+    public long scheduleSnooze(Alarm alarm, int snoozeMinutes) {
         long triggerTime = System.currentTimeMillis() + (long) snoozeMinutes * 60 * 1000;
         PendingIntent pi = buildPendingIntent(alarm.id);
         AlarmManager.AlarmClockInfo info =
                 new AlarmManager.AlarmClockInfo(triggerTime, pi);
         alarmManager.setAlarmClock(info, pi);
+        return triggerTime;
     }
 
     // ===== CANCEL =====

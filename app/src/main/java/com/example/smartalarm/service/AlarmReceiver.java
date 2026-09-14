@@ -102,15 +102,22 @@ public class AlarmReceiver extends BroadcastReceiver {
      * 2. Đặt lại báo thức sau N phút
      */
     private void handleSnooze(Context context, int alarmId) {
-        // Dừng service trước
-        stopRingingService(context);
-
-        // Lấy thời gian snooze từ preferences
         int snoozeMinutes = AppPreferences.getInstance(context).getSnoozeDuration();
 
-        // Reschedule trên background thread
+        PendingResult pending = goAsync();
         new Thread(() -> {
-            AlarmRepository.getInstance(context).snoozeSync(alarmId, snoozeMinutes);
+            try {
+                long triggerAt = AlarmRepository.getInstance(context)
+                        .snoozeSync(alarmId, snoozeMinutes);
+                // Hết lượt hoãn (báo thức quan trọng) thì phải tiếp tục reo,
+                // nếu dừng service ở đây là báo thức biến mất luôn.
+                if (triggerAt <= 0) return;
+
+                stopRingingService(context);
+                SnoozeNotifier.show(context, alarmId, triggerAt);
+            } finally {
+                pending.finish();
+            }
         }).start();
     }
 

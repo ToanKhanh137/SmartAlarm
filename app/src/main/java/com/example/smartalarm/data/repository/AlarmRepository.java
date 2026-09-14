@@ -127,13 +127,14 @@ public class AlarmRepository {
      * Hoãn báo thức N phút (được gọi từ AlarmReceiver hoặc notification action).
      * Chạy trên background thread vì gọi từ BroadcastReceiver cần xử lý nhanh.
      */
-    public void snoozeSync(int alarmId, int snoozeMinutes) {
+    /** Trả về thời điểm sẽ reo lại (ms), hoặc 0 nếu không hoãn được. */
+    public long snoozeSync(int alarmId, int snoozeMinutes) {
         Alarm alarm = dao.getByIdSync(alarmId);
-        if (alarm == null) return;
+        if (alarm == null) return 0;
         // Báo thức quan trọng chỉ được hoãn một số lần nhất định
-        if (!alarm.canSnoozeAgain()) return;
+        if (!alarm.canSnoozeAgain()) return 0;
         dao.incrementSnoozeCount(alarmId);
-        scheduler.scheduleSnooze(alarm, snoozeMinutes);
+        return scheduler.scheduleSnooze(alarm, snoozeMinutes);
     }
 
     // ===== DISMISS (sau khi tắt báo thức) =====
@@ -149,11 +150,17 @@ public class AlarmRepository {
         if (alarm == null) return;
         // Lần reo này kết thúc → cho phép hoãn lại đủ số lần ở lần reo sau
         dao.resetSnoozeCount(alarmId);
-        if (!alarm.repeats() && !alarm.isQuickAlarm) {
-            // Fix BUG-04: Luôn giữ báo thức lại sau khi kêu xong, chỉ tắt toggle
+
+        // Có thể đang có một lần hoãn chờ sẵn (người dùng tắt từ thông báo "đã hoãn"),
+        // phải hủy nó, nếu không báo thức vẫn reo lại sau vài phút.
+        scheduler.cancel(alarmId);
+
+        if (alarm.repeats()) {
+            scheduler.schedule(alarm); // đặt lại lần reo bình thường kế tiếp
+        } else if (!alarm.isQuickAlarm) {
+            // Giữ báo thức lại trong danh sách, chỉ tắt toggle
             dao.setActive(alarmId, false);
         }
-        // Báo thức lặp: AlarmReceiver đã schedule lần tiếp theo, không cần làm gì thêm
     }
 
     // ===== SKIP NEXT =====
