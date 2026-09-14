@@ -3,17 +3,17 @@
     <string name="app_name">Smart Alarm</string>
 
     <!-- ===== BOTTOM NAV ===== -->
-    <string name="nav_alarm">BÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="nav_clock">Ã„ÂÃ¡Â»â€œng hÃ¡Â»â€œ</string>
-    <string name="nav_timer">HÃ¡ÂºÂ¹n giÃ¡Â»Â</string>
-    <string name="nav_stopwatch">BÃ¡ÂºÂ¥m giÃ¡Â»Â</string>
+    <string name="nav_alarm">Báo thức</string>
+    <string name="nav_clock">Đồng hồ</string>
+    <string name="nav_timer">Hẹn giờ</string>
+    <string name="nav_stopwatch">Bấm giờ</string>
 
     <!-- ===== ALARM LIST ===== -->
-    <string name="no_alarms">ChÃ†Â°a cÃƒÂ³ bÃƒÂ¡o thÃ¡Â»Â©c nÃƒÂ o\nNhÃ¡ÂºÂ¥n + Ã„â€˜Ã¡Â»Æ’ thÃƒÂªm</string>
-    <string name="next_alarm">BÃƒÂ¡o thÃ¡Â»Â©c tiÃ¡ÂºÂ¿p theo: %s</string>
-    <string name="alarm_off">KhÃƒÂ´ng cÃƒÂ³ bÃƒÂ¡o thÃ¡Â»Â©c nÃƒÂ o Ã„â€˜ang bÃ¡ÂºÂ­t</string>
-    <string name="delete_alarm_title">XÃƒÂ³a bÃƒÂ¡o thÃ¡Â»Â©c?</string>
-    <string name="delete_alarm_msg">BÃ¡ÂºÂ¡n cÃƒÂ³ chÃ¡ÂºÂ¯c muÃ¡Â»â€˜n xÃƒÂ³a bÃƒÂ¡o thÃ¡Â»Â©c \"%s\"?</string>
+    <string name="no_alarms">Chưa có báo thức nào\nNhấn + để thêm</string>
+    <string name="next_alarm">Báo thức tiếp theo: %s</string>
+    <string name="alarm_off">Không có báo thức nào đang bật</string>
+    <string name="delete_alarm_title">Xóa báo thức?</string>
+    <string name="delete_alarm_msg">Bạn có chắc muốn xóa báo thức \"%s\"?</string>
 
     <!-- ===== DAYS ===== -->
     <string name="day_mon">T2</string>
@@ -23,152 +23,148 @@
     <string name="day_fri">T6</string>
     <string name="day_sat">T7</string>
     <string name="day_sun">CN</string>
-    <string name="repeat_once">MÃ¡Â»â„¢t lÃ¡ÂºÂ§n</string>
-    <string name="repeat_weekdays">ThÃ¡Â»Â© 2Ã¢â‚¬â€œ6</string>
-    <string name="repeat_weekend">CuÃ¡Â»â€˜i tuÃ¡ÂºÂ§n</string>
-    <string name="repeat_everyday">HÃ¡ÂºÂ±ng ngÃƒÂ y</string>
+    <string name="repeat_once">Một lần</string>
+    <string name="repeat_weekdays">Thứ 2–6</string>
+    <string name="repeat_weekend">Cuối tuần</string>
+    <string name="repeat_everyday">Hằng ngày</string>
 
     <!-- ===== EDIT ALARM ===== -->
-    <string name="edit_alarm_title_add">ThÃƒÂªm bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="edit_alarm_title_edit">SÃ¡Â»Â­a bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="step_time">GiÃ¡Â»Â &amp; NgÃƒÂ y</string>
-    <string name="step_sound">Ãƒâ€šm thanh</string>
-    <string name="step_challenge">ThÃ¡Â»Â©c dÃ¡ÂºÂ­y</string>
-    <string name="label_hint">TÃƒÂªn bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="ringtone_label">NhÃ¡ÂºÂ¡c chuÃƒÂ´ng</string>
-    <string name="ringtone_default">MÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh</string>
-    <string name="ringtone_silent">Im lÃ¡ÂºÂ·ng</string>
-    <string name="volume_label">Ãƒâ€šm lÃ†Â°Ã¡Â»Â£ng</string>
+    <string name="edit_alarm_title_add">Thêm báo thức</string>
+    <string name="edit_alarm_title_edit">Sửa báo thức</string>
+    <string name="step_time">Giờ &amp; Ngày</string>
+    <string name="step_sound">Âm thanh</string>
+    <string name="step_challenge">Thức dậy</string>
+    <string name="label_hint">Tên báo thức</string>
+    <string name="ringtone_label">Nhạc chuông</string>
+    <string name="ringtone_default">Mặc định</string>
+    <string name="ringtone_silent">Im lặng</string>
+    <string name="volume_label">Âm lượng</string>
     <string name="vibrate_label">Rung</string>
-    <string name="gradual_volume_label">TÃ„Æ’ng ÃƒÂ¢m lÃ†Â°Ã¡Â»Â£ng dÃ¡ÂºÂ§n</string>
-    <string name="snooze_label">HoÃƒÂ£n bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="snooze_minutes">%d phÃƒÂºt</string>
-    <string name="auto_action_label">TÃ¡Â»Â± Ã„â€˜Ã¡Â»â„¢ng</string>
-    <string name="auto_action_none">KhÃƒÂ´ng lÃƒÂ m gÃƒÂ¬</string>
-    <string name="auto_action_snooze">TÃ¡Â»Â± hoÃƒÂ£n</string>
-    <string name="auto_action_dismiss">TÃ¡Â»Â± tÃ¡ÂºÂ¯t</string>
-    <string name="auto_after_minutes">Sau %d phÃƒÂºt</string>
-    <string name="save">LÃ†Â°u</string>
-    <string name="cancel">HÃ¡Â»Â§y</string>
-    <string name="next">TiÃ¡ÂºÂ¿p</string>
-    <string name="back">Quay lÃ¡ÂºÂ¡i</string>
+    <string name="gradual_volume_label">Tăng âm lượng dần</string>
+    <string name="snooze_label">Hoãn báo thức</string>
+    <string name="snooze_minutes">%d phút</string>
+    <string name="auto_action_label">Tự động</string>
+    <string name="auto_action_none">Không làm gì</string>
+    <string name="auto_action_snooze">Tự hoãn</string>
+    <string name="auto_action_dismiss">Tự tắt</string>
+    <string name="auto_after_minutes">Sau %d phút</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+    <string name="next">Tiếp</string>
+    <string name="back">Quay lại</string>
 
     <!-- ===== CHALLENGE SELECTION ===== -->
-    <string name="difficulty_label">Ã„ÂÃ¡Â»â„¢ khÃƒÂ³</string>
-    <string name="difficulty_easy">DÃ¡Â»â€¦</string>
-    <string name="difficulty_medium">Trung bÃƒÂ¬nh</string>
-    <string name="difficulty_hard">KhÃƒÂ³</string>
-    <string name="difficulty_custom">TÃƒÂ¹y chÃ¡Â»â€°nh</string>
+    <string name="difficulty_label">Độ khó</string>
+    <string name="difficulty_easy">Dễ</string>
+    <string name="difficulty_medium">Trung bình</string>
+    <string name="difficulty_hard">Khó</string>
+    <string name="difficulty_custom">Tùy chỉnh</string>
 
     <!-- ===== RING SCREEN ===== -->
-    <string name="ring_snooze">HoÃƒÂ£n %d phÃƒÂºt</string>
-    <string name="ring_dismiss">ThÃ¡Â»Â©c dÃ¡ÂºÂ­y</string>
+    <string name="ring_snooze">Hoãn %d phút</string>
+    <string name="ring_dismiss">Thức dậy</string>
     <string name="ring_solve_challenge">Thực hiện thử thách</string>
-    <string name="snoozed_until">Ã„ÂÃƒÂ£ hoÃƒÂ£n Ã„â€˜Ã¡ÂºÂ¿n %s</string>
+    <string name="snoozed_until">Đã hoãn đến %s</string>
 
     <!-- ===== MATH CHALLENGE ===== -->
-    <string name="math_instruction">GiÃ¡ÂºÂ£i Ã„â€˜ÃƒÂºng Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="math_wrong">Sai rÃ¡Â»â€œi! ThÃ¡Â»Â­ lÃ¡ÂºÂ¡i</string>
-    <string name="math_wrong_reduce">Sai nhiÃ¡Â»Âu quÃƒÂ¡. GiÃ¡ÂºÂ£m Ã„â€˜Ã¡Â»â„¢ khÃƒÂ³ giÃƒÂºp bÃ¡ÂºÂ¡n</string>
-    <string name="math_wrong_switch">BÃ¡ÂºÂ¡n muÃ¡Â»â€˜n chuyÃ¡Â»Æ’n sang lÃ¡ÂºÂ¯c Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i?</string>
-    <string name="math_switch_yes">ChuyÃ¡Â»Æ’n sang lÃ¡ÂºÂ¯c</string>
-    <string name="math_switch_no">TiÃ¡ÂºÂ¿p tÃ¡Â»Â¥c giÃ¡ÂºÂ£i toÃƒÂ¡n</string>
-    <string name="math_correct">ChÃƒÂ­nh xÃƒÂ¡c!</string>
-    <string name="math_attempts">Sai %d lÃ¡ÂºÂ§n</string>
+    <string name="math_instruction">Giải đúng để tắt báo thức</string>
+    <string name="math_wrong">Sai rồi! Thử lại</string>
+    <string name="math_wrong_reduce">Sai nhiều quá. Giảm độ khó giúp bạn</string>
+    <string name="math_switch_yes">Chuyển sang lắc</string>
+    <string name="math_switch_no">Tiếp tục giải toán</string>
+    <string name="math_correct">Chính xác!</string>
+    <string name="math_attempts">Sai %d lần</string>
 
     <!-- ===== SHAKE CHALLENGE ===== -->
-    <string name="shake_instruction">LÃ¡ÂºÂ¯c Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i %d lÃ¡ÂºÂ§n Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
+    <string name="shake_instruction">Lắc điện thoại %d lần để tắt</string>
     <string name="shake_progress">%1$d / %2$d</string>
-    <string name="shake_hint">CÃ¡ÂºÂ§m chÃ¡ÂºÂ¯c Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i, lÃ¡ÂºÂ¯c mÃ¡ÂºÂ¡nh</string>
+    <string name="shake_hint">Cầm chắc điện thoại, lắc mạnh</string>
 
     <!-- ===== SQUAT CHALLENGE ===== -->
-    <string name="squat_instruction">ThÃ¡Â»Â±c hiÃ¡Â»â€¡n %d squat Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
+    <string name="squat_instruction">Thực hiện %d squat để tắt</string>
     <string name="squat_progress">%1$d / %2$d</string>
-    <string name="squat_hint">CÃ¡ÂºÂ§m Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i trÃƒÂªn tay, ngÃ¡Â»â€œi xuÃ¡Â»â€˜ng rÃ¡Â»â€œi Ã„â€˜Ã¡Â»Â©ng lÃƒÂªn</string>
-    <string name="squat_detected">Squat %d! TiÃ¡ÂºÂ¿p tÃ¡Â»Â¥c</string>
 
     <!-- ===== STEP CHALLENGE ===== -->
-    <string name="step_instruction">Ã„Âi %d bÃ†Â°Ã¡Â»â€ºc Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
-    <string name="step_progress">%1$d / %2$d bÃ†Â°Ã¡Â»â€ºc</string>
-    <string name="step_hint">CÃ¡ÂºÂ§m Ã„â€˜iÃ¡Â»â€¡n thoÃ¡ÂºÂ¡i, bÃ†Â°Ã¡Â»â€ºc Ã„â€˜i bÃƒÂ¬nh thÃ†Â°Ã¡Â»Âng</string>
+    <string name="step_instruction">Đi %d bước để tắt</string>
+    <string name="step_progress">%1$d / %2$d bước</string>
+    <string name="step_hint">Cầm điện thoại, bước đi bình thường</string>
 
     <!-- ===== QR CHALLENGE ===== -->
-    <string name="qr_instruction">QuÃƒÂ©t mÃƒÂ£ QR Ã„â€˜ÃƒÂ£ Ã„â€˜Ã„Æ’ng kÃƒÂ½ Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¯t</string>
-    <string name="qr_wrong">MÃƒÂ£ QR khÃƒÂ´ng Ã„â€˜ÃƒÂºng, thÃ¡Â»Â­ lÃ¡ÂºÂ¡i</string>
-    <string name="qr_success">Ã„ÂÃƒÂºng rÃ¡Â»â€œi! TÃ¡ÂºÂ¯t bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="qr_no_setup">ChÃ†Â°a cÃƒÂ³ mÃƒÂ£ QR. VÃƒÂ o CÃƒÂ i Ã„â€˜Ã¡ÂºÂ·t QR Ã„â€˜Ã¡Â»Æ’ tÃ¡ÂºÂ¡o</string>
-    <string name="qr_setup_now">TÃ¡ÂºÂ¡o QR ngay</string>
+    <string name="qr_instruction">Quét mã QR đã đăng ký để tắt</string>
+    <string name="qr_wrong">Mã QR không đúng, thử lại</string>
+    <string name="qr_success">Đúng rồi! Tắt báo thức</string>
+    <string name="qr_no_setup">Chưa có mã QR. Vào Cài đặt QR để tạo</string>
+    <string name="qr_setup_now">Tạo QR ngay</string>
 
     <!-- ===== QR GENERATOR ===== -->
-    <string name="qr_generator_title">QuÃ¡ÂºÂ£n lÃƒÂ½ mÃƒÂ£ QR</string>
-    <string name="qr_generate">TÃ¡ÂºÂ¡o mÃƒÂ£ QR mÃ¡Â»â€ºi</string>
-    <string name="qr_save_gallery">LÃ†Â°u vÃƒÂ o thÃ†Â° viÃ¡Â»â€¡n</string>
-    <string name="qr_print">In mÃƒÂ£ QR</string>
-    <string name="qr_saved">Ã„ÂÃƒÂ£ lÃ†Â°u vÃƒÂ o thÃ†Â° viÃ¡Â»â€¡n Ã¡ÂºÂ£nh</string>
-    <string name="qr_print_hint">DÃƒÂ¡n mÃƒÂ£ QR Ã¡Â»Å¸ nÃ†Â¡i xa giÃ†Â°Ã¡Â»Âng (phÃƒÂ²ng tÃ¡ÂºÂ¯m, bÃ¡ÂºÂ¿p...)</string>
+    <string name="qr_generator_title">Quản lý mã QR</string>
+    <string name="qr_generate">Tạo mã QR mới</string>
+    <string name="qr_save_gallery">Lưu vào thư viện</string>
+    <string name="qr_print">In mã QR</string>
+    <string name="qr_saved">Đã lưu vào thư viện ảnh</string>
+    <string name="qr_print_hint">Dán mã QR ở nơi xa giường (phòng tắm, bếp...)</string>
 
     <!-- ===== TIMER ===== -->
-    <string name="timer_start">BÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u</string>
-    <string name="timer_pause">TÃ¡ÂºÂ¡m dÃ¡Â»Â«ng</string>
-    <string name="timer_reset">Ã„ÂÃ¡ÂºÂ·t lÃ¡ÂºÂ¡i</string>
-    <string name="timer_done">HÃ¡ÂºÂ¿t giÃ¡Â»Â!</string>
-    <string name="timer_set_time">Ã„ÂÃ¡ÂºÂ·t thÃ¡Â»Âi gian</string>
+    <string name="timer_start">Bắt đầu</string>
+    <string name="timer_pause">Tạm dừng</string>
+    <string name="timer_reset">Đặt lại</string>
+    <string name="timer_done">Hết giờ!</string>
+    <string name="timer_set_time">Đặt thời gian</string>
 
     <!-- ===== STOPWATCH ===== -->
-    <string name="stopwatch_lap">VÃƒÂ²ng</string>
-    <string name="stopwatch_lap_n">VÃƒÂ²ng %d</string>
+    <string name="stopwatch_lap">Vòng</string>
+    <string name="stopwatch_lap_n">Vòng %d</string>
 
     <!-- ===== SETTINGS ===== -->
-    <string name="settings_title">CÃƒÂ i Ã„â€˜Ã¡ÂºÂ·t</string>
-    <string name="settings_display">Giao diÃ¡Â»â€¡n</string>
-    <string name="settings_theme">ChÃ¡Â»Â§ Ã„â€˜Ã¡Â»Â</string>
-    <string name="settings_theme_dark">TÃ¡Â»â€˜i</string>
-    <string name="settings_theme_light">SÃƒÂ¡ng</string>
-    <string name="settings_theme_system">HÃ¡Â»â€¡ thÃ¡Â»â€˜ng</string>
-    <string name="settings_language">NgÃƒÂ´n ngÃ¡Â»Â¯</string>
-    <string name="settings_alarm">BÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="settings_snooze_enabled">BÃ¡ÂºÂ­t tÃƒÂ­nh nÃ„Æ’ng hoÃƒÂ£n</string>
-    <string name="settings_snooze_enabled_desc">TÃ¡ÂºÂ¯t Ã„â€˜Ã¡Â»Æ’ khÃƒÂ´ng hiÃ¡Â»â€¡n nÃƒÂºt HoÃƒÂ£n khi bÃƒÂ¡o thÃ¡Â»Â©c</string>
-    <string name="settings_snooze_duration">ThÃ¡Â»Âi gian hoÃƒÂ£n mÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»â€¹nh</string>
-    <string name="settings_qr_manager">QuÃ¡ÂºÂ£n lÃƒÂ½ mÃƒÂ£ QR</string>
-    <string name="settings_qr_manager_desc">TÃ¡ÂºÂ¡o vÃƒÂ  in mÃƒÂ£ QR cho thÃ¡Â»Â­ thÃƒÂ¡ch quÃƒÂ©t QR</string>
+    <string name="settings_title">Cài đặt</string>
+    <string name="settings_display">Giao diện</string>
+    <string name="settings_theme">Chủ đề</string>
+    <string name="settings_theme_dark">Tối</string>
+    <string name="settings_theme_light">Sáng</string>
+    <string name="settings_theme_system">Hệ thống</string>
+    <string name="settings_language">Ngôn ngữ</string>
+    <string name="settings_alarm">Báo thức</string>
+    <string name="settings_snooze_enabled">Bật tính năng hoãn</string>
+    <string name="settings_snooze_enabled_desc">Tắt để không hiện nút Hoãn khi báo thức</string>
+    <string name="settings_snooze_duration">Thời gian hoãn mặc định</string>
+    <string name="settings_qr_manager">Quản lý mã QR</string>
+    <string name="settings_qr_manager_desc">Tạo và in mã QR cho thử thách quét QR</string>
 
     <!-- ===== PERMISSION ===== -->
-    <string name="perm_exact_alarm_title">CÃ¡ÂºÂ§n quyÃ¡Â»Ân bÃƒÂ¡o thÃ¡Â»Â©c chÃƒÂ­nh xÃƒÂ¡c</string>
-    <string name="perm_exact_alarm_msg">Ã¡Â»Â¨ng dÃ¡Â»Â¥ng cÃ¡ÂºÂ§n quyÃ¡Â»Ân nÃƒÂ y Ã„â€˜Ã¡Â»Æ’ bÃƒÂ¡o thÃ¡Â»Â©c Ã„â€˜ÃƒÂºng giÃ¡Â»Â, ngay cÃ¡ÂºÂ£ khi mÃƒÂ n hÃƒÂ¬nh tÃ¡ÂºÂ¯t.</string>
-    <string name="perm_notification_title">CÃ¡ÂºÂ§n quyÃ¡Â»Ân thÃƒÂ´ng bÃƒÂ¡o</string>
-    <string name="perm_notification_msg">Cho phÃƒÂ©p Ã¡Â»Â©ng dÃ¡Â»Â¥ng hiÃ¡Â»Æ’n thÃ¡Â»â€¹ thÃƒÂ´ng bÃƒÂ¡o bÃƒÂ¡o thÃ¡Â»Â©c.</string>
-    <string name="perm_open_settings">MÃ¡Â»Å¸ cÃƒÂ i Ã„â€˜Ã¡ÂºÂ·t</string>
-    <string name="perm_activity_recognition">CÃ¡ÂºÂ§n quyÃ¡Â»Ân nhÃ¡ÂºÂ­n diÃ¡Â»â€¡n hoÃ¡ÂºÂ¡t Ã„â€˜Ã¡Â»â„¢ng</string>
-    <string name="perm_activity_recognition_msg">QuyÃ¡Â»Ân nÃƒÂ y cÃ¡ÂºÂ§n thiÃ¡ÂºÂ¿t cho tÃƒÂ­nh nÃ„Æ’ng Ã„â€˜Ã¡ÂºÂ¿m bÃ†Â°Ã¡Â»â€ºc chÃƒÂ¢n.</string>
+    <string name="perm_exact_alarm_title">Cần quyền báo thức chính xác</string>
+    <string name="perm_exact_alarm_msg">Ứng dụng cần quyền này để báo thức đúng giờ, ngay cả khi màn hình tắt.</string>
+    <string name="perm_notification_title">Cần quyền thông báo</string>
+    <string name="perm_notification_msg">Cho phép ứng dụng hiển thị thông báo báo thức.</string>
+    <string name="perm_open_settings">Mở cài đặt</string>
+    <string name="perm_activity_recognition">Cần quyền nhận diện hoạt động</string>
+    <string name="perm_activity_recognition_msg">Quyền này cần thiết cho tính năng đếm bước chân.</string>
 
     <!-- ===== COMMON ===== -->
     <string name="ok">OK</string>
-    <string name="yes">CÃƒÂ³</string>
-    <string name="no">KhÃƒÂ´ng</string>
-    <string name="confirm">XÃƒÂ¡c nhÃ¡ÂºÂ­n</string>
-    <string name="delete">XÃƒÂ³a</string>
-    <string name="add">ThÃƒÂªm</string>
-    <string name="edit">SÃ¡Â»Â­a</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="delete">Xóa</string>
+    <string name="add">Thêm</string>
+    <string name="edit">Sửa</string>
     <string name="done">Xong</string>
-    <string name="skip">BÃ¡Â»Â qua lÃ¡ÂºÂ§n nÃƒÂ y</string>
-    <string name="upcoming_channel_name">BÃƒÂ¡o thÃ¡Â»Â©c sÃ¡ÂºÂ¯p tÃ¡Â»â€ºi</string>
-    <string name="ringing_channel_name">Ã„Âang reo</string>
-    <string name="notification_action_snooze">HoÃƒÂ£n</string>
-    <string name="notification_action_dismiss">TÃ¡ÂºÂ¯t</string>
-    <string name="repeat_label">Láº·p láº¡i</string>
-    <string name="snooze_time_label">Thá»i gian hoÃ£n</string>
-    <string name="minutes_unit"> phÃºt</string>
-    <string name="no_alarm_title">ChÆ°a cÃ³ bÃ¡o thá»©c</string>
-    <string name="no_alarm_desc">Nháº¥n + Ä‘á»ƒ thÃªm bÃ¡o thá»©c Ä‘áº§u tiÃªn</string>
-    <string name="emergency_stop">Táº¯t kháº©n cáº¥p</string>
-    <string name="action_check">Kiá»ƒm tra</string>
-    <string name="math_invalid_input">Nháº­p sá»‘ há»£p lá»‡</string>
-    <string name="qr_no_setup_toast">ChÆ°a cÃ³ mÃ£ QR! Táº¯t bÃ¡o thá»©c tá»± Ä‘á»™ng.</string>
-    <string name="qr_camera_permission">Cáº§n quyá»n camera Ä‘á»ƒ quÃ©t QR</string>
-    <string name="qr_save_error">Lá»—i khi lÆ°u áº£nh</string>
-    <string name="skip_once">Táº¯t hÃ´m nay</string>
-    <string name="disable_alarm">Táº¯t háº³n</string>
+    <string name="skip">Bỏ qua lần này</string>
+    <string name="upcoming_channel_name">Báo thức sắp tới</string>
+    <string name="ringing_channel_name">Đang reo</string>
+    <string name="notification_action_snooze">Hoãn</string>
+    <string name="notification_action_dismiss">Tắt</string>
+    <string name="repeat_label">Lặp lại</string>
+    <string name="snooze_time_label">Thời gian hoãn</string>
+    <string name="minutes_unit"> phút</string>
+    <string name="no_alarm_title">Chưa có báo thức</string>
+    <string name="no_alarm_desc">Nhấn + để thêm báo thức đầu tiên</string>
+    <string name="action_check">Kiểm tra</string>
+    <string name="math_invalid_input">Nhập số hợp lệ</string>
+    <string name="qr_no_setup_toast">Chưa có mã QR! Tắt báo thức tự động.</string>
+    <string name="qr_camera_permission">Cần quyền camera để quét QR</string>
+    <string name="qr_save_error">Lỗi khi lưu ảnh</string>
+    <string name="skip_once">Tắt hôm nay</string>
+    <string name="disable_alarm">Tắt hẳn</string>
     <string name="challenge_title">Thử thách thức dậy</string>
     <string name="challenge_subtitle">Chọn cách bạn muốn tắt báo thức</string>
     <string name="challenge_none">Tắt bình thường</string>
@@ -183,5 +179,43 @@
     <string name="challenge_step_desc">Đi bộ một đoạn ngắn để tắt</string>
     <string name="challenge_qr">Quét QR</string>
     <string name="challenge_qr_desc">Quét mã QR đặt ở nơi xa giường</string>
+
+    <!-- ===== NEXT ALARM COUNTDOWN ===== -->
+    <string name="next_in_hours_minutes">Còn %1$d giờ %2$d phút</string>
+    <string name="next_in_minutes">Còn %1$d phút</string>
+
+    <!-- ===== STOPWATCH ===== -->
+    <string name="lap_format">Vòng %1$d  %2$02d:%3$02d.%4$02d</string>
+
+    <!-- ===== WORLD CLOCK ===== -->
+    <string name="world_clock_local">Giờ địa phương</string>
+    <string name="world_clock_diff_ahead">+%d giờ</string>
+    <string name="world_clock_diff_behind">%d giờ</string>
+
+    <!-- ===== CHALLENGE COMMON ===== -->
+    <string name="challenge_skip">Bỏ qua thử thách</string>
+    <string name="challenge_switch_title">Đổi thử thách</string>
+    <string name="challenge_switch_message">Bạn đã sai %d lần. Chuyển sang lắc điện thoại cho dễ hơn nhé?</string>
+
+    <!-- ===== MATH CUSTOM ===== -->
+    <string name="math_questions_label">Số câu hỏi</string>
+    <string name="math_operators_label">Phép tính</string>
+    <string name="math_operators_required">Chọn ít nhất một phép tính</string>
+    <string name="custom_value_label">Giá trị:</string>
+    <string name="math_progress">Câu %1$d/%2$d</string>
+
+    <!-- ===== RINGING NOTIFICATION ===== -->
+    <string name="notification_ringing_challenge">Cần %s để tắt báo thức</string>
+    <string name="notification_ringing_plain">Nhấn để tắt báo thức</string>
+    <string name="notification_action_emergency">Tắt khẩn cấp</string>
+
+    <!-- ===== PERMISSIONS ===== -->
+    <string name="perm_camera_title">Cần quyền camera</string>
+    <string name="perm_camera_message">Thử thách quét QR cần quyền truy cập camera. Hãy cấp quyền trong Cài đặt để dùng tính năng này.</string>
+    <string name="ringtone_unreadable">Không đọc được nhạc chuông đã chọn, đang dùng nhạc mặc định</string>
+
+    <!-- ===== SQUAT / STEP HINTS ===== -->
+    <string name="squat_hold_phone">Giữ điện thoại trước ngực và squat thật chậm</string>
+    <string name="squat_too_fast">Lắc không tính đâu — hãy squat chậm và sâu hơn</string>
 </resources>
 

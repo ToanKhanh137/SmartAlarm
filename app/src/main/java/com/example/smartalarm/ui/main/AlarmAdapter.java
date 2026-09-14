@@ -158,14 +158,16 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         }
 
         private String getChallengeIcon(int type) {
+            int res;
             switch (type) {
-                case Alarm.CHALLENGE_MATH:  return "Giải toán";
-                case Alarm.CHALLENGE_SHAKE: return "Lắc máy";
-                case Alarm.CHALLENGE_SQUAT: return "Squat";
-                case Alarm.CHALLENGE_STEP:  return "Đếm bước";
-                case Alarm.CHALLENGE_QR:    return "Quét QR";
+                case Alarm.CHALLENGE_MATH:  res = R.string.challenge_math;  break;
+                case Alarm.CHALLENGE_SHAKE: res = R.string.challenge_shake; break;
+                case Alarm.CHALLENGE_SQUAT: res = R.string.challenge_squat; break;
+                case Alarm.CHALLENGE_STEP:  res = R.string.challenge_step;  break;
+                case Alarm.CHALLENGE_QR:    res = R.string.challenge_qr;    break;
                 default: return "";
             }
+            return itemView.getContext().getString(res);
         }
     }
 }

@@ -37,7 +37,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave" android:layout_width="match_parent"
                 android:layout_height="56dp" android:text="@string/qr_save_gallery"
-                android:backgroundTint="@color/accent" android:textColor="@color/text_primary"/>
+                android:backgroundTint="@color/accent" android:textColor="@color/text_on_accent"/>
 
         </LinearLayout>
     </ScrollView>

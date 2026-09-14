@@ -10,6 +10,7 @@
     <color name="bg_surface">#FFFFFF</color>
     <color name="bg_card">#FFFFFF</color>
     <color name="bg_dialog">#FFFFFF</color>
+    <color name="bg_card_selected">#EEEBFE</color>
 
     <!-- ===== TEXT ===== -->
     <color name="text_primary">#1C1C1E</color>

@@ -10,11 +10,12 @@
     <color name="bg_surface">#1E1E2E</color>
     <color name="bg_card">#252538</color>
     <color name="bg_dialog">#2A2A3E</color>
+    <color name="bg_card_selected">#2C2757</color>
 
     <!-- ===== TEXT ===== -->
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#9E9EA8</color>
-    <color name="text_hint">#5C5C70</color>
+    <color name="text_hint">#7E7E93</color>
     <color name="text_on_accent">#FFFFFF</color>
 
     <!-- ===== DAY CHIP ===== -->

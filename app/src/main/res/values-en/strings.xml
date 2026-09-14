@@ -21,7 +21,7 @@
     <string name="day_sat">Sa</string>
     <string name="day_sun">Su</string>
     <string name="repeat_once">Once</string>
-    <string name="repeat_weekdays">MonÃ¢â‚¬â€œFri</string>
+    <string name="repeat_weekdays">Mon–Fri</string>
     <string name="repeat_weekend">Weekend</string>
     <string name="repeat_everyday">Every day</string>
 
@@ -63,7 +63,6 @@
     <string name="math_instruction">Solve to dismiss the alarm</string>
     <string name="math_wrong">Wrong! Try again</string>
     <string name="math_wrong_reduce">Too many mistakes. Reducing difficulty</string>
-    <string name="math_wrong_switch">Switch to shake challenge?</string>
     <string name="math_switch_yes">Switch to shake</string>
     <string name="math_switch_no">Keep solving</string>
     <string name="math_correct">Correct!</string>
@@ -75,8 +74,6 @@
 
     <string name="squat_instruction">Do %d squats to dismiss</string>
     <string name="squat_progress">%1$d / %2$d</string>
-    <string name="squat_hint">Hold phone in hand, squat down and stand up</string>
-    <string name="squat_detected">Squat %d! Keep going</string>
 
     <string name="step_instruction">Walk %d steps to dismiss</string>
     <string name="step_progress">%1$d / %2$d steps</string>
@@ -144,7 +141,6 @@
     <string name="minutes_unit"> min</string>
     <string name="no_alarm_title">No alarms yet</string>
     <string name="no_alarm_desc">Tap + to add your first alarm</string>
-    <string name="emergency_stop">Emergency Stop</string>
     <string name="action_check">Check</string>
     <string name="math_invalid_input">Invalid input</string>
     <string name="qr_no_setup_toast">No QR code setup! Auto dismissing.</string>
@@ -166,5 +162,43 @@
     <string name="challenge_step_desc">Walk a short distance to turn off</string>
     <string name="challenge_qr">Scan QR</string>
     <string name="challenge_qr_desc">Scan a QR code placed far away</string>
+
+    <!-- ===== NEXT ALARM COUNTDOWN ===== -->
+    <string name="next_in_hours_minutes">In %1$d h %2$d min</string>
+    <string name="next_in_minutes">In %1$d min</string>
+
+    <!-- ===== STOPWATCH ===== -->
+    <string name="lap_format">Lap %1$d  %2$02d:%3$02d.%4$02d</string>
+
+    <!-- ===== WORLD CLOCK ===== -->
+    <string name="world_clock_local">Local time</string>
+    <string name="world_clock_diff_ahead">+%d h</string>
+    <string name="world_clock_diff_behind">%d h</string>
+
+    <!-- ===== CHALLENGE COMMON ===== -->
+    <string name="challenge_skip">Skip challenge</string>
+    <string name="challenge_switch_title">Switch challenge</string>
+    <string name="challenge_switch_message">You got it wrong %d times. Switch to shaking the phone instead?</string>
+
+    <!-- ===== MATH CUSTOM ===== -->
+    <string name="math_questions_label">Number of questions</string>
+    <string name="math_operators_label">Operators</string>
+    <string name="math_operators_required">Pick at least one operator</string>
+    <string name="custom_value_label">Value:</string>
+    <string name="math_progress">Question %1$d/%2$d</string>
+
+    <!-- ===== RINGING NOTIFICATION ===== -->
+    <string name="notification_ringing_challenge">%s required to stop the alarm</string>
+    <string name="notification_ringing_plain">Tap to turn off the alarm</string>
+    <string name="notification_action_emergency">Emergency stop</string>
+
+    <!-- ===== PERMISSIONS ===== -->
+    <string name="perm_camera_title">Camera permission needed</string>
+    <string name="perm_camera_message">The QR challenge needs camera access. Grant it in Settings to use this feature.</string>
+    <string name="ringtone_unreadable">Could not read the selected ringtone, using the default one</string>
+
+    <!-- ===== SQUAT / STEP HINTS ===== -->
+    <string name="squat_hold_phone">Hold the phone at your chest and squat slowly</string>
+    <string name="squat_too_fast">Shaking will not count — squat slower and deeper</string>
 </resources>
 

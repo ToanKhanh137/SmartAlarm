@@ -40,12 +40,13 @@ public class WorldClockAdapter extends RecyclerView.Adapter<WorldClockAdapter.Cl
         long diffMs = tz.getOffset(System.currentTimeMillis()) - localTz.getOffset(System.currentTimeMillis());
         int diffHours = (int) (diffMs / 3600000);
         
+        android.content.Context context = holder.itemView.getContext();
         if (diffHours == 0) {
-            holder.tvTimeDiff.setText("Giờ địa phương");
+            holder.tvTimeDiff.setText(context.getString(R.string.world_clock_local));
         } else if (diffHours > 0) {
-            holder.tvTimeDiff.setText("+" + diffHours + " giờ");
+            holder.tvTimeDiff.setText(context.getString(R.string.world_clock_diff_ahead, diffHours));
         } else {
-            holder.tvTimeDiff.setText(diffHours + " giờ");
+            holder.tvTimeDiff.setText(context.getString(R.string.world_clock_diff_behind, diffHours));
         }
     }
 

@@ -5,9 +5,10 @@
     <color name="bg_surface">#FFFFFF</color>
     <color name="bg_card">#FFFFFF</color>
     <color name="bg_dialog">#FFFFFF</color>
+    <color name="bg_card_selected">#EEEBFE</color>
     <color name="text_primary">#1A1A2E</color>
     <color name="text_secondary">#5C5C70</color>
-    <color name="text_hint">#AAAABC</color>
+    <color name="text_hint">#8A8A9E</color>
     <color name="divider">#E0E0EC</color>
     <color name="border">#D0D0E0</color>
     <color name="day_inactive_bg">#EBEBF5</color>

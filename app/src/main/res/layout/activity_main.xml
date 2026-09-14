@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_primary">
 
-    <!-- Content area: ViewFlipper thay Ä‘á»•i giá»¯a 4 tab -->
+    <!-- Content area: ViewFlipper thay đổi giữa 4 tab -->
     <ViewFlipper
         android:id="@+id/viewFlipper"
         android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                     android:src="@drawable/ic_settings"
                     android:background="@drawable/bg_challenge_card"
                     android:padding="10dp"
-                    android:contentDescription="Settings"/>
+                    android:contentDescription="@string/settings_title"/>
             </LinearLayout>
 
             <!-- Alarm RecyclerView -->
@@ -117,28 +117,17 @@
             android:background="@color/bg_primary"
             android:paddingHorizontal="20dp">
 
-            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingTop="16dp" android:paddingBottom="12dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nav_clock"
-                    android:textSize="28sp"
-                    android:textColor="@color/text_primary"
-                    android:textStyle="bold"
-                    android:layout_centerVertical="true"/>
-                <ImageButton
-                    android:id="@+id/btnAddCity"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_add"
-                    app:tint="@color/accent"
-                    android:contentDescription="Add City"/>
-            </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_clock"
+                android:textSize="28sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp"/>
 
-            <!-- Digital clock lá»›n á»Ÿ giá»¯a -->
+            <!-- Digital clock lớn ở giữa -->
             <TextClock
                 android:id="@+id/digitalClock"
                 android:layout_width="match_parent"
@@ -148,7 +137,7 @@
                 android:textSize="56sp"
                 android:textColor="@color/text_primary"
                 android:gravity="center"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="sans-serif-medium"
                 android:paddingVertical="16dp"/>
 
             <TextClock
@@ -189,7 +178,7 @@
                 android:textStyle="bold"
                 android:paddingBottom="32dp"/>
 
-            <!-- Hiá»ƒn thá»‹ Ä‘áº¿m ngÆ°á»£c -->
+            <!-- Hiển thị đếm ngược -->
             <TextView
                 android:id="@+id/tvTimerDisplay"
                 android:layout_width="match_parent"
@@ -198,10 +187,10 @@
                 android:textSize="72sp"
                 android:textColor="@color/text_primary"
                 android:gravity="center"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"/>
 
-            <!-- NumberPicker row khi chÆ°a báº¯t Ä‘áº§u -->
+            <!-- NumberPicker row khi chưa bắt đầu -->
             <LinearLayout
                 android:id="@+id/llTimerPicker"
                 android:layout_width="wrap_content"
@@ -320,7 +309,7 @@
                     android:layout_height="56dp"
                     android:text="@string/timer_start"
                     android:backgroundTint="@color/accent"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/text_on_accent"
                     app:cornerRadius="28dp"/>
             </LinearLayout>
         </LinearLayout>
@@ -351,7 +340,7 @@
                 android:textSize="72sp"
                 android:textColor="@color/text_primary"
                 android:gravity="center"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="sans-serif-medium"
                 android:paddingBottom="32dp"/>
 
             <LinearLayout
@@ -377,7 +366,7 @@
                     android:layout_height="56dp"
                     android:text="@string/timer_start"
                     android:backgroundTint="@color/accent"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/text_on_accent"
                     app:cornerRadius="28dp"/>
             </LinearLayout>
 
@@ -404,7 +393,7 @@
         app:itemTextColor="@drawable/nav_item_color"
         app:labelVisibilityMode="labeled"/>
 
-    <!-- FAB: ThÃªm bÃ¡o thá»©c (chá»‰ hiá»‡n trÃªn tab Alarm) -->
+    <!-- FAB: Thêm báo thức (chỉ hiện trên tab Alarm) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddAlarm"
         android:layout_width="wrap_content"
@@ -413,7 +402,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="96dp"
         android:src="@drawable/ic_add"
-        android:contentDescription="Add alarm"
+        android:contentDescription="@string/edit_alarm_title_add"
         app:backgroundTint="@color/accent"
         app:tint="@color/text_primary"/>
 
