@@ -39,6 +39,8 @@ public class EditAlarmActivity extends BaseActivity {
 
     public static final String EXTRA_ALARM_ID = "alarm_id";
     private static final int REQUEST_RINGTONE = 2001;
+    private static final int REQUEST_ADD_AUDIO = 2002;
+    private static final int REQUEST_ADD_RINGTONE = 2003;
     private static final int PERM_CAMERA = 302;
     private static final int PERM_ACTIVITY = 301;
     private static final int PERM_AUDIO = 303;
@@ -398,33 +400,123 @@ public class EditAlarmActivity extends BaseActivity {
                 : getString(R.string.shuffle_playlist_count, count));
     }
 
+    /**
+     * Danh sách hiện trong hộp thoại = nhạc hệ thống + những bài người dùng tự thêm.
+     * Bài tự thêm luôn nằm trong danh sách kể cả khi bỏ tick, để còn tick lại được.
+     */
+    private List<String> buildPlaylistUris() {
+        List<String> uris = new ArrayList<>();
+        for (RingtoneCatalog.Item item : RingtoneCatalog.load(this)) {
+            uris.add(item.uri);
+        }
+        for (String uri : shuffleSelection) {
+            if (!uris.contains(uri)) uris.add(uri);
+        }
+        return uris;
+    }
+
     private void showShufflePlaylistDialog() {
-        List<RingtoneCatalog.Item> catalog = RingtoneCatalog.load(this);
-        if (catalog.isEmpty()) {
-            Toast.makeText(this, getString(R.string.shuffle_playlist_all), Toast.LENGTH_SHORT).show();
+        List<String> uris = buildPlaylistUris();
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.shuffle_playlist_title))
+                // Máy không liệt kê được nhạc chuông nào thì vẫn phải có đường thêm nhạc,
+                // nếu không hộp thoại rỗng và người dùng bế tắc.
+                .setNeutralButton(getString(R.string.shuffle_add_from_device),
+                        (d, w) -> showAddSourceChooser())
+                .setNegativeButton(getString(R.string.cancel), null);
+
+        if (uris.isEmpty()) {
+            builder.setMessage(getString(R.string.shuffle_playlist_empty)).show();
             return;
         }
 
-        String[] titles = new String[catalog.size()];
-        boolean[] checked = new boolean[catalog.size()];
-        for (int i = 0; i < catalog.size(); i++) {
-            titles[i] = catalog.get(i).title;
-            checked[i] = shuffleSelection.contains(catalog.get(i).uri);
+        String[] titles = new String[uris.size()];
+        boolean[] checked = new boolean[uris.size()];
+        for (int i = 0; i < uris.size(); i++) {
+            titles[i] = RingtoneCatalog.displayName(this, uris.get(i));
+            checked[i] = shuffleSelection.contains(uris.get(i));
         }
 
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.shuffle_playlist_title))
-                .setMessage(getString(R.string.shuffle_playlist_hint))
-                .setMultiChoiceItems(titles, checked, (d, which, isChecked) -> checked[which] = isChecked)
+        builder.setMultiChoiceItems(titles, checked, (d, which, isChecked) -> checked[which] = isChecked)
                 .setPositiveButton(getString(R.string.save), (d, w) -> {
                     shuffleSelection.clear();
-                    for (int i = 0; i < catalog.size(); i++) {
-                        if (checked[i]) shuffleSelection.add(catalog.get(i).uri);
+                    for (int i = 0; i < uris.size(); i++) {
+                        if (checked[i]) shuffleSelection.add(uris.get(i));
                     }
                     refreshShuffleRow();
                 })
+                .show();
+    }
+
+    /**
+     * Hai nguồn thêm nhạc: file nhạc trong máy, hoặc nhạc chuông hệ thống.
+     * Cần cả hai vì có máy API liệt kê nhạc chuông trả về rỗng, nhưng bộ chọn
+     * nhạc chuông của hệ thống thì vẫn hiện đầy đủ.
+     */
+    private void showAddSourceChooser() {
+        String[] options = {
+                getString(R.string.shuffle_source_files),
+                getString(R.string.shuffle_source_ringtones)
+        };
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.shuffle_add_from_device))
+                .setItems(options, (d, which) -> {
+                    if (which == 0) pickAudioFromDevice();
+                    else pickSystemRingtone();
+                })
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show();
+    }
+
+    private void pickSystemRingtone() {
+        Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, false);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE,
+                getString(R.string.shuffle_playlist_title));
+        startActivityForResult(intent, REQUEST_ADD_RINGTONE);
+    }
+
+    private void pickAudioFromDevice() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("audio/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        try {
+            startActivityForResult(intent, REQUEST_ADD_AUDIO);
+        } catch (Exception e) {
+            Toast.makeText(this, getString(R.string.shuffle_no_file_picker), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void addPickedAudio(Intent data) {
+        List<Uri> picked = new ArrayList<>();
+        if (data.getClipData() != null) {
+            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                picked.add(data.getClipData().getItemAt(i).getUri());
+            }
+        } else if (data.getData() != null) {
+            picked.add(data.getData());
+        }
+
+        for (Uri uri : picked) {
+            // Không giữ quyền lâu dài thì sau khi khởi động lại máy sẽ không đọc được file
+            try {
+                getContentResolver().takePersistableUriPermission(uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Exception ignored) {
+                // Một số provider không cho giữ quyền lâu dài – vẫn thêm, chỉ là có thể mất sau reboot
+            }
+            String uriString = uri.toString();
+            if (!shuffleSelection.contains(uriString)) shuffleSelection.add(uriString);
+        }
+
+        refreshShuffleRow();
+        if (!picked.isEmpty()) showShufflePlaylistDialog();
     }
 
     private void openRingtonePicker() {
@@ -478,6 +570,15 @@ public class EditAlarmActivity extends BaseActivity {
                             Toast.LENGTH_LONG).show();
                 }
             }
+        } else if (requestCode == REQUEST_ADD_AUDIO && resultCode == RESULT_OK && data != null) {
+            addPickedAudio(data);
+        } else if (requestCode == REQUEST_ADD_RINGTONE && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            if (uri != null && !shuffleSelection.contains(uri.toString())) {
+                shuffleSelection.add(uri.toString());
+            }
+            refreshShuffleRow();
+            showShufflePlaylistDialog();
         }
     }
 

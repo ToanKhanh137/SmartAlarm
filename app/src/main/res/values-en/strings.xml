@@ -227,5 +227,10 @@
     <string name="shuffle_playlist_count">%d selected</string>
     <string name="shuffle_playlist_title">Pick songs to shuffle</string>
     <string name="shuffle_playlist_hint">Select at least one, or leave empty to use all</string>
+    <string name="shuffle_add_from_device">Add from device</string>
+    <string name="shuffle_playlist_empty">No ringtones found on this device. Tap \"Add from device\" to pick audio files.</string>
+    <string name="shuffle_no_file_picker">No file picker app available</string>
+    <string name="shuffle_source_files">Audio files</string>
+    <string name="shuffle_source_ringtones">System ringtones</string>
 </resources>
 

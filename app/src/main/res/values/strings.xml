@@ -244,5 +244,10 @@
     <string name="shuffle_playlist_count">Đã chọn %d bài</string>
     <string name="shuffle_playlist_title">Chọn nhạc cho shuffle</string>
     <string name="shuffle_playlist_hint">Chọn ít nhất một bài, hoặc bỏ trống để dùng tất cả</string>
+    <string name="shuffle_add_from_device">Thêm nhạc từ máy</string>
+    <string name="shuffle_playlist_empty">Máy không liệt kê được nhạc chuông nào. Bấm \"Thêm nhạc từ máy\" để chọn file nhạc.</string>
+    <string name="shuffle_no_file_picker">Máy không có ứng dụng chọn file</string>
+    <string name="shuffle_source_files">File nhạc trong máy</string>
+    <string name="shuffle_source_ringtones">Nhạc chuông hệ thống</string>
 </resources>
 
